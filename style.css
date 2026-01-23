@@ -633,3 +633,58 @@ footer .social-icons a {
   transform: scale(1.05);
   box-shadow: 0 6px 14px rgba(0,0,0,0.3);
 }
+
+.item-carrito {
+  border-bottom: 1px solid #ccc;
+  padding: 12px;
+}
+
+.fila-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nombre {
+  font-weight: bold;
+  margin: 0;
+  flex: 1;
+}
+
+.precio-eliminar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.precio {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.eliminar {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.eliminar:hover {
+  background-color: #c0392b;
+}
+
+.cantidad-controles {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.cantidad {
+  min-width: 24px;
+  text-align: center;
+  font-weight: bold;
+}
