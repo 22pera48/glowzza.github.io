@@ -680,7 +680,8 @@ function agregarAlCarrito(nombre, precio) {
   const producto = {
     id: Date.now().toString(), // ID único
     nombre,
-    precio
+    precio,
+    cantidad: 1
   };
 
   carrito.push(producto);
