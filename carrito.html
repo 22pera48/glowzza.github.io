@@ -112,6 +112,22 @@
         mostrarCarrito();
       });
     });
+
+    item.innerHTML = `
+  <div class="fila-superior">
+    <p class="nombre">${producto.nombre}</p>
+    <div class="precio-eliminar">
+      <p class="precio">$${producto.precio}</p>
+      <button class="eliminar">Eliminar</button>
+    </div>
+  </div>
+  <div class="cantidad-controles">
+    <button class="menos">-</button>
+    <span class="cantidad">${producto.cantidad}</span>
+    <button class="mas">+</button>
+  </div>
+`;
+
   }
 
   window.onload = mostrarCarrito;
