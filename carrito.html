@@ -40,10 +40,6 @@
     </div>
   </section>
 
-<form id="form-carrito" action="https://formspree.io/f/xykedrnd" method="POST" style="display:none;">
-  <input type="hidden" name="productos" id="productos">
-  <input type="hidden" name="total" id="total">
-</form>
 
   <div class="boton-volver">
     <a href="index.html">⬅️ Volver a la página principal</a>
@@ -137,25 +133,41 @@
 
   window.onload = mostrarCarrito;
 
-function continuarCompra() {
-  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+<script>
+  function mostrarCarrito() {
+    // tu código actual para mostrar productos
+  }
 
-  // Armamos el texto con productos y cantidades
-  let productosTexto = carrito.map(p => `${p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}`).join("\n");
-  let totalTexto = carrito.reduce((suma, p) => suma + p.precio * p.cantidad, 0);
+  function continuarCompra() {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-  // Pasamos los datos al formulario oculto
-  document.getElementById("productos").value = productosTexto;
-  document.getElementById("total").value = "$" + totalTexto;
+    // Armamos el texto con productos y cantidades
+    let productosTexto = carrito.map(p => `${p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}`).join("\n");
+    let totalTexto = carrito.reduce((suma, p) => suma + p.precio * p.cantidad, 0);
 
-  // Enviamos el formulario a Formspree
-  document.getElementById("form-carrito").submit();
-}
+    // Enviamos con EmailJS
+    emailjs.send("service_e2dcwiw", "template_0wi0hpz", {
+      productos: productosTexto,
+      total: "$" + totalTexto
+    })
+    .then(function(response) {
+      alert("Compra enviada correctamente ✅");
+    }, function(error) {
+      alert("Error al enviar la compra ❌");
+    });
+  }
 
+  window.onload = mostrarCarrito;
+</script>
 
 
 </script>
 
-
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("eNmGPzHIA110nI73f"); // reemplazá con tu Public Key de EmailJS
+  })();
+</script>
 </body>
 </html>
