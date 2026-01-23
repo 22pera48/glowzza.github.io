@@ -4,6 +4,26 @@
   <meta charset="UTF-8">
   <title>Carrito de compras</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .item-carrito {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      padding: 6px;
+      border-bottom: 1px solid #ccc;
+    }
+    .eliminar {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    .eliminar:hover {
+      background-color: #c0392b;
+    }
+  </style>
 </head>
 <body>
  <section class="banner-promos">
@@ -21,54 +41,54 @@
   </section>
 
   <div class="boton-volver">
-  <a href="index.html">⬅️ Volver a la página principal</a>
-</div>
-
+    <a href="index.html">⬅️ Volver a la página principal</a>
+  </div>
 
   <script>
-    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-    const lista = document.getElementById("lista-carrito");
-    const total = document.getElementById("total-carrito");
+    function mostrarCarrito() {
+      const lista = document.getElementById("lista-carrito");
+      const total = document.getElementById("total-carrito");
+      lista.innerHTML = "";
 
-    let suma = 0;
-    carrito.forEach(producto => {
-      const item = document.createElement("div");
-      item.className = "item-carrito";
-      item.innerHTML = `<p>${producto.nombre}</p><p>$${producto.precio}</p>`;
-      lista.appendChild(item);
-      suma += producto.precio;
-    });
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      let suma = 0;
 
-    total.textContent = suma;
+      carrito.forEach(producto => {
+        const item = document.createElement("div");
+        item.className = "item-carrito";
+        item.dataset.id = producto.id; // usamos el id único
+
+        item.innerHTML = `
+          <p>${producto.nombre}</p>
+          <p>$${producto.precio}</p>
+          <button class="eliminar">Eliminar</button>
+        `;
+
+        lista.appendChild(item);
+        suma += producto.precio;
+      });
+
+      total.textContent = suma;
+
+      // Activar botones eliminar
+      document.querySelectorAll(".eliminar").forEach(boton => {
+        boton.addEventListener("click", function() {
+          const id = this.parentElement.dataset.id;
+          let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+          carrito = carrito.filter(prod => prod.id !== id);
+          localStorage.setItem("carrito", JSON.stringify(carrito));
+          mostrarCarrito(); // refrescar vista
+        });
+      });
+    }
 
     function continuarCompra() {
       alert("Gracias por tu compra. Pronto te contactaremos por WhatsApp.");
       // Si querés redirigir directamente a WhatsApp:
       // window.open("https://wa.me/541171019084?text=Quiero%20finalizar%20mi%20compra", "_blank");
     }
+
+    window.onload = mostrarCarrito;
   </script>
-
-  <script>
-window.onload = function() {
-  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-  const lista = document.getElementById("lista-carrito");
-  const total = document.getElementById("total-carrito");
-
-  let suma = 0;
-  carrito.forEach(producto => {
-    const item = document.createElement("div");
-    item.className = "item-carrito";
-    item.innerHTML = `<p>${producto.nombre}</p><p>$${producto.precio}</p>`;
-    lista.appendChild(item);
-    suma += producto.precio;
-  });
-
-  total.textContent = suma;
-};
-
-function continuarCompra() {
-  alert("Gracias por tu compra. Pronto te contactaremos por WhatsApp.");
-}
-</script>
 </body>
 </html>
