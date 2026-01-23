@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrito de compras</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section class="carrito">
+    <h1>Tu carrito</h1>
+    <div id="lista-carrito"></div>
+    <div class="resumen">
+      <p><strong>Total:</strong> $<span id="total-carrito">0</span></p>
+      <button onclick="continuarCompra()">Continuar compra</button>
+    </div>
+  </section>
+
+  <script>
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    const lista = document.getElementById("lista-carrito");
+    const total = document.getElementById("total-carrito");
+
+    let suma = 0;
+    carrito.forEach(producto => {
+      const item = document.createElement("div");
+      item.className = "item-carrito";
+      item.innerHTML = `<p>${producto.nombre}</p><p>$${producto.precio}</p>`;
+      lista.appendChild(item);
+      suma += producto.precio;
+    });
+
+    total.textContent = suma;
+
+    function continuarCompra() {
+      alert("Gracias por tu compra. Pronto te contactaremos por WhatsApp.");
+      // Si querés redirigir directamente a WhatsApp:
+      // window.open("https://wa.me/541171019084?text=Quiero%20finalizar%20mi%20compra", "_blank");
+    }
+  </script>
+
+  <script>
+window.onload = function() {
+  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  const lista = document.getElementById("lista-carrito");
+  const total = document.getElementById("total-carrito");
+
+  let suma = 0;
+  carrito.forEach(producto => {
+    const item = document.createElement("div");
+    item.className = "item-carrito";
+    item.innerHTML = `<p>${producto.nombre}</p><p>$${producto.precio}</p>`;
+    lista.appendChild(item);
+    suma += producto.precio;
+  });
+
+  total.textContent = suma;
+};
+
+function continuarCompra() {
+  alert("Gracias por tu compra. Pronto te contactaremos por WhatsApp.");
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,635 @@
+/* Tipografía y reset */
+body {
+  font-family: 'Roboto', 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  color: #333;
+}
+
+/* Header y navegación */
+header {
+  background: #fff;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header .social-icons a {
+  margin: 0 8px;
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+}
+
+/* Botones */
+.btn {
+  background: #000;
+  color: #fff;
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+.btn:hover {
+  background: #333;
+}
+
+/* Secciones */
+section {
+  padding: 40px 20px;
+  text-align: center;
+}
+section h1, section h2, section h4 {
+  margin-bottom: 15px;
+}
+
+/* Productos */
+.productos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  align-items: stretch; /* fuerza misma altura */
+
+}
+.producto {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 320px; /* nuevo valor */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 15px;
+  width: 250px;
+  text-align: center;
+  background: #fafafa;
+}
+.producto img {
+  width: 100%;
+  height: 180px; /* ajustá según tu diseño */
+  object-fit: cover; /* recorta y centra la imagen sin deformarla */
+  border-radius: 4px;
+}
+.producto h4 {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+.producto p {
+  font-weight: bold;
+  color: #e53935;
+}
+
+/* Footer */
+footer {
+  background: #333;
+  color: #fff;
+  padding: 20px;
+}
+footer .social-icons a {
+  margin: 0 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Popup de compra */
+#popup-compra {
+  display: none; /* lo activás con JS */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+}
+#popup-compra .dialog {
+  background: #fff;
+  width: 90%;
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 20px;
+  border-radius: 8px;
+}
+#popup-compra .precio {
+  margin: 15px 0;
+}
+#popup-compra .old-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 10px;
+}
+#popup-compra .new-price {
+  font-weight: bold;
+  color: #e53935;
+}
+#popup-compra .cerrar {
+  background: #e53935;
+  margin-top: 20px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .productos {
+    flex-direction: column;
+    align-items: center;
+  }
+  .producto {
+    width: 90%;
+  }
+}
+
+/* Menú de navegación */
+.menu {
+  background-color: #f8f8f8;
+  padding: 10px 0;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.menu a {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 12px 24px;
+  border-radius: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.menu a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+}.menu a:hover {
+  color: #e53935;
+}
+
+/* Banner */
+.banner {
+  position: relative;
+  text-align: center;
+  color: #fff;
+}
+.banner {
+    position: relative;
+    text-align: center;
+    color: #fff;
+    background-image: url('images/banner/banner.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 300px; /* ajustá según el alto que necesites */
+}
+.banner-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.4);
+  padding: 20px;
+  border-radius: 10px;
+}
+.banner-text h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+.banner-text h2 {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+.banner-text p {
+  font-size: 1.2rem;
+}
+.boton-carrito {
+  margin-top: auto;
+}
+
+/* Fondo oscuro */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  text-align: center;
+  padding-top: 40px;
+}
+
+.modal img {
+  max-width: 80%;
+  max-height: 70%;
+  border-radius: 8px;
+}
+
+.modal p {
+  color: white;
+  font-size: 16px;
+  margin-top: 15px;
+}
+.producto img {
+  cursor: pointer; /* se ve la manito */
+}
+.buscador {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.buscador input {
+  padding: 8px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+}
+
+.buscador button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-left: none;
+  background: black;
+  color: white;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+.buscador-flotante {
+  display: none;
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  background-color: black;
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 1000;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+.buscador-flotante input {
+  padding: 10px;
+  width: 250px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+  background-color: #222;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.buscador-flotante input::placeholder {
+  color: #aaa;
+}
+
+.buscador-flotante input:hover,
+.buscador-flotante input:focus {
+  background-color: #111;
+  border: 1px solid #555;
+  box-shadow: 0 0 5px rgba(255,255,255,0.3);
+}
+
+.buscador-flotante button {
+  padding: 10px 15px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buscador-flotante button:hover {
+  background-color: #ddd;
+}
+
+.cerrar {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+.buscador-toggle button {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: white;
+  font-size: 18px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.buscador-toggle button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+}
+
+/* Recuadro flotante más grande y elegante */
+.buscador-flotante {
+  display: none;
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  max-width: 90%;
+  background-color: #111;
+  padding: 30px;
+  border-radius: 16px;
+  z-index: 1000;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,0.7);
+}
+
+/* Campo de texto más grande y suave */
+.buscador-flotante input {
+  padding: 14px;
+  width: 80%;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: #222;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.buscador-flotante input::placeholder {
+  color: #aaa;
+}
+
+.buscador-flotante input:hover,
+.buscador-flotante input:focus {
+  background-color: #333;
+  border: 1px solid #ff69b4;
+  box-shadow: 0 0 8px rgba(255,105,180,0.4);
+}
+
+/* Botones dentro del buscador */
+.buscador-flotante button {
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  margin: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.buscador-flotante button:hover {
+  background-color: #ff1493;
+}
+
+/* Botón de cerrar */
+.cerrar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+}
+.social-icons a {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: white;
+  font-size: 28px;   /* 🔥 acá agrandás el ícono */
+  padding: 14px;     /* ajustá el espacio interno */
+  border-radius: 50%;
+  text-align: center;
+  width: 40px;       /* ancho del círculo */
+  height: 40px;      /* alto del círculo */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+.titulo-peluqueria {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: linear-gradient(to right, #f8b7d4, #fce4ec);
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.titulo-peluqueria h1 {
+  font-size: 2.8em;
+  margin: 0;
+  color: #e91e63;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 1px;
+}
+
+.titulo-peluqueria h4 {
+  font-size: 1.3em;
+  margin-top: 10px;
+  color: #555;
+  font-weight: normal;
+  font-family: 'Segoe UI', sans-serif;
+}
+.titulo-skincare {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: linear-gradient(to right, #fce4ec, #f8b7d4);
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.titulo-skincare h1 {
+  font-size: 2.8em;
+  margin: 0;
+  color: #ff4081;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 1px;
+}
+
+.titulo-skincare h4 {
+  font-size: 1.3em;
+  margin-top: 10px;
+  color: #555;
+  font-weight: normal;
+  font-family: 'Segoe UI', sans-serif;
+}
+.titulo-maquillaje {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: linear-gradient(to right, #f8b7d4, #fce4ec);
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.titulo-maquillaje h1 {
+  font-size: 2.8em;
+  margin: 0;
+  color: #d81b60; /* tono rosa fuerte para maquillaje */
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 1px;
+}
+
+.titulo-maquillaje h4 {
+  font-size: 1.3em;
+  margin-top: 10px;
+  color: #555;
+  font-weight: normal;
+  font-family: 'Segoe UI', sans-serif;
+}
+.bloque-contacto {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(to right, #fce4ec, #f8b7d4);
+  border-radius: 20px;
+  margin: 50px auto;
+  max-width: 600px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.bloque-contacto h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  color: #d81b60;
+}
+
+.bloque-contacto h4 {
+  font-size: 1.3em;
+  margin-bottom: 20px;
+  color: #555;
+  font-weight: normal;
+}
+
+.bloque-contacto p {
+  font-size: 1.1em;
+  color: #333;
+  margin: 8px 0;
+}
+
+.carrito {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fce4ec;
+  border-radius: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.item-carrito {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.resumen {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.resumen button {
+  background-color: #ff4081;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.boton-promocion {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.boton-promocion a {
+  display: inline-block;
+  padding: 16px 32px;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(to right, #ff4081, #e91e63);
+  border-radius: 40px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.boton-promocion a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+.promociones {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff0f5;
+  border-radius: 20px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.promo {
+  background: #ffe4ec;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.banner-promos {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(to right, #ff4081, #e91e63);
+  color: white;
+}
+
+.titulo-glowzza {
+  font-size: 3em;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.subtitulo-glowzza {
+  font-size: 1.2em;
+  margin-top: 10px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.boton-volver {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.boton-volver a {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(to right, #ff4081, #e91e63);
+  border-radius: 30px;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.boton-volver a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+}
