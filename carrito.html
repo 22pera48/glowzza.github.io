@@ -53,29 +53,32 @@
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     let suma = 0;
 
-    carrito.forEach(producto => {
-      const item = document.createElement("div");
-      item.className = "item-carrito";
-      item.dataset.id = producto.id;
+carrito.forEach(producto => {
+  const item = document.createElement("div");
+  item.className = "item-carrito";
+  item.dataset.id = producto.id;
 
-      if (!producto.cantidad) producto.cantidad = 1; // inicializamos cantidad
+  if (!producto.cantidad) producto.cantidad = 1; // inicializamos cantidad
 
-      item.innerHTML = `
-        <p>${producto.nombre}</p>
-        <p>$${producto.precio}</p>
-        <div>
-          <button class="menos">-</button>
-          <span>${producto.cantidad}</span>
-          <button class="mas">+</button>
-          <button class="eliminar">Eliminar</button>
-        </div>
-      `;
+  // 👉 acá armás el contenido del producto
+  item.innerHTML = `
+    <div class="fila-superior">
+      <p class="nombre">${producto.nombre}</p>
+      <div class="precio-eliminar">
+        <p class="precio">$${producto.precio}</p>
+        <button class="eliminar">Eliminar</button>
+      </div>
+    </div>
+    <div class="cantidad-controles">
+      <button class="menos">-</button>
+      <span class="cantidad">${producto.cantidad}</span>
+      <button class="mas">+</button>
+    </div>
+  `;
 
-      lista.appendChild(item);
-      suma += producto.precio * producto.cantidad;
-    });
-
-    total.textContent = suma;
+  lista.appendChild(item);
+  suma += producto.precio * producto.cantidad;
+});    total.textContent = suma;
 
     // Botón eliminar
     document.querySelectorAll(".eliminar").forEach(boton => {
@@ -113,20 +116,6 @@
       });
     });
 
-    item.innerHTML = `
-  <div class="fila-superior">
-    <p class="nombre">${producto.nombre}</p>
-    <div class="precio-eliminar">
-      <p class="precio">$${producto.precio}</p>
-      <button class="eliminar">Eliminar</button>
-    </div>
-  </div>
-  <div class="cantidad-controles">
-    <button class="menos">-</button>
-    <span class="cantidad">${producto.cantidad}</span>
-    <button class="mas">+</button>
-  </div>
-`;
 
   }
 
