@@ -6,6 +6,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+ <section class="banner-promos">
+  <h1 class="titulo-glowzza">Glowzza</h1>
+  <p class="subtitulo-glowzza">PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
+</section>
+
   <section class="carrito">
     <h1>Tu carrito</h1>
     <div id="lista-carrito"></div>
@@ -14,6 +19,11 @@
       <button onclick="continuarCompra()">Continuar compra</button>
     </div>
   </section>
+
+  <div class="boton-volver">
+  <a href="index.html">⬅️ Volver a la página principal</a>
+</div>
+
 
   <script>
     const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
