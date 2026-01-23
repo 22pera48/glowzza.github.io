@@ -686,8 +686,20 @@ function agregarAlCarrito(nombre, precio) {
 
   carrito.push(producto);
   localStorage.setItem("carrito", JSON.stringify(carrito));
-  alert("Producto agregado al carrito");
+Swal.fire({
+  title: 'Producto agregado al carrito',
+  icon: 'success',
+  showCancelButton: true,
+  confirmButtonText: 'Aceptar',
+  cancelButtonText: 'Ir al carrito',
+}).then((result) => {
+  if (result.dismiss === Swal.DismissReason.cancel) {
+    window.location.href = 'carrito.html';
+  }
+});
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 </html>
