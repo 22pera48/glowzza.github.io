@@ -531,6 +531,12 @@ footer .social-icons a {
   font-family: 'Segoe UI', sans-serif;
 }
 
+.item-carrito {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
 
 .resumen {
   text-align: center;
