@@ -40,6 +40,11 @@
     </div>
   </section>
 
+<form id="form-carrito" action="https://formspree.io/f/xykedrnd" method="POST" style="display:none;">
+  <input type="hidden" name="productos" id="productos">
+  <input type="hidden" name="total" id="total">
+</form>
+
   <div class="boton-volver">
     <a href="index.html">⬅️ Volver a la página principal</a>
   </div>
@@ -126,12 +131,31 @@
     <span class="cantidad">${producto.cantidad}</span>
     <button class="mas">+</button>
   </div>
-`;
+ `;
 
   }
 
   window.onload = mostrarCarrito;
+
+function continuarCompra() {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+  // Armamos el texto con productos y cantidades
+  let productosTexto = carrito.map(p => `${p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}`).join("\n");
+  let totalTexto = carrito.reduce((suma, p) => suma + p.precio * p.cantidad, 0);
+
+  // Pasamos los datos al formulario oculto
+  document.getElementById("productos").value = productosTexto;
+  document.getElementById("total").value = "$" + totalTexto;
+
+  // Enviamos el formulario a Formspree
+  document.getElementById("form-carrito").submit();
+}
+
+
+
 </script>
+
 
 </body>
 </html>
