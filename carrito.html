@@ -44,51 +44,78 @@
     <a href="index.html">⬅️ Volver a la página principal</a>
   </div>
 
-  <script>
-    function mostrarCarrito() {
-      const lista = document.getElementById("lista-carrito");
-      const total = document.getElementById("total-carrito");
-      lista.innerHTML = "";
+<script>
+  function mostrarCarrito() {
+    const lista = document.getElementById("lista-carrito");
+    const total = document.getElementById("total-carrito");
+    lista.innerHTML = "";
 
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      let suma = 0;
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    let suma = 0;
 
-      carrito.forEach(producto => {
-        const item = document.createElement("div");
-        item.className = "item-carrito";
-        item.dataset.id = producto.id; // usamos el id único
+    carrito.forEach(producto => {
+      const item = document.createElement("div");
+      item.className = "item-carrito";
+      item.dataset.id = producto.id;
 
-        item.innerHTML = `
-          <p>${producto.nombre}</p>
-          <p>$${producto.precio}</p>
+      if (!producto.cantidad) producto.cantidad = 1; // inicializamos cantidad
+
+      item.innerHTML = `
+        <p>${producto.nombre}</p>
+        <p>$${producto.precio}</p>
+        <div>
+          <button class="menos">-</button>
+          <span>${producto.cantidad}</span>
+          <button class="mas">+</button>
           <button class="eliminar">Eliminar</button>
-        `;
+        </div>
+      `;
 
-        lista.appendChild(item);
-        suma += producto.precio;
+      lista.appendChild(item);
+      suma += producto.precio * producto.cantidad;
+    });
+
+    total.textContent = suma;
+
+    // Botón eliminar
+    document.querySelectorAll(".eliminar").forEach(boton => {
+      boton.addEventListener("click", function() {
+        const id = this.parentElement.parentElement.dataset.id;
+        carrito = carrito.filter(prod => prod.id !== id);
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarCarrito();
       });
+    });
 
-      total.textContent = suma;
-
-      // Activar botones eliminar
-      document.querySelectorAll(".eliminar").forEach(boton => {
-        boton.addEventListener("click", function() {
-          const id = this.parentElement.dataset.id;
-          let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-          carrito = carrito.filter(prod => prod.id !== id);
-          localStorage.setItem("carrito", JSON.stringify(carrito));
-          mostrarCarrito(); // refrescar vista
+    // Botón +
+    document.querySelectorAll(".mas").forEach(boton => {
+      boton.addEventListener("click", function() {
+        const id = this.parentElement.parentElement.dataset.id;
+        carrito = carrito.map(prod => {
+          if (prod.id === id) prod.cantidad += 1;
+          return prod;
         });
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarCarrito();
       });
-    }
+    });
 
-    function continuarCompra() {
-      alert("Gracias por tu compra. Pronto te contactaremos por WhatsApp.");
-      // Si querés redirigir directamente a WhatsApp:
-      // window.open("https://wa.me/541171019084?text=Quiero%20finalizar%20mi%20compra", "_blank");
-    }
+    // Botón -
+    document.querySelectorAll(".menos").forEach(boton => {
+      boton.addEventListener("click", function() {
+        const id = this.parentElement.parentElement.dataset.id;
+        carrito = carrito.map(prod => {
+          if (prod.id === id && prod.cantidad > 1) prod.cantidad -= 1;
+          return prod;
+        });
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarCarrito();
+      });
+    });
+  }
 
-    window.onload = mostrarCarrito;
-  </script>
+  window.onload = mostrarCarrito;
+</script>
+
 </body>
 </html>
