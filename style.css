@@ -531,12 +531,6 @@ footer .social-icons a {
   font-family: 'Segoe UI', sans-serif;
 }
 
-.item-carrito {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #ccc;
-}
 
 .resumen {
   text-align: center;
@@ -635,11 +629,40 @@ footer .social-icons a {
 }
 
 .item-carrito {
-  border-bottom: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;   /* organiza nombre/precio arriba y botones debajo */
+  gap: 6px;                 /* espacio entre bloques */
   padding: 12px;
+  border-bottom: 1px solid #ccc;
 }
 
-.fila-superior {
+.item-carrito p {
+  margin: 0;
+  display: flex;
+  justify-content: space-between; /* nombre a la izquierda, precio a la derecha */
+  font-weight: bold;
+}
+
+.cantidad-controles {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.menos, .mas, .eliminar {
+  padding: 4px 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.eliminar {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.eliminar:hover {
+  background-color: #c0392b;
+}.fila-superior {
   display: flex;
   justify-content: space-between;
   align-items: center;
