@@ -640,7 +640,6 @@ footer .social-icons a {
   margin: 0;
   display: flex;
   justify-content: space-between; /* nombre a la izquierda, precio a la derecha */
-  font-weight: bold;
 }
 
 .cantidad-controles {
