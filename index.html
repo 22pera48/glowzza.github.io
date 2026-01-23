@@ -676,10 +676,19 @@ function irAlCarrito() {
 
 function agregarAlCarrito(nombre, precio) {
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-  carrito.push({ nombre, precio });
+
+  // Crear producto con ID único
+  const producto = {
+    id: Date.now().toString(), // ID único basado en timestamp
+    nombre,
+    precio
+  };
+
+  carrito.push(producto);
   localStorage.setItem("carrito", JSON.stringify(carrito));
   alert("Producto agregado al carrito");
-}
+}  
+
 </script>
 </body>
 </html>
