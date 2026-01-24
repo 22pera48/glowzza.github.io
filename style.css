@@ -863,3 +863,24 @@ nav a {
     margin-top: 1em;
   }
 }
+/* Contenedor de buscador y carrito */
+.buscador-toggle {
+  display: flex;
+  flex-wrap: wrap;          /* permite que bajen si no entran en una fila */
+  justify-content: flex-end; /* en escritorio a la derecha */
+  gap: 0.5em;               /* espacio entre botones */
+  margin-top: 1em;
+}
+
+/* En pantallas chicas (menos de 600px) */
+@media (max-width: 600px) {
+  .buscador-toggle {
+    justify-content: center; /* centrados en celular */
+    margin-top: 1.5em;
+  }
+  .buscador-toggle button {
+    width: 100%;             /* cada botón ocupa todo el ancho disponible */
+    max-width: 250px;        /* límite para que no se estiren demasiado */
+    justify-content: center; /* ícono + texto centrados */
+  }
+}
