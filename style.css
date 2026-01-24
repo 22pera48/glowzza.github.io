@@ -710,3 +710,53 @@ footer .social-icons a {
   text-align: center;
   font-weight: bold;
 }
+.formulario-compra {
+  background-color: #ffe4f1;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 400px;
+  margin: 30px auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.formulario-compra h3 {
+  text-align: center;
+  color: #d63384;
+  margin-bottom: 20px;
+}
+
+.campo {
+  margin-bottom: 15px;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.campo input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.boton-enviar {
+  background-color: #d63384;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.boton-enviar:hover {
+  background-color: #c2186b;
+}
