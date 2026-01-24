@@ -156,7 +156,9 @@
     <button class="mas">+</button>
   </div>
  `;
-
+   if (item.detalle) {
+  html += `<p style="font-size: 0.9em; color: #555;">Incluye: ${item.detalle}</p>`;
+}
   }
 
   window.onload = mostrarCarrito;
@@ -191,6 +193,22 @@ function continuarCompra() {
 
     document.getElementById("form-carrito").style.display = "block";
     window.scrollTo(0, document.body.scrollHeight);
+  }
+</script>
+
+<script>
+  function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    carrito.push({
+      nombre: "PROMO: " + nombrePromo,
+      precio: precioPromo,
+      cantidad: 1,
+      detalle: contenidoPromo
+    });
+
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    alert("Promo agregada al carrito ✅");
   }
 </script>
 
