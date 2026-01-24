@@ -196,21 +196,6 @@ function continuarCompra() {
   }
 </script>
 
-<script>
-  function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
-    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-
-    carrito.push({
-      nombre: "PROMO: " + nombrePromo,
-      precio: precioPromo,
-      cantidad: 1,
-      detalle: contenidoPromo
-    });
-
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    alert("Promo agregada al carrito ✅");
-  }
-</script>
 
 </body>
 </html>
