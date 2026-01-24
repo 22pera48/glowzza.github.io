@@ -778,3 +778,27 @@ footer .social-icons a {
   transform: scale(1.05);
   box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
+
+/* Ajustes responsive para menú de navegación */
+nav {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap; /* permite que los botones bajen si no entran */
+  justify-content: center; /* centra los botones */
+}
+
+nav a {
+  flex: 1 1 auto;
+  min-width: 100px; /* evita que se recorten demasiado */
+  text-align: center;
+}
+
+/* En pantallas chicas (menos de 600px de ancho) */
+@media (max-width: 600px) {
+  nav {
+    flex-direction: column; /* los botones se apilan verticalmente */
+  }
+  nav a {
+    margin: 0.5em 0;
+  }
+}
