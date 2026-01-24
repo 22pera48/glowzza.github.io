@@ -36,15 +36,23 @@
     <div id="lista-carrito"></div>
     <div class="resumen">
       <p><strong>Total:</strong> $<span id="total-carrito">0</span></p>
-      <button onclick="continuarCompra()">Continuar compra</button>
+<button onclick="mostrarFormulario()">Continuar compra</button>
     </div>
   </section>
 
-<form id="form-carrito" action="https://formspree.io/f/xykedrnd" method="POST" style="display:none;">
+<form id="form-carrito" action="https://formspree.io/f/xykedrnd" method="POST" style="display:none; margin-top:20px;">
+  <h3>Datos personales</h3>
+  <input type="text" name="nombre" id="nombre" placeholder="Nombre" required><br>
+  <input type="text" name="apellido" id="apellido" placeholder="Apellido" required><br>
+  <input type="email" name="email" id="email" placeholder="Correo electrónico" required><br>
+  <input type="tel" name="telefono" id="telefono" placeholder="Teléfono" required><br>
+  
+  <!-- Campos ocultos para carrito -->
   <input type="hidden" name="productos" id="productos">
   <input type="hidden" name="total" id="total">
-</form>
 
+  <button type="submit">Enviar compra</button>
+</form>
   <div class="boton-volver">
     <a href="index.html">⬅️ Volver a la página principal</a>
   </div>
@@ -155,7 +163,20 @@ function continuarCompra() {
 
 
 </script>
+<script>
+  function mostrarFormulario() {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
+    let productosTexto = carrito.map(p => `${p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}`).join("\n");
+    let totalTexto = carrito.reduce((suma, p) => suma + p.precio * p.cantidad, 0);
+
+    document.getElementById("productos").value = productosTexto;
+    document.getElementById("total").value = "$" + totalTexto;
+
+    document.getElementById("form-carrito").style.display = "block";
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+</script>
 
 </body>
 </html>
