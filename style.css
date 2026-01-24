@@ -408,6 +408,16 @@ footer .social-icons a {
   color: white;
   cursor: pointer;
 }
+/* Contenedor de los iconos */
+.social-icons {
+  display: flex;
+  flex-wrap: wrap;        /* permite que bajen si no entran en una fila */
+  justify-content: flex-end; /* en escritorio se alinean a la derecha */
+  gap: 0.5em;             /* espacio entre iconos */
+  margin-top: 1em;
+}
+
+
 .social-icons a {
   background: linear-gradient(135deg, #ff69b4, #ff1493);
   color: white;
@@ -423,6 +433,15 @@ footer .social-icons a {
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
+
+/* En pantallas chicas (menos de 600px) */
+@media (max-width: 600px) {
+  .social-icons {
+    justify-content: center; /* centrados en celular */
+    margin-top: 1.5em;
+  }
+}
+
 .titulo-peluqueria {
   text-align: center;
   padding: 40px 20px 20px;
