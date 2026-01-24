@@ -41,27 +41,6 @@
   </section>
 
   <h3>Datos personales</h3>
-
-  <div class="campo">
-    <label for="nombre">Nombre</label>
-    <input type="text" name="user_name" id="nombre" required>
-  </div>
-
-  <div class="campo">
-    <label for="apellido">Apellido</label>
-    <input type="text" name="user_lastname" id="apellido" required>
-  </div>
-
-  <div class="campo">
-    <label for="email">Correo electrónico (opcional)</label>
-    <input type="email" name="user_email" id="email">
-  </div>
-
-  <div class="campo">
-    <label for="telefono">Teléfono</label>
-    <input type="tel" name="user_phone" id="telefono" required>
-  </div>
-
   <input type="hidden" name="productos" id="productos">
   <input type="hidden" name="total" id="total">
 
@@ -195,10 +174,35 @@ function continuarCompra() {
   }
 </script>
 <form id="form-carrito" style="display:none;">
-  <!-- campos del formulario -->
+  <h3>Datos personales</h3>
+
+<div class="campo">
+  <label for="nombre">Nombre</label>
+  <input type="text" name="user_name" id="nombre" required>
+</div>
+
+<div class="campo">
+  <label for="apellido">Apellido</label>
+  <input type="text" name="user_lastname" id="apellido" required>
+</div>
+
+<div class="campo">
+  <label for="email">Correo electrónico</label>
+  <input type="email" name="user_email" id="email">
+</div>
+
+<div class="campo">
+  <label for="telefono">Teléfono</label>
+  <input type="tel" name="user_phone" id="telefono" required>
+</div>
+
+<input type="hidden" name="productos" id="productos">
+<input type="hidden" name="total" id="total">
+
+<button type="submit" class="boton-enviar">Enviar compra</button>
 </form>
 
-<script src="https://cdn.emailjs.com/sdk/3.11.0/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
   (function(){
     emailjs.init("eNmGPzHIA110nI73f"); // reemplazá con tu Public Key
