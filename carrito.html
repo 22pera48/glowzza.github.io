@@ -40,20 +40,36 @@
     </div>
   </section>
 
-<form id="form-carrito" action="https://formspree.io/f/xykedrnd" method="POST" style="display:none; margin-top:20px;">
+<form id="form-carrito" action="https://formspree.io/f/xykedrnd" method="POST" class="formulario-compra">
   <h3>Datos personales</h3>
-  <input type="text" name="nombre" id="nombre" placeholder="Nombre" required><br>
-  <input type="text" name="apellido" id="apellido" placeholder="Apellido" required><br>
-  <input type="email" name="email" id="email" placeholder="Correo electrónico" required><br>
-  <input type="tel" name="telefono" id="telefono" placeholder="Teléfono" required><br>
-  
-  <!-- Campos ocultos para carrito -->
+
+  <div class="campo">
+    <label for="nombre">Nombre</label>
+    <input type="text" name="nombre" id="nombre" required>
+  </div>
+
+  <div class="campo">
+    <label for="apellido">Apellido</label>
+    <input type="text" name="apellido" id="apellido" required>
+  </div>
+
+  <div class="campo">
+    <label for="email">Correo electrónico</label>
+    <input type="email" name="email" id="email" required>
+  </div>
+
+  <div class="campo">
+    <label for="telefono">Teléfono</label>
+    <input type="tel" name="telefono" id="telefono" required>
+  </div>
+
   <input type="hidden" name="productos" id="productos">
   <input type="hidden" name="total" id="total">
 
-  <button type="submit">Enviar compra</button>
+  <button type="submit" class="boton-enviar">Enviar compra</button>
 </form>
-  <div class="boton-volver">
+
+<div class="boton-volver">
     <a href="index.html">⬅️ Volver a la página principal</a>
   </div>
 
