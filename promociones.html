@@ -42,19 +42,20 @@
 </div>
 
 <script>
-  function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
-    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-    carrito.push({
-      nombre: "PROMO: " + nombrePromo,
-      precio: precioPromo,
-      cantidad: 1,
-      detalle: contenidoPromo
-    });
+  carrito.push({
+    id: Date.now().toString(), // 👈 genera un id único
+    nombre: "PROMO: " + nombrePromo,
+    precio: precioPromo,
+    cantidad: 1,
+    detalle: contenidoPromo
+  });
 
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    alert("Promo agregada al carrito ✅");
-  }
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  alert("Promo agregada al carrito ✅");
+}
 </script>
 
 </body>
