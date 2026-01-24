@@ -760,3 +760,21 @@ footer .social-icons a {
 .boton-enviar:hover {
   background-color: #c2186b;
 }
+
+.boton-agregar {
+  background: linear-gradient(135deg, #d63384, #ff80b5);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.boton-agregar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
