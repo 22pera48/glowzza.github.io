@@ -40,27 +40,27 @@
     </div>
   </section>
 
-<form id="form-carrito" action="https://formspree.io/f/xykedrnd" method="POST" class="formulario-compra" style="display:none;">
+<form id="form-carrito" class="formulario-compra" style="display:none;">
   <h3>Datos personales</h3>
 
   <div class="campo">
     <label for="nombre">Nombre</label>
-    <input type="text" name="nombre" id="nombre" required>
+    <input type="text" name="user_name" id="nombre" required>
   </div>
 
   <div class="campo">
     <label for="apellido">Apellido</label>
-    <input type="text" name="apellido" id="apellido" required>
+    <input type="text" name="user_lastname" id="apellido" required>
   </div>
 
   <div class="campo">
     <label for="email">Correo electrónico (opcional)</label>
-    <input type="email" name="email" id="email" >
+    <input type="email" name="user_email" id="email">
   </div>
 
   <div class="campo">
     <label for="telefono">Teléfono</label>
-    <input type="tel" name="telefono" id="telefono" required>
+    <input type="tel" name="user_phone" id="telefono" required>
   </div>
 
   <input type="hidden" name="productos" id="productos">
@@ -196,6 +196,22 @@ function continuarCompra() {
   }
 </script>
 
+<script src="https://cdn.emailjs.com/sdk/3.11.0/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("eNmGPzHIA110nI73f"); // reemplazá con tu Public Key
+  })();
 
+  document.getElementById('form-carrito').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    emailjs.sendForm('service_e2dcwiw', 'template_0wi0hpz', this)
+      .then(function() {
+        alert('✅ Compra enviada con éxito');
+      }, function(error) {
+        alert('❌ Error al enviar: ' + JSON.stringify(error));
+      });
+  });
+</script>
 </body>
 </html>
