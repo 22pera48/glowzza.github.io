@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Glowzza</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <section class="banner-promos">
@@ -54,8 +55,33 @@ function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
   });
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
-  alert("Promo agregada al carrito ✅");
-}
+ function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+  carrito.push({
+    id: Date.now().toString(), // para que funcione el botón eliminar
+    nombre: "PROMO: " + nombrePromo,
+    precio: precioPromo,
+    cantidad: 1,
+    detalle: contenidoPromo
+  });
+
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+
+  // ✅ Popup de confirmación
+  Swal.fire({
+    icon: 'success',
+    title: 'Producto agregado al carrito',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Ir al carrito',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.dismiss === Swal.DismissReason.cancel) {
+      window.location.href = 'carrito.html';
+    }
+  });
+}}
 </script>
 
 </body>
