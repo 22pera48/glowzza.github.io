@@ -47,18 +47,6 @@ function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
   carrito.push({
-    id: Date.now().toString(), // 👈 genera un id único
-    nombre: "PROMO: " + nombrePromo,
-    precio: precioPromo,
-    cantidad: 1,
-    detalle: contenidoPromo
-  });
-
-  localStorage.setItem("carrito", JSON.stringify(carrito));
- function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
-  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-
-  carrito.push({
     id: Date.now().toString(), // para que funcione el botón eliminar
     nombre: "PROMO: " + nombrePromo,
     precio: precioPromo,
@@ -81,8 +69,7 @@ function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
       window.location.href = 'carrito.html';
     }
   });
-}}
-</script>
+}</script>
 
 </body>
 </html>
