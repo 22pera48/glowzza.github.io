@@ -207,7 +207,7 @@ function continuarCompra() {
 </div>
 
 <input type="hidden" name="productos" id="productos">
-<input type="hidden" name="total" id="total">
+<input type="hidden" name="total" id="total">e
 
 <button type="submit" class="boton-enviar">Enviar compra</button>
 </form>
@@ -246,6 +246,29 @@ Swal.fire({
     });
   });
 </script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+  // Configuración de tu proyecto Firebase
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_PROJECT.firebaseapp.com",
+    projectId: "TU_PROJECT_ID",
+    storageBucket: "TU_PROJECT.appspot.com",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
+  };
+
+  // Inicializar Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  // Inicializar Firestore
+  const db = firebase.firestore();
+</script>
+
 
 <script>
   function guardarVenta(productos, total) {
