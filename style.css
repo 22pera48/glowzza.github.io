@@ -884,3 +884,12 @@ nav a {
     justify-content: center; /* ícono + texto centrados */
   }
 }
+#lista-carrito {
+  max-height: 250px;   /* altura inicial */
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+#lista-carrito.expandido {
+  max-height: 800px;   /* altura expandida */
+}
