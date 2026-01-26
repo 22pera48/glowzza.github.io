@@ -542,12 +542,28 @@ footer .social-icons a {
 }
 
 .carrito {
-  max-width: 600px;
-  margin: 40px auto;
+  width: 100%;            /* ocupa todo el ancho disponible */
+  max-width: 600px;       /* límite en escritorio */
+  margin: 20px auto;      /* centrado */
   padding: 20px;
   background: #fce4ec;
   border-radius: 20px;
   font-family: 'Segoe UI', sans-serif;
+}
+
+/* Ajustes específicos para pantallas chicas */
+@media (max-width: 480px) {
+  .carrito {
+    max-width: 100%;      /* en móvil ocupa todo el ancho */
+    margin: 10px;         /* menos margen para aprovechar espacio */
+    padding: 15px;        /* padding más chico para que no se vea apretado */
+    font-size: 14px;      /* texto más legible en pantallas pequeñas */
+  }
+
+  .item-carrito {
+    flex-direction: column;   /* botones debajo del producto */
+    align-items: flex-start;
+  }
 }
 
 
