@@ -884,14 +884,3 @@ nav a {
     justify-content: center; /* ícono + texto centrados */
   }
 }
-#lista-carrito {
-  transition: all 0.3s ease;
-  max-height: 200px; /* tamaño inicial */
-  overflow: hidden;
-  background-color: pink; /* para que se note el área clickeable */
-  cursor: pointer;
-}
-
-#lista-carrito.expandido {
-  max-height: 600px; /* tamaño ampliado */
-}
