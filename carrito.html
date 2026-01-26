@@ -279,6 +279,27 @@ Swal.fire({
     })
     .then(() => {
       console.log("✅ Venta guardada en Firestore");
+
+      // 🔻 Descontar stock de cada producto comprado
+      productos.forEach(producto => {
+        const productoRef = db.collection("productos").doc(producto.id);
+        productoRef.update({
+          stock: firebase.firestore.FieldValue.increment(-producto.cantidad)
+        })
+        .then(() => {
+          productoRef.get().then(doc => {
+            if (doc.exists && doc.data().stock <= 3) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Stock bajo',
+                text: `El producto ${doc.data().nombre} está por agotarse`
+              });
+            }
+          });
+        });
+      });
+
+      // 🔻 Confirmación visual de la compra
       Swal.fire({
         title: '¡Compra enviada con éxito!',
         text: 'Gracias por tu pedido 🛒',
@@ -286,13 +307,16 @@ Swal.fire({
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#d63384'
       });
+
+      // 🔻 Vaciar carrito local
+      localStorage.removeItem("carrito");
+
     })
     .catch((error) => {
       alert('❌ Error al enviar: ' + JSON.stringify(error));
     });
   }
 </script>
-
 
 </body>
 </html>
