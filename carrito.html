@@ -223,5 +223,17 @@ Swal.fire({
   });
 </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const listaCarrito = document.getElementById("lista-carrito");
+    const contenedorCarrito = document.querySelector(".carrito");
+
+    // Al hacer clic en cualquier parte del bloque .carrito
+    contenedorCarrito.addEventListener("click", function () {
+      listaCarrito.classList.toggle("expandido");
+    });
+  });
+</script>
+
 </body>
 </html>
