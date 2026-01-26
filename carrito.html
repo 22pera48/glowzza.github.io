@@ -223,10 +223,13 @@ Swal.fire({
   });
 </script>
 <script>
-  const listaCarrito = document.getElementById("lista-carrito");
+  document.addEventListener("DOMContentLoaded", function () {
+    const listaCarrito = document.getElementById("lista-carrito");
 
-  listaCarrito.addEventListener("click", function () {
-    listaCarrito.classList.toggle("expandido");
+    listaCarrito.addEventListener("click", function () {
+      // Alterna la clase expandido
+      this.classList.toggle("expandido");
+    });
   });
 </script>
 
