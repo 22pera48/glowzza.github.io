@@ -702,5 +702,25 @@ Swal.fire({
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+    authDomain: "glowzzainventario.firebaseapp.com",
+    projectId: "glowzzainventario",
+    storageBucket: "glowzzainventario.appspot.com",
+    messagingSenderId: "159721581844",
+    appId: "1:159721581844:web:f62cdb303258dc847b6601",
+    measurementId: "G-0FR3Q6P3L2"
+  };
+
+  // Inicializar Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
 </body>
 </html>
