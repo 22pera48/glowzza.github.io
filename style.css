@@ -622,12 +622,29 @@ footer .social-icons a {
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 .banner-promos {
+  width: 100%;                      /* ocupa todo el ancho */
   text-align: center;
   padding: 40px 20px;
   background: linear-gradient(to right, #ff4081, #e91e63);
   color: white;
+  box-sizing: border-box;            /* asegura que padding no rompa el ancho */
 }
 
+/* Ajustes para pantallas chicas */
+@media (max-width: 480px) {
+  .banner-promos {
+    padding: 20px 10px;              /* menos padding en móvil */
+    font-size: 14px;                 /* texto más chico para que no se corte */
+  }
+
+  .banner-promos h1 {
+    font-size: 22px;                 /* título más legible en móvil */
+  }
+
+  .banner-promos p {
+    font-size: 16px;                 /* subtítulo adaptado */
+  }
+}
 .titulo-glowzza {
   font-size: 3em;
   margin: 0;
