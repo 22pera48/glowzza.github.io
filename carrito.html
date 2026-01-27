@@ -41,6 +41,7 @@
     <div class="resumen">
       <p><strong>Total:</strong> $<span id="total-carrito">0</span></p>
 <button onclick="mostrarFormulario()">Continuar compra</button>
+<button onclick="vaciarCarrito()" class="btn-vaciar">Vaciar carrito</button>
     </div>
   </section>
 
@@ -283,6 +284,21 @@ Swal.fire({
     })
     .catch((error) => {
       alert('❌ Error al enviar: ' + JSON.stringify(error));
+    });
+  }
+</script>
+
+<script>
+  function vaciarCarrito() {
+    localStorage.removeItem("carrito");
+    mostrarCarrito();
+
+    Swal.fire({
+      title: 'Carrito vaciado',
+      text: 'Todos los productos fueron eliminados 🧹',
+      icon: 'info',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#d63384'
     });
   }
 </script>
