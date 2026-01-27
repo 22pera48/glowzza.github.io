@@ -928,3 +928,14 @@ nav a {
   transform: scale(1.2);      /* zoom al 120% */
   transform-origin: top center; /* define el punto de referencia del zoom */
 }
+.btn-vaciar {
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.btn-vaciar:hover {
+  background-color: #e67e22;
+}
