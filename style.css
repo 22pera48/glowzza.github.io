@@ -918,8 +918,8 @@ nav a {
   }
 }
 #lista-carrito {
-  max-height: 250px;          /* altura inicial */
-  overflow: hidden;
+  max-height: none;          /* altura inicial */
+  overflow: visible;
   transition: max-height 0.3s ease, transform 0.3s ease;
 }
 
