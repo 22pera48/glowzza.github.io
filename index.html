@@ -6,11 +6,6 @@
   <a href="#maquillaje">Maquillaje</a>
   <a href="#skincare">Skincare</a>
   <a href="#contacto">Contacto</a>
-  <a href="">Perfumeria</a>
-  <a href="">Sahumerios y esencias</a>
-  <a href="">Cuidado personal</a>
-
-
 </nav>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -333,16 +328,14 @@
   <button onclick="agregarAlCarrito('Iluminador retractil lapiz', 1800)" class="btn">Agregar al carrito</button>
         </div>
       </div>
-<div class="producto" data-id="base-liquida" data-precio="2000">
-  <img src="images/maquillaje/mq12.jpeg" alt="Producto maquillaje" onclick="abrirImagen(this)" data-descripcion="">
-  <h4>Base Liquida.</h4>
-  <p>$2000</p>
-  <div class="boton-carrito">
-    <button onclick="agregarAlCarrito(this.parentElement.parentElement.dataset.id, this.parentElement.parentElement.dataset.precio)" class="btn">
-      Agregar al carrito
-    </button>
-  </div>
-</div>
+      <div class="producto">
+        <img src="images//maquillaje/mq12.jpeg" alt="Producto maquillaje" onclick="abrirImagen(this)" data-descripcion="">
+        <h4>Base Liquida.</h4>
+        <p>$2000</p>
+        <div class="boton-carrito">
+  <button onclick="agregarAlCarrito('Base liquida', 2000)" class="btn">Agregar al carrito</button>
+        </div>
+      </div>
       <div class="producto">
         <img src="images//maquillaje/mq13.jpeg" alt="Producto maquillaje" onclick="abrirImagen(this)" data-descripcion="">
         <h4>Set de Brochas x12.</h4>
@@ -682,30 +675,29 @@ function irAlCarrito() {
   window.location.href = "carrito.html";
 }
 
-function agregarAlCarrito(id, precio) {
+function agregarAlCarrito(nombre, precio) {
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
   const producto = {
-    id: id,                  // 🔻 ahora coincide con Firestore ("base-liquida")
-    nombre: "Base Liquida.", // nombre visible
-    precio: parseInt(precio),
+    id: Date.now().toString(), // ID único
+    nombre,
+    precio,
     cantidad: 1
   };
 
   carrito.push(producto);
   localStorage.setItem("carrito", JSON.stringify(carrito));
-
-  Swal.fire({
-    title: 'Producto agregado al carrito',
-    icon: 'success',
-    showCancelButton: true,
-    confirmButtonText: 'Aceptar',
-    cancelButtonText: 'Ir al carrito',
-  }).then((result) => {
-    if (result.dismiss === Swal.DismissReason.cancel) {
-      window.location.href = 'carrito.html';
-    }
-  });
+Swal.fire({
+  title: 'Producto agregado al carrito',
+  icon: 'success',
+  showCancelButton: true,
+  confirmButtonText: 'Aceptar',
+  cancelButtonText: 'Ir al carrito',
+}).then((result) => {
+  if (result.dismiss === Swal.DismissReason.cancel) {
+    window.location.href = 'carrito.html';
+  }
+});
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
