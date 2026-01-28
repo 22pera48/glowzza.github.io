@@ -216,30 +216,8 @@ footer .social-icons a {
 }
 
 /* Fondo oscuro */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.8);
-  text-align: center;
-  padding-top: 40px;
-}
+/* Estilo general para cualquier modal */
 
-.modal img {
-  max-width: 80%;
-  max-height: 70%;
-  border-radius: 8px;
-}
-
-.modal p {
-  color: white;
-  font-size: 16px;
-  margin-top: 15px;
-}
 .producto img {
   cursor: pointer; /* se ve la manito */
 }
@@ -938,4 +916,106 @@ nav a {
 }
 .btn-vaciar:hover {
   background-color: #e67e22;
+}
+
+/* Fondo oscuro del modal */
+/* 🔹 Fondo oscuro del modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  background-color: rgba(0,0,0,0.8);
+  overflow-y: auto;
+  padding: 40px 0;
+}
+
+/* 🔹 Contenido del modal de producto */
+.modal-producto .modal-contenido {
+  width: 90%;
+  max-width: 400px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 🔹 Botones del modal */
+.modal-producto .botones-modal {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 🔹 Imagen del producto */
+.modal-producto .imagen-grande {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+/* 🔹 Animación de entrada */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+/* 🔹 Selector de opciones */
+.modal-producto select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #e91e63;
+  border-radius: 8px;
+  background-color: #fff0f5;
+  color: #333;
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-producto select:focus {
+  border-color: #d81b60;
+  box-shadow: 0 0 8px rgba(233, 30, 99, 0.3);
+  outline: none;
+}
+
+/* 🔹 Botones */
+.modal-producto .botones-modal button {
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+/* Confirmar */
+.modal-producto .botones-modal button:first-child {
+  background: linear-gradient(to right, #ff4081, #e91e63);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.modal-producto .botones-modal button:first-child:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+}
+
+/* Cancelar */
+.modal-producto .botones-modal button:last-child {
+  background: #fce4ec;
+  color: #e91e63;
+  border: 2px solid #e91e63;
+}
+
+.modal-producto .botones-modal button:last-child:hover {
+  background: #f8bbd0;
+  transform: scale(1.05);
 }
