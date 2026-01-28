@@ -114,11 +114,11 @@
           </div>
        </div>
       <div class="producto">
-        <img src="images/peluqueria/pl2.png" alt="Labiales" onclick="abrirImagen(this)" data-descripcion="Planchita flequillera ideal para viajes por su novedosos estuche y diseño compacto de 16cm, la misma posee calentadores ceramicos equiparables a los equipos de uso profesional.">
+        <img src="images/peluqueria/pl2.png" alt="Labiales" onclick="abrirImagenProducto(this)" data-descripcion="Planchita flequillera ideal para viajes por su novedosos estuche y diseño compacto de 16cm, la misma posee calentadores ceramicos equiparables a los equipos de uso profesional.">
         <h4>Planchita Flequillera.</h4>
         <p>$4000</p>
          <div class="boton-carrito">
-          <button onclick="agregarAlCarrito('Planchita Flequillera', 4000)" class="btn">Agregar al carrito</button>
+<button onclick="abrirModal('planchita-flequillera')" class="btn">Agregar al carrito</button>  
            </div>    
           </div>
   
@@ -778,6 +778,29 @@ Swal.fire({
 }
 </script>
 
+<div id="modal-planchita-flequillera" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Planchita Flequillera</h2>
+    <p>Seleccioná tu color:</p>
+    <select id="selector-planchita-flequillera">
+      <option value="">-- Elegí una opción --</option>
+      <option value="rosado">Rosado</option>
+      <option value="negro">Negro</option>
+      <option value="blanca">Blanca</option>
+      <option value="celeste">Celeste</option>
+      <option value="violeta">Violeta</option>
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('planchita-flequillera', 'Planchita Flequillera', 4000)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('planchita-flequillera')">Cancelar</button>
+    </div>
+
+    <img src="images/peluqueria/pl2.png" alt="Planchita Flequillera" class="imagen-grande">
+  </div>
+</div>
+
+
+
 <div id="modal-cepillo-anti-frizz" class="modal modal-producto" style="display:none;">
   <div class="modal-contenido">
     
@@ -785,9 +808,9 @@ Swal.fire({
     <p>Seleccioná tu color:</p>
     <select id="selector-cepillo-anti-frizz">
       <option value="">-- Elegí una opción --</option>
-      <option value="rosa">Rosa</option>
-      <option value="negro">Verde</option>
-      <option value="blanco">Lila</option>
+      <option value="fucsia">Fucsia</option>
+      <option value="verde">Verde</option>
+      <option value="lila">Lila</option>
     </select>
 
     <div class="botones-modal">
