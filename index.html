@@ -106,7 +106,7 @@
   <!-- productos acá -->
     <div class="productos">
       <div class="producto">
-        <img src="images/peluqueria/pl1.jpeg" alt="Labiales" onclick="abrirImagen(this)" data-descripcion="Novedoso cepillo flexible para el control de pelo enredado sin dañarlo.">
+        <img src="images/peluqueria/pl1.jpeg" alt="Labiales" onclick="abrirImagenProducto(this)" data-descripcion="Novedoso cepillo flexible para el control de pelo enredado sin dañarlo.">
         <h4>Cepillo Anti-Frizz</h4>
         <p>$4500</p>
           <div class="boton-carrito">
@@ -588,30 +588,33 @@
   </footer>
 
 <script>
-function abrirImagen(img) {
+function abrirImagenProducto(img) {
   // crear modal si no existe
-  let modal = document.getElementById("modal");
+  let modal = document.getElementById("modal-imagen-producto");
   if (!modal) {
     modal = document.createElement("div");
-    modal.id = "modal";
-    modal.className = "modal";
+    modal.id = "modal-imagen-producto";
+    modal.className = "modal-imagen";
     modal.innerHTML = `
-      <img>
-      <p style="color:white; font-size:16px; margin-top:15px;"></p>
-      <span onclick='cerrarImagen()' 
-            style='color:white;position:absolute;top:20px;right:40px;font-size:30px;cursor:pointer'>&times;</span>`;
+      <div class="contenido">
+        <img>
+        <p style="color:white; font-size:16px; margin-top:15px;"></p>
+        <span onclick='cerrarImagenProducto()'
+              style='color:white;position:absolute;top:20px;right:40px;font-size:30px;cursor:pointer'>&times;</span>
+      </div>`;
     document.body.appendChild(modal);
   }
-  modal.style.display = "block";
+  modal.style.display = "flex";
   modal.querySelector("img").src = img.src;
 
-  // NUEVO: tomar la descripción del atributo data-descripcion
+  // tomar la descripción del atributo data-descripcion
   let descripcion = img.getAttribute("data-descripcion");
   modal.querySelector("p").textContent = descripcion ? descripcion : "";
 }
 
-function cerrarImagen() {
-  document.getElementById("modal").style.display = "none";
+function cerrarImagenProducto() {
+  const modal = document.getElementById("modal-imagen-producto");
+  if (modal) modal.style.display = "none";
 }
 </script>
 <div id="modal" class="modal">
@@ -783,8 +786,8 @@ Swal.fire({
     <select id="selector-cepillo-anti-frizz">
       <option value="">-- Elegí una opción --</option>
       <option value="rosa">Rosa</option>
-      <option value="negro">Negro</option>
-      <option value="blanco">Blanco</option>
+      <option value="negro">Verde</option>
+      <option value="blanco">Lila</option>
     </select>
 
     <div class="botones-modal">
