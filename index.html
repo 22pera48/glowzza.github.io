@@ -739,11 +739,15 @@ function confirmarAgregar(id, nombre, precio) {
   const selector = document.getElementById("selector-" + id);
   const variante = selector.value;
 
-  if (!variante) {
-    Swal.fire("Elegí una opción", "Seleccioná color o sabor antes de continuar", "warning");
-    return;
-  }
-
+if (!variante) {
+  Swal.fire({
+    icon: "warning",
+    title: "Elegí una opción",
+    text: "Seleccioná color o sabor antes de continuar",
+    confirmButtonColor: "#e91e63"
+  });
+  return;
+}
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
   carrito.push({
     id: id + "-" + variante,
@@ -754,9 +758,20 @@ function confirmarAgregar(id, nombre, precio) {
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
   mostrarCarrito();
-  cerrarModal(id);
 
-  Swal.fire("Agregado", "Producto añadido al carrito", "success");
+Swal.fire({
+  title: 'Producto agregado al carrito',
+  icon: 'success',
+  showCancelButton: true,
+  confirmButtonText: 'Aceptar',
+  cancelButtonText: 'Ir al carrito',
+})
+.then((result) => {
+  cerrarModal(id); // se cierra el modal siempre
+  if (result.dismiss === Swal.DismissReason.cancel) {
+    window.location.href = 'carrito.html';
+  }
+});
 }
 </script>
 
