@@ -223,9 +223,9 @@
         <img src="images//skincare/sk11.jpeg" alt="Skincare producto" onclick="abrirImagen(this)" data-descripcion="Mascarilla facial con acido hialuronico utilizadas para hidratar piel seca y nutrirla. Cantidad x paquete 1 unidad.">
         <h4>Mascarilla Facial.</h4>
         <p>$1500</p>
-  <button onclick="agregarAlCarrito('Mascara facial', 1500)" class="btn">Agregar al carrito</button>
-        </div>
-      </div>
+<button onclick="abrirModal('mascara-facial')" class="btn">Agregar al carrito</button>  
+
+</div>
 
     </div>
   </section>
@@ -248,8 +248,9 @@
         <h4>Balsamo frutal.</h4>
         <p>$1200</p>
         <div class="boton-carrito">
-        <button onclick="agregarAlCarrito('Balsamo frutal', 1200)" class="btn">Agregar al carrito</button>
-        </div>
+      <button onclick="abrirModal('balsamo-frutal')" class="btn">Agregar al carrito</button>  
+ 
+      </div>
       </div>
       <div class="producto">
         <img src="images//maquillaje/mq2.jpeg" alt="Producto maquillaje" onclick="abrirImagen(this)" data-descripcion="Aumenta visualmente el volumen de los labios.">
@@ -778,6 +779,30 @@ Swal.fire({
 }
 </script>
 
+<div id="modal-mascara-facial" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Mascarilla facial</h2>
+    <p>Seleccioná tu tipo:</p>
+    <select id="selector-planchita-flequillera">
+      <option value="">-- Elegí una opción --</option>
+      <option value="frutilla">Frutilla</option>
+      <option value="la bubu">La Bubu</option>
+      <option value="arabe">Arabe</option>
+      <option value="arroz">Arroz</option>
+      <option value="acido hialuronico">Acido Hialuronico</option>
+      <option value="oro">Oro</option>
+
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('mascara-facial', 'mascara facial', 1500)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('mascara-facial')">Cancelar</button>
+    </div>
+
+    <img src="images/skincare/sk11.jpeg" alt="Planchita Flequillera" class="imagen-grande">
+  </div>
+</div>
+
+
 <div id="modal-planchita-flequillera" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
     <h2>Planchita Flequillera</h2>
     <p>Seleccioná tu color:</p>
@@ -798,6 +823,27 @@ Swal.fire({
     <img src="images/peluqueria/pl2.png" alt="Planchita Flequillera" class="imagen-grande">
   </div>
 </div>
+
+<div id="modal-balsamo-frutal" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Balsamo Frutal</h2>
+    <p>Seleccioná tu gusto:</p>
+    <select id="selector-planchita-flequillera">
+      <option value="">-- Elegí una opción --</option>
+      <option value="rosado">Uva</option>
+      <option value="negro">Frutilla</option>
+      <option value="blanca">Limon</option>
+      <option value="celeste">Manzana verde</option>
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('balsamo-frutal', 'balsamo frutal', 1200)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('balsamo-frutal')">Cancelar</button>
+    </div>
+
+    <img src="images/maquillaje/mq1.jpeg" alt="balsamo frutal" class="imagen-grande">
+  </div>
+</div>
+
 
 
 
