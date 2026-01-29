@@ -466,6 +466,30 @@ footer .social-icons a {
   font-weight: normal;
   font-family: 'Segoe UI', sans-serif;
 }
+.titulo-cuidado-personal {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: linear-gradient(to right, #fce4ec, #f8b7d4);
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.titulo-cuidado-personal h1 {
+  font-size: 2.8em;
+  margin: 0;
+  color: #ff4081;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 1px;
+}
+
+.titulo-cuidado-personal h4 {
+  font-size: 1.3em;
+  margin-top: 10px;
+  color: #555;
+  font-weight: normal;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 .titulo-maquillaje {
   text-align: center;
   padding: 40px 20px 20px;
