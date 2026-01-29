@@ -282,8 +282,9 @@
         <h4>Delineador de Labios.</h4>
         <p>$1000</p>
         <div class="boton-carrito">
-  <button onclick="agregarAlCarrito('Delineador de labios', 1000)" class="btn">Agregar al carrito</button>
-        </div>
+<button onclick="abrirModal('delineador-de-labios')" class="btn">Agregar al carrito</button>  
+     
+</div>
       </div>
       <div class="producto">
         <img src="images//maquillaje/mq6.jpeg" alt="Producto maquillaje" onclick="abrirImagenProducto(this)" data-descripcion="Hidratar labios secos.">
@@ -306,8 +307,9 @@
         <h4>Crema para Manos.</h4>
         <p>$2000</p>
         <div class="boton-carrito">
-  <button onclick="agregarAlCarrito('Crema para manos', 2000)" class="btn">Agregar al carrito</button>
-        </div>
+  <button onclick="abrirModal('crema-para-manos')" class="btn">Agregar al carrito</button>  
+     
+</div>
       </div>
       <div class="producto">
         <img src="images//maquillaje/mq9.jpeg" alt="Producto maquillaje" onclick="abrirImagenProducto(this)" data-descripcion="">
@@ -354,8 +356,9 @@
         <h4>Mascarilla hidratante frutal labios.</h4>
         <p>$1800</p>
         <div class="boton-carrito">
-  <button onclick="agregarAlCarrito('Mascarilla hidratante frutal labios', 1800)" class="btn">Agregar al carrito</button>
-        </div>
+<button onclick="abrirModal('mascarilla-hidratante-labios')" class="btn">Agregar al carrito</button>  
+      
+</div>
       </div>
       <div class="producto">
         <img src="images//maquillaje/mq15.jpeg" alt="Producto maquillaje" onclick="abrirImagenProducto(this)" data-descripcion="">
@@ -434,8 +437,9 @@
         <h4>Tinta Labial.</h4>
         <p>$1800</p>
         <div class="boton-carrito">
-  <button onclick="agregarAlCarrito('Tinta labial', 1800)" class="btn">Agregar al carrito</button>
-        </div>
+      <button onclick="abrirModal('tinta-labial')" class="btn">Agregar al carrito</button>  
+    
+</div>
       </div>
       <div class="producto">
         <img src="images//maquillaje/mq25.jpeg" alt="Producto maquillaje" onclick="abrirImagenProducto(this)" data-descripcion="">
@@ -466,8 +470,9 @@
         <h4>Mascara de Pestañas.</h4>
         <p>$2300</p>
         <div class="boton-carrito">
-  <button onclick="agregarAlCarrito('Mascara de pestañas', 2300)" class="btn">Agregar al carrito</button>
-        </div>
+<button onclick="abrirModal('mascara-de-pestaña')" class="btn">Agregar al carrito</button>  
+       
+</div>
       </div>
       <div class="producto">
         <img src="images//maquillaje/mq29.jpeg" alt="Producto maquillaje" onclick="abrirImagenProducto(this)" data-descripcion="">
@@ -530,8 +535,9 @@
         <h4>Corrector de ojeras.</h4>
         <p>$1300</p>
         <div class="boton-carrito">
-  <button onclick="agregarAlCarrito('Corrector de ojeras', 1300)" class="btn">Agregar al carrito</button>
-        </div>
+     <button onclick="abrirModal('corrector-ojeras')" class="btn">Agregar al carrito</button>  
+
+</div>
       </div>
       <div class="producto">
         <img src="images//maquillaje/mq37.jpeg" alt="Producto maquillaje" onclick="abrirImagenProducto(this)" data-descripcion="">
@@ -913,6 +919,148 @@ Swal.fire({
   </div>
 </div>
 
+<div id="modal-delineador-de-labios" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Delineador de labios</h2>
+    <p>Seleccioná tu color:</p>
+    <select id="selector-delineador-de-labios">
+      <option value="">-- Elegí una opción --</option>
+      <option value="marron">Marron</option>
+      <option value="rosado">Rosado</option>
+
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('delineador-de-labios', 'delineador de labios', 1000)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('delineador-de-labios')">Cancelar</button>
+    </div>
+
+    <img src="images/maquillaje/mq5.jpeg" alt="delineador-de-labios" class="imagen-grande">
+  </div>
+</div>
+
+<div id="modal-crema-para-manos" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Crema para manos</h2>
+    <p>Seleccioná tu color:</p>
+    <select id="selector-crema-para-manos">
+      <option value="">-- Elegí una opción --</option>
+      <option value="amarillo">Amarillo</option>
+      <option value="rosado oscuro">Rosado oscuro</option>
+      <option value="gris">Gris</option>
+      <option value="ocre">Ocre</option>
+      <option value="rosado claro">Rosado claro</option>
+
+
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('crema-para-manos', 'crema para manos', 2000)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('crema-para-manos')">Cancelar</button>
+    </div>
+
+    <img src="images/maquillaje/mq8.jpeg" alt="delineador-de-labios" class="imagen-grande">
+  </div>
+</div>
+
+<div id="modal-mascarilla-hidratante-labios" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Mascarilla hidratante de labios</h2>
+    <p>Seleccioná tu gusto:</p>
+    <select id="selector-mascarilla-hidratante-labios">
+      <option value="">-- Elegí una opción --</option>
+      <option value="naranja">Naranja</option>
+      <option value="manzana verde">Manzana Verde</option>
+      <option value="arandano">Arandano</option>
+      <option value="frutilla">Frutilla</option>
+
+
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('mascarilla-hidratante-labios', 'mascarilla hidratante de labios', 1800)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('crema-para-manos')">Cancelar</button>
+    </div>
+
+    <img src="images/maquillaje/mq14.jpeg" alt="delineador-de-labios" class="imagen-grande">
+  </div>
+</div>
+
+<div id="modal-tinta-labial" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Tinta labial</h2>
+    <p>Seleccioná tu color:</p>
+    <select id="selector-tinta-labial">
+      <option value="">-- Elegí una opción --</option>
+      <option value="rosado">Rosado</option>
+      <option value="rojo">Rojo</option>
+
+
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('tinta-labial', 'tinta labial', 1800)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('tinta-labial')">Cancelar</button>
+    </div>
+
+    <img src="images/maquillaje/mq24.jpeg" alt="delineador-de-labios" class="imagen-grande">
+  </div>
+</div>
+
+<div id="modal-mascara-de-pestaña" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Mascara de pestaña</h2>
+    <p>Seleccioná tu color:</p>
+    <select id="selector-mascara-de-pestaña">
+      <option value="">-- Elegí una opción --</option>
+      <option value="Negro">Negro</option>
+      <option value="violeta">Violeta</option>
+      <option value="amarillo">Amarillo</option>
+      <option value="blanco">Blanco</option>
+      <option value="negro 7d">Negro 7d</option>
+      <option value="rosado">Rosado</option>
+      <option value="fucsia">Fucsia</option>
+      <option value="rosado/blanco">Rosado/blanco</option>
+      <option value="naranja">Naranja</option>
+
+
+
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('mascara-de-pestaña', 'mascara de pestaña', 1800)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('mascara-de-pestaña')">Cancelar</button>
+    </div>
+
+    <img src="images/maquillaje/mq28.jpeg" alt="delineador-de-labios" class="imagen-grande">
+  </div>
+</div>
+
+
+<div id="modal-corrector-ojeras" class="modal modal-producto" style="display:none;">  <div class="modal-contenido">
+    <h2>Corrector de ojeras</h2>
+    <p>Seleccioná tu color:</p>
+    <select id="selector-corrector-ojeras">
+      <option value="">-- Elegí una opción --</option>
+      <option value="violeta">Violeta</option>
+      <option value="amarillo">Amarillo</option>
+      <option value="blanco">Blanco</option>
+      <option value="naranja">Naranja</option>
+      <option value="celeste">Celeste</option>
+
+
+
+
+    </select>
+
+    <div class="botones-modal">
+      <button onclick="confirmarAgregar('corrector-ojeras', 'corrector ojeras', 1300)">Confirmar y agregar</button>
+      <button onclick="cerrarModal('corrector-ojeras')">Cancelar</button>
+    </div>
+
+    <img src="images/maquillaje/mq28.jpeg" alt="delineador-de-labios" class="imagen-grande">
+  </div>
+</div>
+
+
+
+
+
 
     <div class="modal-imagen">
       <img src="images/peluqueria/pl1.jpeg" alt="Cepillo Anti-Frizz" class="imagen-grande">
@@ -921,4 +1069,5 @@ Swal.fire({
   </div>
 </div>
 </body>
-</html>
+</html>       
+                
