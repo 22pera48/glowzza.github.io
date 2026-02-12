@@ -1065,3 +1065,39 @@ nav a {
   max-height: 70vh;
   border-radius: 10px;
 }
+.titulo-perfumeria {
+  text-align: center;
+  background: linear-gradient(135deg, #f8e1f4, #f3c6e0);
+  padding: 40px 20px;
+  border-radius: 12px;
+  color: #4a2c5b;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.titulo-perfumeria h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.titulo-perfumeria h4 {
+  font-size: 1.2em;
+  font-style: italic;
+  margin-bottom: 20px;
+  color: #6a3d7a;
+}
+
+.titulo-perfumeria .boton-promocion a {
+  display: inline-block;
+  background-color: #6a3d7a;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.titulo-perfumeria .boton-promocion a:hover {
+  background-color: #4a2c5b;
+}
