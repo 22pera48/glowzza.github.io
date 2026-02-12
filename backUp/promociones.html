@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glowzza</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<section class="banner-promos">
+  <h1 class="titulo-glowzza">Glowzza</h1>
+  <p class="subtitulo-glowzza">PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
+</section>
+
+<div class="boton-volver">
+  <a href="index.html">⬅️ Volver a la página principal</a>
+</div>
+   
+<!-- Agregá más promos acá -->
+
+  <section class="promociones">
+    <h1>Promociones Exclusivas</h1>
+    <p>Descubrí los combos, descuentos y productos destacados que tenemos para vos.</p>
+
+<div class="promo">
+  <h4>Combo Skincare x3</h4>
+  <p>Incluye: limpiador, tónico y serum</p>
+  <p>Precio: $8500</p>
+<button class="boton-agregar" onclick="agregarPromo('Combo Skincare x3', 8500, 'Limpiador, Tónico, Serum')">
+  🛒 Agregar al carrito
+</button>
+</div>
+
+<div class="promo">
+  <h4>Pack Maquillaje 1</h4>
+  <p>Incluye: base, labial, paleta de sombras</p>
+  <p>Precio: $6900</p>
+<button class="boton-agregar" onclick="agregarPromo('Pack Maquillaje 1', 6900, 'Base, Labial, Paleta de sombras')">
+  🛒 Agregar al carrito
+</button>
+</div>
+
+<div class="promo">
+  <h4>Pack Maquillaje 2</h4>
+  <p>Incluye: balsamo labial, esponjita, mascara de pestañas y delineador liquido.</p>
+  <p>Precio: $8000</p>
+<button class="boton-agregar" onclick="agregarPromo('Pack Maquillaje 2', 8000, 'balsamo labial, esponjita, mascara de pestañas y delineador liquido')">
+  🛒 Agregar al carrito
+</button>
+</div>
+
+    <!-- Agregá más promos acá -->
+
+  </section>
+  <div class="boton-volver">
+  <a href="index.html">⬅️ Volver a la página principal</a>
+</div>
+
+<script>
+function agregarPromo(nombrePromo, precioPromo, contenidoPromo) {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+  carrito.push({
+    id: Date.now().toString(), // para que funcione el botón eliminar
+    nombre: "PROMO: " + nombrePromo,
+    precio: precioPromo,
+    cantidad: 1,
+    detalle: contenidoPromo
+  });
+
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+
+  // ✅ Popup de confirmación
+  Swal.fire({
+    icon: 'success',
+    title: 'Producto agregado al carrito',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Ir al carrito',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.dismiss === Swal.DismissReason.cancel) {
+      window.location.href = 'carrito.html';
+    }
+  });
+}</script>
+
+</body>
+</html>
