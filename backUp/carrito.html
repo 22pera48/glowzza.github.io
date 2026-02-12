@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrito de compras</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .item-carrito {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      padding: 6px;
+      border-bottom: 1px solid #ccc;
+    }
+    .eliminar {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    .eliminar:hover {
+      background-color: #c0392b;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+ <section class="banner-promos">
+  <h1 class="titulo-glowzza">Glowzza</h1>
+  <p class="subtitulo-glowzza">PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
+</section>
+
+  <section class="carrito">
+    <h1>Tu carrito</h1>
+    <div id="lista-carrito">
+    </div>
+    <div class="resumen">
+      <p><strong>Total:</strong> $<span id="total-carrito">0</span></p>
+<button onclick="mostrarFormulario()">Continuar compra</button>
+<button onclick="vaciarCarrito()" class="btn-vaciar">Vaciar carrito</button>
+    </div>
+  </section>
+
+<div class="boton-volver">
+    <a href="index.html">⬅️ Volver a la página principal</a>
+  </div>
+
+<script>
+  function mostrarCarrito() {
+    const lista = document.getElementById("lista-carrito");
+    const total = document.getElementById("total-carrito");
+    lista.innerHTML = "";
+
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    let suma = 0;
+
+    carrito.forEach(producto => {
+      const item = document.createElement("div");
+      item.className = "item-carrito";
+      item.dataset.id = producto.id;
+
+      if (!producto.cantidad) producto.cantidad = 1; // inicializamos cantidad
+
+      item.innerHTML = `
+        <p>${producto.nombre}</p>
+        <p>$${producto.precio}</p>
+        <div>
+          <button class="menos">-</button>
+          <span>${producto.cantidad}</span>
+          <button class="mas">+</button>
+          <button class="eliminar">Eliminar</button>
+        </div>
+      `;
+
+      lista.appendChild(item);
+      suma += producto.precio * producto.cantidad;
+    });
+
+    total.textContent = suma;
+
+    // Botón eliminar
+    document.querySelectorAll(".eliminar").forEach(boton => {
+      boton.addEventListener("click", function() {
+        const id = this.parentElement.parentElement.dataset.id;
+        carrito = carrito.filter(prod => prod.id !== id);
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarCarrito();
+      });
+    });
+
+    // Botón +
+    document.querySelectorAll(".mas").forEach(boton => {
+      boton.addEventListener("click", function() {
+        const id = this.parentElement.parentElement.dataset.id;
+        carrito = carrito.map(prod => {
+          if (prod.id === id) prod.cantidad += 1;
+          return prod;
+        });
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarCarrito();
+      });
+    });
+
+    // Botón -
+    document.querySelectorAll(".menos").forEach(boton => {
+      boton.addEventListener("click", function() {
+        const id = this.parentElement.parentElement.dataset.id;
+        carrito = carrito.map(prod => {
+          if (prod.id === id && prod.cantidad > 1) prod.cantidad -= 1;
+          return prod;
+        });
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarCarrito();
+      });
+    });
+
+  }
+
+  window.onload = mostrarCarrito;
+
+function continuarCompra() {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+  // Armamos el texto con productos y cantidades
+  let productosTexto = carrito.map(p => `${p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}`).join("\n");
+  let totalTexto = carrito.reduce((suma, p) => suma + p.precio * p.cantidad, 0);
+
+  // Pasamos los datos al formulario oculto
+  document.getElementById("productos").value = productosTexto;
+  document.getElementById("total").value = "$" + totalTexto;
+
+  // Enviamos el formulario a Formspree
+  document.getElementById("form-carrito").submit();
+}
+
+
+
+</script>
+<script>
+  function mostrarFormulario() {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    let productosTexto = carrito.map(p => `${p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}`).join("\n");
+    let totalTexto = carrito.reduce((suma, p) => suma + p.precio * p.cantidad, 0);
+
+    document.getElementById("productos").value = productosTexto;
+    document.getElementById("total").value = "$" + totalTexto;
+
+    document.getElementById("form-carrito").style.display = "block";
+    window.scrollTo(0, document.body.scrollHeight);
+
+    const productos = [
+    { id: "serum-vitamina-c", cantidad: 2 },
+    { id: "crema-hidratante", cantidad: 1 }
+  ];
+  const total = 13500;
+
+  guardarVenta(productos, total);
+
+
+  }
+</script>
+<form id="form-carrito" style="display:none;">
+  <h3>Datos personales</h3>
+
+<div class="campo">
+  <label for="nombre">Nombre</label>
+  <input type="text" name="user_name" id="nombre" required>
+</div>
+
+<div class="campo">
+  <label for="apellido">Apellido</label>
+  <input type="text" name="user_lastname" id="apellido" required>
+</div>
+
+<div class="campo">
+  <label for="email">Correo electrónico (opcional)</label>
+  <input type="email" name="user_email" id="email">
+</div>
+
+<div class="campo">
+  <label for="telefono">Teléfono</label>
+  <input type="tel" name="user_phone" id="telefono" required>
+</div>
+
+<input type="hidden" name="productos" id="productos">
+<input type="hidden" name="total" id="total">
+
+<button type="submit" class="boton-enviar">Enviar compra</button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("eNmGPzHIA110nI73f"); // reemplazá con tu Public Key
+  })();
+
+  document.getElementById('form-carrito').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    emailjs.sendForm('service_e2dcwiw', 'template_0wi0hpz', this)
+      .then(function() {
+Swal.fire({
+  title: '¡Compra enviada con éxito!',
+  text: 'Gracias por tu pedido ✨',
+  icon: 'success',
+  confirmButtonText: 'Aceptar',
+  confirmButtonColor: '#d63384' // rosa Glowzza
+});      }, function(error) {
+        alert('❌ Error al enviar: ' + JSON.stringify(error));
+      });
+  });
+</script>
+
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+  // Configuración de tu proyecto Firebase
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_PROJECT.firebaseapp.com",
+    projectId: "TU_PROJECT_ID",
+    storageBucket: "TU_PROJECT.appspot.com",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
+  };
+
+  // Inicializar Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  // Inicializar Firestore
+  const db = firebase.firestore();
+</script>
+
+
+<script>
+  function guardarVenta(productos, total) {
+    db.collection("ventas").add({
+      productos: productos,   // array de productos con id y cantidad
+      total: total,
+      fecha: new Date()
+    })
+    .then(() => {
+      console.log("✅ Venta guardada en Firestore");
+
+      // 🔻 Descontar stock de cada producto comprado
+      productos.forEach(producto => {
+        const productoRef = db.collection("productos").doc(producto.id);
+        productoRef.update({
+          stock: firebase.firestore.FieldValue.increment(-producto.cantidad)
+        })
+        .then(() => {
+          productoRef.get().then(doc => {
+            if (doc.exists && doc.data().stock <= 3) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Stock bajo',
+                text: `El producto ${doc.data().nombre} está por agotarse`
+              });
+            }
+          });
+        });
+      });
+
+      // 🔻 Confirmación visual de la compra
+      Swal.fire({
+        title: '¡Compra enviada con éxito!',
+        text: 'Gracias por tu pedido 🛒',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d63384'
+      });
+
+      // 🔻 Vaciar carrito local
+      localStorage.removeItem("carrito");
+
+    })
+    .catch((error) => {
+      alert('❌ Error al enviar: ' + JSON.stringify(error));
+    });
+  }
+</script>
+
+<script>
+  function vaciarCarrito() {
+    localStorage.removeItem("carrito");
+    mostrarCarrito();
+
+    Swal.fire({
+      title: 'Carrito vaciado',
+      text: 'Todos los productos fueron eliminados 🧹',
+      icon: 'info',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#d63384'
+    });
+  }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
