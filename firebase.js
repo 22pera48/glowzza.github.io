@@ -90,43 +90,54 @@ async function mostrarClientes() {
     `;
     li.appendChild(productosSelect);
 
+    // Campo cantidad (oculto al inicio)
+    const cantidadInput = document.createElement("input");
+    cantidadInput.type = "number";
+    cantidadInput.min = 1;
+    cantidadInput.value = 1;
+    cantidadInput.style.display = "none";
+    li.appendChild(cantidadInput);
+
     // Contenedor para mostrar productos listados
     const productosList = document.createElement("ul");
     productosList.style.marginTop = "5px";
     if (data.productos && data.productos.length > 0) {
       data.productos.forEach(p => {
         const item = document.createElement("li");
-        item.textContent = `Producto: ${p}`;
+        item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad})`;
         productosList.appendChild(item);
       });
     }
     li.appendChild(productosList);
 
-    // Mostrar menú al presionar "+"
+    // Mostrar menú y cantidad al presionar "+"
     addButton.addEventListener("click", () => {
       productosSelect.style.display = "inline-block";
+      cantidadInput.style.display = "inline-block";
     });
 
-    // Guardar producto seleccionado en Firestore y mostrarlo debajo
+    // Guardar producto con cantidad en Firestore y mostrarlo debajo
     productosSelect.addEventListener("change", async () => {
       const nuevoProducto = productosSelect.value;
+      const cantidad = parseInt(cantidadInput.value, 10);
       if (!nuevoProducto) return;
 
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
       let productosActuales = clienteSnap.data().productos || [];
 
-      productosActuales.push(nuevoProducto);
+      productosActuales.push({ nombre: nuevoProducto, cantidad });
 
       await updateDoc(clienteRef, {
         productos: productosActuales
       });
 
       const item = document.createElement("li");
-      item.textContent = `Producto: ${nuevoProducto}`;
+      item.textContent = `Producto: ${nuevoProducto} (Cantidad: ${cantidad})`;
       productosList.appendChild(item);
 
-      productosSelect.style.display = "none"; // ocultar nuevamente
+      productosSelect.style.display = "none";
+      cantidadInput.style.display = "none";
     });
 
     lista.appendChild(li);
