@@ -169,6 +169,15 @@ async function mostrarClientes() {
       item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
       productosList.appendChild(item);
 
+      // 🔹 Recalcular total y actualizar encabezado en vivo
+  let nuevoTotal = 0;
+  productosActuales.forEach(p => {
+    nuevoTotal += p.precio * p.cantidad;
+  });
+  headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
+
+
+
       productosSelect.style.display = "none";
       cantidadInput.style.display = "none";
     });
