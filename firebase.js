@@ -52,11 +52,29 @@ async function mostrarClientes() {
   if (!lista) return;
   lista.innerHTML = "";
 
+// ESTA LÍNEA ES LA QUE FALTABA
   const querySnapshot = await getDocs(collection(db, "clientes"));
+
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
+
+    // Calcular el total de productos
+    let total = 0;
+    if (data.productos && data.productos.length > 0) {
+      data.productos.forEach(p => {
+        total += p.precio * p.cantidad;
+      });
+    }
+
+    // Crear contenedor principal
     const li = document.createElement("li");
-    li.textContent = `${data.nombre} - ${data.fecha} `;
+
+    // Encabezado con nombre, fecha y total
+    const headerDiv = document.createElement("div");
+    headerDiv.style.fontWeight = "bold";
+    headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${total}`;
+    li.appendChild(headerDiv);
+
 
     // Menú Ubicación
     const ubicacionSelect = document.createElement("select");
