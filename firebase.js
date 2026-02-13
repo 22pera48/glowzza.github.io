@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } 
+import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, getDoc } 
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -112,9 +112,14 @@ async function mostrarClientes() {
       const nuevoProducto = productosSelect.value;
       if (!nuevoProducto) return;
 
-      const nuevosProductos = data.productos ? [...data.productos, nuevoProducto] : [nuevoProducto];
-      await updateDoc(doc(db, "clientes", docSnap.id), {
-        productos: nuevosProductos
+      const clienteRef = doc(db, "clientes", docSnap.id);
+      const clienteSnap = await getDoc(clienteRef);
+      let productosActuales = clienteSnap.data().productos || [];
+
+      productosActuales.push(nuevoProducto);
+
+      await updateDoc(clienteRef, {
+        productos: productosActuales
       });
 
       const item = document.createElement("li");
