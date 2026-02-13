@@ -26,7 +26,7 @@ document.getElementById("clienteForm").addEventListener("submit", async (e) => {
     fecha,
     ubicacion: "deposito", // valor inicial
     pago: "no",            // valor inicial
-    producto: ""           // valor inicial vacío
+    productos: []          // lista vacía de productos
   });
   alert("Cliente guardado!");
   mostrarClientes();
@@ -88,16 +88,19 @@ async function mostrarClientes() {
       <option value="Labial Glowzza">Labial Glowzza</option>
       <option value="Crema Glowzza">Crema Glowzza</option>
     `;
-    if (data.producto) productosSelect.value = data.producto;
     li.appendChild(productosSelect);
 
-    // Contenedor para mostrar producto elegido debajo del nombre
-    const productoLabel = document.createElement("div");
-    productoLabel.style.marginTop = "5px";
-    if (data.producto) {
-      productoLabel.textContent = `Producto: ${data.producto}`;
+    // Contenedor para mostrar productos listados
+    const productosList = document.createElement("ul");
+    productosList.style.marginTop = "5px";
+    if (data.productos && data.productos.length > 0) {
+      data.productos.forEach(p => {
+        const item = document.createElement("li");
+        item.textContent = `Producto: ${p}`;
+        productosList.appendChild(item);
+      });
     }
-    li.appendChild(productoLabel);
+    li.appendChild(productosList);
 
     // Mostrar menú al presionar "+"
     addButton.addEventListener("click", () => {
@@ -106,10 +109,19 @@ async function mostrarClientes() {
 
     // Guardar producto seleccionado en Firestore y mostrarlo debajo
     productosSelect.addEventListener("change", async () => {
+      const nuevoProducto = productosSelect.value;
+      if (!nuevoProducto) return;
+
+      const nuevosProductos = data.productos ? [...data.productos, nuevoProducto] : [nuevoProducto];
       await updateDoc(doc(db, "clientes", docSnap.id), {
-        producto: productosSelect.value
+        productos: nuevosProductos
       });
-      productoLabel.textContent = `Producto: ${productosSelect.value}`;
+
+      const item = document.createElement("li");
+      item.textContent = `Producto: ${nuevoProducto}`;
+      productosList.appendChild(item);
+
+      productosSelect.style.display = "none"; // ocultar nuevamente
     });
 
     lista.appendChild(li);
