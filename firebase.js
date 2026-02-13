@@ -124,6 +124,10 @@ terminarButton.addEventListener("click", async () => {
     });
 
     alert("Compra cerrada y enviada a lista de ventas cerradas!");
+    
+// 🔹 Actualizar la lista en pantalla
+mostrarVentasCerradas();
+
   } else {
     alert("Solo se puede cerrar la compra si está PAGADO y DESPACHADO.");
   }
@@ -279,3 +283,4 @@ async function mostrarVentasCerradas() {
 
 // Cargar lista al abrir
 mostrarClientes();
+mostrarVentasCerradas();
