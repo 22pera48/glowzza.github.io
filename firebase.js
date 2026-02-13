@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
@@ -20,7 +21,12 @@ document.getElementById("clienteForm").addEventListener("submit", async (e) => {
   const nombre = document.getElementById("nombre").value;
   const fecha = document.getElementById("fecha").value;
 
-  await addDoc(collection(db, "clientes"), { nombre, fecha });
+  await addDoc(collection(db, "clientes"), { 
+    nombre, 
+    fecha,
+    ubicacion: "deposito", // valor inicial
+    pago: "no"             // valor inicial
+  });
   alert("Cliente guardado!");
   mostrarClientes();
 });
@@ -28,14 +34,45 @@ document.getElementById("clienteForm").addEventListener("submit", async (e) => {
 // Mostrar clientes
 async function mostrarClientes() {
   const lista = document.getElementById("listaClientes");
-  if (!lista) return; // seguridad por si no existe el UL
+  if (!lista) return;
   lista.innerHTML = "";
 
   const querySnapshot = await getDocs(collection(db, "clientes"));
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
+  querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
     const li = document.createElement("li");
-    li.textContent = `${data.nombre} - ${data.fecha}`;
+    li.textContent = `${data.nombre} - ${data.fecha} `;
+
+    // Menú Ubicación
+    const ubicacionSelect = document.createElement("select");
+    ubicacionSelect.innerHTML = `
+      <option value="deposito">En depósito</option>
+      <option value="despachado">Despachado</option>
+    `;
+    if (data.ubicacion) ubicacionSelect.value = data.ubicacion;
+
+    ubicacionSelect.addEventListener("change", async () => {
+      await updateDoc(doc(db, "clientes", docSnap.id), {
+        ubicacion: ubicacionSelect.value
+      });
+    });
+    li.appendChild(ubicacionSelect);
+
+    // Menú Pago
+    const pagoSelect = document.createElement("select");
+    pagoSelect.innerHTML = `
+      <option value="si">Sí</option>
+      <option value="no">No</option>
+    `;
+    if (data.pago) pagoSelect.value = data.pago;
+
+    pagoSelect.addEventListener("change", async () => {
+      await updateDoc(doc(db, "clientes", docSnap.id), {
+        pago: pagoSelect.value
+      });
+    });
+    li.appendChild(pagoSelect);
+
     lista.appendChild(li);
   });
 }
