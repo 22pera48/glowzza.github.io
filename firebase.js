@@ -15,6 +15,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+let catalogoProductos = [];
+
+// Cargar catálogo de productos (nombre + precio)
+async function cargarCatalogo() {
+  const querySnapshot = await getDocs(collection(db, "productos"));
+  catalogoProductos = [];
+  querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    catalogoProductos.push({ nombre: data.nombre, precio: data.precio });
+  });
+}
+
 // Guardar cliente
 document.getElementById("clienteForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -34,6 +46,8 @@ document.getElementById("clienteForm").addEventListener("submit", async (e) => {
 
 // Mostrar clientes
 async function mostrarClientes() {
+  await cargarCatalogo(); // primero cargamos el catálogo
+
   const lista = document.getElementById("listaClientes");
   if (!lista) return;
   lista.innerHTML = "";
@@ -82,12 +96,12 @@ async function mostrarClientes() {
     // Menú de productos (oculto al inicio)
     const productosSelect = document.createElement("select");
     productosSelect.style.display = "none";
-    productosSelect.innerHTML = `
-      <option value="">Seleccionar producto...</option>
-      <option value="Shampoo Glowzza">Shampoo Glowzza</option>
-      <option value="Labial Glowzza">Labial Glowzza</option>
-      <option value="Crema Glowzza">Crema Glowzza</option>
-    `;
+
+    let opciones = `<option value="">Seleccionar producto...</option>`;
+    catalogoProductos.forEach(p => {
+      opciones += `<option value="${p.nombre}">${p.nombre} - $${p.precio}</option>`;
+    });
+    productosSelect.innerHTML = opciones;
     li.appendChild(productosSelect);
 
     // Campo cantidad (oculto al inicio)
@@ -104,7 +118,7 @@ async function mostrarClientes() {
     if (data.productos && data.productos.length > 0) {
       data.productos.forEach(p => {
         const item = document.createElement("li");
-        item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad})`;
+        item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
         productosList.appendChild(item);
       });
     }
@@ -116,24 +130,25 @@ async function mostrarClientes() {
       cantidadInput.style.display = "inline-block";
     });
 
-    // Guardar producto con cantidad en Firestore y mostrarlo debajo
+    // Guardar producto con cantidad y precio en Firestore
     productosSelect.addEventListener("change", async () => {
-      const nuevoProducto = productosSelect.value;
+      const nombreProducto = productosSelect.value;
       const cantidad = parseInt(cantidadInput.value, 10);
-      if (!nuevoProducto) return;
+      if (!nombreProducto) return;
+
+      const productoInfo = catalogoProductos.find(p => p.nombre === nombreProducto);
+      const precio = productoInfo ? productoInfo.precio : 0;
 
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
       let productosActuales = clienteSnap.data().productos || [];
 
-      productosActuales.push({ nombre: nuevoProducto, cantidad });
+      productosActuales.push({ nombre: nombreProducto, precio, cantidad });
 
-      await updateDoc(clienteRef, {
-        productos: productosActuales
-      });
+      await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
-      item.textContent = `Producto: ${nuevoProducto} (Cantidad: ${cantidad})`;
+      item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
       productosList.appendChild(item);
 
       productosSelect.style.display = "none";
