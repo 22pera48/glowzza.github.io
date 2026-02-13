@@ -84,23 +84,32 @@ async function mostrarClientes() {
     productosSelect.style.display = "none";
     productosSelect.innerHTML = `
       <option value="">Seleccionar producto...</option>
-      <option value="shampoo">Shampoo Glowzza</option>
-      <option value="labial">Labial Glowzza</option>
-      <option value="crema">Crema Glowzza</option>
+      <option value="Shampoo Glowzza">Shampoo Glowzza</option>
+      <option value="Labial Glowzza">Labial Glowzza</option>
+      <option value="Crema Glowzza">Crema Glowzza</option>
     `;
     if (data.producto) productosSelect.value = data.producto;
     li.appendChild(productosSelect);
+
+    // Contenedor para mostrar producto elegido debajo del nombre
+    const productoLabel = document.createElement("div");
+    productoLabel.style.marginTop = "5px";
+    if (data.producto) {
+      productoLabel.textContent = `Producto: ${data.producto}`;
+    }
+    li.appendChild(productoLabel);
 
     // Mostrar menú al presionar "+"
     addButton.addEventListener("click", () => {
       productosSelect.style.display = "inline-block";
     });
 
-    // Guardar producto seleccionado en Firestore
+    // Guardar producto seleccionado en Firestore y mostrarlo debajo
     productosSelect.addEventListener("change", async () => {
       await updateDoc(doc(db, "clientes", docSnap.id), {
         producto: productosSelect.value
       });
+      productoLabel.textContent = `Producto: ${productosSelect.value}`;
     });
 
     lista.appendChild(li);
