@@ -102,6 +102,35 @@ async function mostrarClientes() {
     });
     li.appendChild(pagoSelect);
 
+// 🔹 Botón Terminar compra
+const terminarButton = document.createElement("button");
+terminarButton.textContent = "Terminar compra";
+terminarButton.style.marginLeft = "10px";
+
+terminarButton.addEventListener("click", async () => {
+  if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
+    let totalFinal = 0;
+    (data.productos || []).forEach(p => {
+      totalFinal += p.precio * p.cantidad;
+    });
+
+    await addDoc(collection(db, "ventasCerradas"), {
+      nombre: data.nombre,
+      fecha: data.fecha,
+      productos: data.productos,
+      total: totalFinal,
+      pago: pagoSelect.value,
+      ubicacion: ubicacionSelect.value
+    });
+
+    alert("Compra cerrada y enviada a lista de ventas cerradas!");
+  } else {
+    alert("Solo se puede cerrar la compra si está PAGADO y DESPACHADO.");
+  }
+});
+
+li.appendChild(terminarButton);
+
     // Botón "+"
     const addButton = document.createElement("button");
     addButton.textContent = "+";
@@ -219,6 +248,31 @@ async function mostrarClientes() {
       cantidadInput.style.display = "none";
     });
 
+    lista.appendChild(li);
+  });
+}
+
+async function mostrarVentasCerradas() {
+  const lista = document.getElementById("listaVentasCerradas");
+  if (!lista) return;
+  lista.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "ventasCerradas"));
+
+  querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+
+    const li = document.createElement("li");
+    li.textContent = `${data.nombre} - ${data.fecha} | Total: $${data.total}`;
+
+    const productosList = document.createElement("ul");
+    (data.productos || []).forEach(p => {
+      const item = document.createElement("li");
+      item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+      productosList.appendChild(item);
+    });
+
+    li.appendChild(productosList);
     lista.appendChild(li);
   });
 }
