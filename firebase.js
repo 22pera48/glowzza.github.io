@@ -61,8 +61,8 @@ async function mostrarClientes() {
     // Menú Pago
     const pagoSelect = document.createElement("select");
     pagoSelect.innerHTML = `
-      <option value="sin pagar">Sí</option>
-      <option value="pagado">No</option>
+      <option value="sin pagar">Sin Pagar</option>
+      <option value="pagado">Pagado</option>
     `;
     if (data.pago) pagoSelect.value = data.pago;
 
