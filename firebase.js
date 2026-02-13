@@ -25,7 +25,8 @@ document.getElementById("clienteForm").addEventListener("submit", async (e) => {
     nombre, 
     fecha,
     ubicacion: "deposito", // valor inicial
-    pago: "no"             // valor inicial
+    pago: "no",            // valor inicial
+    producto: ""           // valor inicial vacío
   });
   alert("Cliente guardado!");
   mostrarClientes();
@@ -61,8 +62,8 @@ async function mostrarClientes() {
     // Menú Pago
     const pagoSelect = document.createElement("select");
     pagoSelect.innerHTML = `
-      <option value="sin pagar">Sin Pagar</option>
-      <option value="pagado">Pagado</option>
+      <option value="no">Sin pagar</option>
+      <option value="si">Pagado</option>
     `;
     if (data.pago) pagoSelect.value = data.pago;
 
@@ -72,6 +73,35 @@ async function mostrarClientes() {
       });
     });
     li.appendChild(pagoSelect);
+
+    // Botón "+"
+    const addButton = document.createElement("button");
+    addButton.textContent = "+";
+    li.appendChild(addButton);
+
+    // Menú de productos (oculto al inicio)
+    const productosSelect = document.createElement("select");
+    productosSelect.style.display = "none";
+    productosSelect.innerHTML = `
+      <option value="">Seleccionar producto...</option>
+      <option value="shampoo">Shampoo Glowzza</option>
+      <option value="labial">Labial Glowzza</option>
+      <option value="crema">Crema Glowzza</option>
+    `;
+    if (data.producto) productosSelect.value = data.producto;
+    li.appendChild(productosSelect);
+
+    // Mostrar menú al presionar "+"
+    addButton.addEventListener("click", () => {
+      productosSelect.style.display = "inline-block";
+    });
+
+    // Guardar producto seleccionado en Firestore
+    productosSelect.addEventListener("change", async () => {
+      await updateDoc(doc(db, "clientes", docSnap.id), {
+        producto: productosSelect.value
+      });
+    });
 
     lista.appendChild(li);
   });
