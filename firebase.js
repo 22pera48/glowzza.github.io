@@ -131,17 +131,45 @@ async function mostrarClientes() {
     li.appendChild(cantidadInput);
 
     // Contenedor para mostrar productos listados
-    const productosList = document.createElement("ul");
-    productosList.style.marginTop = "5px";
-    if (data.productos && data.productos.length > 0) {
-      data.productos.forEach(p => {
-        const item = document.createElement("li");
-        item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
-        productosList.appendChild(item);
-      });
-    }
-    li.appendChild(productosList);
+// Contenedor para mostrar productos listados
+const productosList = document.createElement("ul");
+productosList.style.marginTop = "5px";
+if (data.productos && data.productos.length > 0) {
+  data.productos.forEach((p, index) => {
+    const item = document.createElement("li");
+    item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
 
+    // Botón eliminar
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Eliminar";
+    deleteButton.style.marginLeft = "10px";
+
+    deleteButton.addEventListener("click", async () => {
+      // Sacar el producto de la lista
+      let productosActuales = [...data.productos];
+      productosActuales.splice(index, 1);
+
+      // Actualizar en Firestore
+      await updateDoc(doc(db, "clientes", docSnap.id), {
+        productos: productosActuales
+      });
+
+      // Quitar del DOM
+      productosList.removeChild(item);
+
+      // Recalcular total
+      let nuevoTotal = 0;
+      productosActuales.forEach(prod => {
+        nuevoTotal += prod.precio * prod.cantidad;
+      });
+      headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
+    });
+
+    item.appendChild(deleteButton);
+    productosList.appendChild(item);
+  });
+}
+li.appendChild(productosList);
     // Mostrar menú y cantidad al presionar "+"
     addButton.addEventListener("click", () => {
       productosSelect.style.display = "inline-block";
