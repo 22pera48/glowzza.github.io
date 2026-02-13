@@ -52,7 +52,6 @@ async function mostrarClientes() {
   if (!lista) return;
   lista.innerHTML = "";
 
-// ESTA LÍNEA ES LA QUE FALTABA
   const querySnapshot = await getDocs(collection(db, "clientes"));
 
   querySnapshot.forEach((docSnap) => {
@@ -75,7 +74,6 @@ async function mostrarClientes() {
     headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${total}`;
     li.appendChild(headerDiv);
 
-
     // Menú Ubicación
     const ubicacionSelect = document.createElement("select");
     ubicacionSelect.innerHTML = `
@@ -83,7 +81,6 @@ async function mostrarClientes() {
       <option value="despachado">Despachado</option>
     `;
     if (data.ubicacion) ubicacionSelect.value = data.ubicacion;
-
     ubicacionSelect.addEventListener("change", async () => {
       await updateDoc(doc(db, "clientes", docSnap.id), {
         ubicacion: ubicacionSelect.value
@@ -98,7 +95,6 @@ async function mostrarClientes() {
       <option value="si">Pagado</option>
     `;
     if (data.pago) pagoSelect.value = data.pago;
-
     pagoSelect.addEventListener("change", async () => {
       await updateDoc(doc(db, "clientes", docSnap.id), {
         pago: pagoSelect.value
@@ -131,45 +127,42 @@ async function mostrarClientes() {
     li.appendChild(cantidadInput);
 
     // Contenedor para mostrar productos listados
-// Contenedor para mostrar productos listados
-const productosList = document.createElement("ul");
-productosList.style.marginTop = "5px";
-if (data.productos && data.productos.length > 0) {
-  data.productos.forEach((p, index) => {
-    const item = document.createElement("li");
-    item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+    const productosList = document.createElement("ul");
+    productosList.style.marginTop = "5px";
+    if (data.productos && data.productos.length > 0) {
+      data.productos.forEach((p, index) => {
+        const item = document.createElement("li");
+        item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
 
-    // Botón eliminar
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Eliminar";
-    deleteButton.style.marginLeft = "10px";
+        // Botón eliminar
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Eliminar";
+        deleteButton.style.marginLeft = "10px";
 
-    deleteButton.addEventListener("click", async () => {
-      // Sacar el producto de la lista
-      let productosActuales = [...data.productos];
-      productosActuales.splice(index, 1);
+        deleteButton.addEventListener("click", async () => {
+          let productosActuales = [...data.productos];
+          productosActuales.splice(index, 1);
 
-      // Actualizar en Firestore
-      await updateDoc(doc(db, "clientes", docSnap.id), {
-        productos: productosActuales
+          await updateDoc(doc(db, "clientes", docSnap.id), {
+            productos: productosActuales
+          });
+
+          productosList.removeChild(item);
+
+          // Recalcular total
+          let nuevoTotal = 0;
+          productosActuales.forEach(prod => {
+            nuevoTotal += prod.precio * prod.cantidad;
+          });
+          headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
+        });
+
+        item.appendChild(deleteButton);
+        productosList.appendChild(item);
       });
+    }
+    li.appendChild(productosList);
 
-      // Quitar del DOM
-      productosList.removeChild(item);
-
-      // Recalcular total
-      let nuevoTotal = 0;
-      productosActuales.forEach(prod => {
-        nuevoTotal += prod.precio * prod.cantidad;
-      });
-      headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
-    });
-
-    item.appendChild(deleteButton);
-    productosList.appendChild(item);
-  });
-}
-li.appendChild(productosList);
     // Mostrar menú y cantidad al presionar "+"
     addButton.addEventListener("click", () => {
       productosSelect.style.display = "inline-block";
@@ -190,21 +183,37 @@ li.appendChild(productosList);
       let productosActuales = clienteSnap.data().productos || [];
 
       productosActuales.push({ nombre: nombreProducto, precio, cantidad });
-
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
       item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
+
+      // Botón eliminar también para los nuevos
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Eliminar";
+      deleteButton.style.marginLeft = "10px";
+
+      deleteButton.addEventListener("click", async () => {
+        productosActuales = productosActuales.filter(prod => !(prod.nombre === nombreProducto && prod.cantidad === cantidad));
+        await updateDoc(clienteRef, { productos: productosActuales });
+        productosList.removeChild(item);
+
+        let nuevoTotal = 0;
+        productosActuales.forEach(p => {
+          nuevoTotal += p.precio * p.cantidad;
+        });
+        headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
+      });
+
+      item.appendChild(deleteButton);
       productosList.appendChild(item);
 
-      // 🔹 Recalcular total y actualizar encabezado en vivo
-  let nuevoTotal = 0;
-  productosActuales.forEach(p => {
-    nuevoTotal += p.precio * p.cantidad;
-  });
-  headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
-
-
+      // Recalcular total y actualizar encabezado en vivo
+      let nuevoTotal = 0;
+      productosActuales.forEach(p => {
+        nuevoTotal += p.precio * p.cantidad;
+      });
+      headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
 
       productosSelect.style.display = "none";
       cantidadInput.style.display = "none";
