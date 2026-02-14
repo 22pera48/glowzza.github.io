@@ -119,35 +119,42 @@ terminarButton.style.marginLeft = "10px";
 
 terminarButton.addEventListener("click", async () => {
   if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
-    let totalFinal = 0;
-    (data.productos || []).forEach(p => {
-      totalFinal += p.precio * p.cantidad;
-    });
+    try {
+      const clienteRef = doc(db, "clientes", docSnap.id);
+      const clienteSnap = await getDoc(clienteRef);
+      const clienteData = clienteSnap.data();
 
-    // Guardar en ventasCerradas
-    await addDoc(collection(db, "ventasCerradas"), {
-      nombre: data.nombre,
-      fecha: data.fecha,
-      productos: data.productos,
-      total: totalFinal,
-      pago: pagoSelect.value,
-      ubicacion: ubicacionSelect.value
-    });
+      let totalFinal = 0;
+      (clienteData.productos || []).forEach(p => {
+        totalFinal += p.precio * p.cantidad;
+      });
 
-    // Borrar de clientes
-    await deleteDoc(doc(db, "clientes", docSnap.id));
+      // Guardar en ventasCerradas con los productos actualizados
+      await addDoc(collection(db, "ventasCerradas"), {
+        nombre: clienteData.nombre,
+        fecha: clienteData.fecha,
+        productos: clienteData.productos || [],
+        total: totalFinal,
+        pago: pagoSelect.value,
+        ubicacion: ubicacionSelect.value
+      });
 
-    alert("Compra cerrada y movida a lista de ventas cerradas!");
+      // Borrar de clientes
+      await deleteDoc(clienteRef);
 
-    // Actualizar ambas listas
-    mostrarClientes();
-    mostrarVentasCerradas();
+      alert("Compra cerrada y movida a lista de ventas cerradas!");
 
+      // Actualizar ambas listas
+      mostrarClientes();
+      mostrarVentasCerradas();
+    } catch (err) {
+      console.error("Error al cerrar compra:", err);
+      alert("Error al cerrar la compra: " + err.message);
+    }
   } else {
     alert("Solo se puede cerrar la compra si está PAGADO y DESPACHADO.");
   }
 });
-
 li.appendChild(terminarButton);
 // Botón "+"
 const addButton = document.createElement("button");
