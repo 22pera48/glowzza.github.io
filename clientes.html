@@ -31,6 +31,8 @@
     </div>
   </div>
 
+  <!-- Script de Firebase -->
+  <script type="module" src="firebase.js"></script>
 <script>
   // Buscador de clientes
   const buscadorClientes = document.getElementById("buscadorClientes");
@@ -60,53 +62,6 @@
     });
   });
 </script>
-<!-- Script de Firebase con CDN -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, getDocs, collection, deleteDoc, doc } 
-      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
-      authDomain: "glowzzainventario.firebaseapp.com",
-      projectId: "glowzzainventario",
-      storageBucket: "glowzzainventario.firebasestorage.app",
-      messagingSenderId: "159721581844",
-      appId: "1:159721581844:web:f62cdb303258dc847b6601"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    async function cargarClientes() {
-      const querySnapshot = await getDocs(collection(db, "clientes"));
-      querySnapshot.forEach(docSnap => {
-        const cliente = docSnap.data();
-
-        const li = document.createElement("li");
-        li.textContent = `${cliente.etiqueta} - ${cliente.nombre}`;
-
-        const btnEliminar = document.createElement("button");
-        btnEliminar.textContent = "Eliminar";
-        btnEliminar.onclick = () => eliminarCliente(docSnap.id);
-
-        li.appendChild(btnEliminar);
-        document.getElementById("listaClientes").appendChild(li);
-      });
-    }
-
-    cargarClientes();
-
-    function eliminarCliente(idCliente) {
-      const clave = prompt("Ingrese la contraseña para eliminar:");
-      if (clave === "admin123") {
-        deleteDoc(doc(db, "clientes", idCliente))
-          .then(() => alert("Cliente eliminado correctamente"))
-          .catch(err => console.error("Error al eliminar:", err));
-      } else {
-        alert("Contraseña incorrecta. No se eliminó nada.");
-      }
-    }
-  </script>
 </body>
 </html>
