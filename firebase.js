@@ -118,22 +118,28 @@ terminarButton.textContent = "Terminar compra";
 terminarButton.style.marginLeft = "10px";
 
 terminarButton.addEventListener("click", async () => {
-  if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
-    try {
-      const clienteRef = doc(db, "clientes", docSnap.id);
-      const clienteSnap = await getDoc(clienteRef);
-      const clienteData = clienteSnap.data();
+  try {
+    const clienteRef = doc(db, "clientes", docSnap.id);
+    const clienteSnap = await getDoc(clienteRef);
+    const clienteData = clienteSnap.data();
 
+    // Validación: debe tener al menos 1 producto
+    if (!clienteData.productos || clienteData.productos.length === 0) {
+      alert("No se puede cerrar la compra: el cliente no tiene productos cargados.");
+      return;
+    }
+
+    if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
       let totalFinal = 0;
-      (clienteData.productos || []).forEach(p => {
+      clienteData.productos.forEach(p => {
         totalFinal += p.precio * p.cantidad;
       });
 
-      // Guardar en ventasCerradas con los productos actualizados
+      // Guardar en ventasCerradas
       await addDoc(collection(db, "ventasCerradas"), {
         nombre: clienteData.nombre,
         fecha: clienteData.fecha,
-        productos: clienteData.productos || [],
+        productos: clienteData.productos,
         total: totalFinal,
         pago: pagoSelect.value,
         ubicacion: ubicacionSelect.value
@@ -147,12 +153,12 @@ terminarButton.addEventListener("click", async () => {
       // Actualizar ambas listas
       mostrarClientes();
       mostrarVentasCerradas();
-    } catch (err) {
-      console.error("Error al cerrar compra:", err);
-      alert("Error al cerrar la compra: " + err.message);
+    } else {
+      alert("Solo se puede cerrar la compra si está PAGADO y DESPACHADO.");
     }
-  } else {
-    alert("Solo se puede cerrar la compra si está PAGADO y DESPACHADO.");
+  } catch (err) {
+    console.error("Error al cerrar compra:", err);
+    alert("Error al cerrar la compra: " + err.message);
   }
 });
 li.appendChild(terminarButton);
