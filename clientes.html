@@ -31,8 +31,6 @@
     </div>
   </div>
 
-  <!-- Script de Firebase -->
-  <script type="module" src="firebase.js"></script>
 <script>
   // Buscador de clientes
   const buscadorClientes = document.getElementById("buscadorClientes");
@@ -62,43 +60,53 @@
     });
   });
 </script>
-<!-- Script de Firebase -->
-<script type="module">
-  import { getDocs, collection, deleteDoc, doc } from "firebase/firestore";
-  import { db } from "./firebase.js";
+<!-- Script de Firebase con CDN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, getDocs, collection, deleteDoc, doc } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // Cargar clientes
-  async function cargarClientes() {
-    const querySnapshot = await getDocs(collection(db, "clientes"));
-    querySnapshot.forEach(docSnap => {
-      const cliente = docSnap.data();
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_STORAGE_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
 
-      const li = document.createElement("li");
-      li.textContent = `${cliente.etiqueta} - ${cliente.nombre}`;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      // Botón de eliminar automático
-      const btnEliminar = document.createElement("button");
-      btnEliminar.textContent = "Eliminar";
-      btnEliminar.onclick = () => eliminarCliente(docSnap.id);
+    async function cargarClientes() {
+      const querySnapshot = await getDocs(collection(db, "clientes"));
+      querySnapshot.forEach(docSnap => {
+        const cliente = docSnap.data();
 
-      li.appendChild(btnEliminar);
-      document.getElementById("listaClientes").appendChild(li);
-    });
-  }
+        const li = document.createElement("li");
+        li.textContent = `${cliente.etiqueta} - ${cliente.nombre}`;
 
-  cargarClientes();
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "Eliminar";
+        btnEliminar.onclick = () => eliminarCliente(docSnap.id);
 
-  // Función de eliminar con contraseña
-  function eliminarCliente(idCliente) {
-    const clave = prompt("Ingrese la contraseña para eliminar:");
-    if (clave === "admin123") {
-      deleteDoc(doc(db, "clientes", idCliente))
-        .then(() => alert("Cliente eliminado correctamente"))
-        .catch(err => console.error("Error al eliminar:", err));
-    } else {
-      alert("Contraseña incorrecta. No se eliminó nada.");
+        li.appendChild(btnEliminar);
+        document.getElementById("listaClientes").appendChild(li);
+      });
     }
-  }
-</script>
+
+    cargarClientes();
+
+    function eliminarCliente(idCliente) {
+      const clave = prompt("Ingrese la contraseña para eliminar:");
+      if (clave === "admin123") {
+        deleteDoc(doc(db, "clientes", idCliente))
+          .then(() => alert("Cliente eliminado correctamente"))
+          .catch(err => console.error("Error al eliminar:", err));
+      } else {
+        alert("Contraseña incorrecta. No se eliminó nada.");
+      }
+    }
+  </script>
 </body>
 </html>
