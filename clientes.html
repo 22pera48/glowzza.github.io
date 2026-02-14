@@ -16,36 +16,49 @@
 
   <div style="display:flex; gap:40px; margin-top:20px;">
     <div>
-      <h2>Lista de Clientes</h2>
-          <input type="text" id="buscador" placeholder="Buscar cliente por nombre, ID o palabra clave">
-
-      <ul id="listaClientes"></ul>
+<h2>Lista de Clientes</h2>
+<input type="text" id="buscadorClientes" placeholder="Buscar cliente por nombre o ID">
+<ul id="listaClientes">
+  <!-- Aquí se cargan los clientes -->
+</ul>
     </div>
     <div>
-      <h2>Lista de Ventas Cerradas</h2>
-          <input type="text" id="buscador" placeholder="Buscar cliente por nombre, ID o palabra clave">
-
-      <ul id="listaVentasCerradas"></ul>
+<h2>Lista de Ventas Cerradas</h2>
+<input type="text" id="buscadorVentas" placeholder="Buscar venta cerrada por nombre o etiqueta">
+<ul id="listaVentasCerradas">
+  <!-- Aquí se cargan las ventas cerradas -->
+</ul>
     </div>
   </div>
 
   <!-- Script de Firebase -->
   <script type="module" src="firebase.js"></script>
-  <script>
-  const buscador = document.getElementById("buscador");
+<script>
+  // Buscador de clientes
+  const buscadorClientes = document.getElementById("buscadorClientes");
   const listaClientes = document.getElementById("listaClientes");
 
-  buscador.addEventListener("input", () => {
-    const filtro = buscador.value.toLowerCase();
+  buscadorClientes.addEventListener("input", () => {
+    const filtro = buscadorClientes.value.toLowerCase();
     const clientes = listaClientes.querySelectorAll("li");
 
     clientes.forEach(cliente => {
       const texto = cliente.textContent.toLowerCase();
-      if (texto.includes(filtro)) {
-        cliente.style.display = "";
-      } else {
-        cliente.style.display = "none";
-      }
+      cliente.style.display = texto.includes(filtro) ? "" : "none";
+    });
+  });
+
+  // Buscador de ventas cerradas
+  const buscadorVentas = document.getElementById("buscadorVentas");
+  const listaVentas = document.getElementById("listaVentasCerradas");
+
+  buscadorVentas.addEventListener("input", () => {
+    const filtro = buscadorVentas.value.toLowerCase();
+    const ventas = listaVentas.querySelectorAll("li");
+
+    ventas.forEach(venta => {
+      const texto = venta.textContent.toLowerCase();
+      venta.style.display = texto.includes(filtro) ? "" : "none";
     });
   });
 </script>
