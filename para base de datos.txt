@@ -2,7 +2,9 @@ pass y usuario
 codigo unico para un cliente
 hacer codigo mas potable para escribir
 codigo unico para hacer codigos de barras
-subir productos al server y precios
+subir productos al server y precios con exel
+agregar marca de agua de las fotos
+agregar en las fotos una imagen con glowzza
 
 
 agregar
