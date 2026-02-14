@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Control de Stock</title>
+</head>
+<body>
+  <h2>Control de Stock</h2>
+  <button onclick="document.getElementById('archivoExcel').click()">Subir Excel</button>
+  <input type="file" id="archivoExcel" style="display:none" accept=".csv,.xlsx">
+
+  <h3>Listado General</h3>
+  <ul id="listaStock"></ul>
+
+  <h3>Por Agotarse (≤2 unidades)</h3>
+  <ul id="listaPorAgotarse"></ul>
+
+  <h3>Agotados</h3>
+  <ul id="listaAgotados"></ul>
+
+  <!-- Script de Firebase -->
+  <script type="module" src="firebase.js"></script>
+</body>
+</html>
