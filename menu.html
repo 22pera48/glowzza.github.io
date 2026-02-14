@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glowzza - Panel Principal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      margin-bottom: 50px;
+      color: #333;
+    }
+    .menu-principal {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+    }
+    .boton-grande {
+      width: 280px;
+      height: 160px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-grande:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Glowzza - Panel Principal</h1>
+  <div class="menu-principal">
+    <button onclick="location.href='clientes.html'" class="boton-grande">
+      Registro de Clientes
+    </button>
+    <button onclick="location.href='stock.html'" class="boton-grande">
+      Control de Stock
+    </button>
+  </div>
+</body>
+</html>
