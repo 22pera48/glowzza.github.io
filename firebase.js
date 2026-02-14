@@ -43,12 +43,18 @@ document.getElementById("clienteForm").addEventListener("submit", async (e) => {
   const nombre = document.getElementById("nombre").value;
   const fecha = document.getElementById("fecha").value;
 
+  // Generar etiqueta única (ej: timestamp + random)
+const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+
+
   await addDoc(collection(db, "clientes"), { 
     nombre, 
     fecha,
     ubicacion: "deposito", // valor inicial
     pago: "no",            // valor inicial
-    productos: []          // lista vacía de productos
+    productos: [],          // lista vacía de productos
+    etiqueta: etiquetaUnica   // 👈 campo único
+
   });
   alert("Cliente guardado!");
   mostrarClientes();
@@ -142,7 +148,9 @@ terminarButton.addEventListener("click", async () => {
         productos: clienteData.productos,
         total: totalFinal,
         pago: pagoSelect.value,
-        ubicacion: ubicacionSelect.value
+        ubicacion: ubicacionSelect.value,
+        etiqueta: clienteData.etiqueta   // 👈 se mantiene igual
+
       });
 
       // Borrar de clientes
