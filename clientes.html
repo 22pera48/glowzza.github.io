@@ -10,6 +10,7 @@
     <input type="text" id="nombre" placeholder="Nombre" required>
     <input type="date" id="fecha" required>
     <button type="submit">Guardar</button>
+    <input type="text" id="buscador" placeholder="Buscar cliente por nombre, ID o palabra clave">
   </form>
 
   <div style="display:flex; gap:40px; margin-top:20px;">
@@ -25,5 +26,23 @@
 
   <!-- Script de Firebase -->
   <script type="module" src="firebase.js"></script>
+  <script>
+  const buscador = document.getElementById("buscador");
+  const listaClientes = document.getElementById("listaClientes");
+
+  buscador.addEventListener("input", () => {
+    const filtro = buscador.value.toLowerCase();
+    const clientes = listaClientes.querySelectorAll("li");
+
+    clientes.forEach(cliente => {
+      const texto = cliente.textContent.toLowerCase();
+      if (texto.includes(filtro)) {
+        cliente.style.display = "";
+      } else {
+        cliente.style.display = "none";
+      }
+    });
+  });
+</script>
 </body>
 </html>
