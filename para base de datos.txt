@@ -1,0 +1,27 @@
+pass y usuario
+
+
+poder poner buscardor filtro para nombres
+codigo unico para hacer codigos de barras
+subir productos al server y precios
+
+
+agregar
+await addDoc(collection(db, "productos"), {
+  nombre: "Labial Rojo",
+  precio: 2500,
+  stock: 20,
+  categoria: "maquillaje",
+  descripcion: "Labial mate de larga duración",
+  imagenURL: "https://tuservidor.com/labial.jpg",
+  codigo: "PROD-0001"
+});
+{
+  nombre: "Labial Rojo",
+  precio: 2500,
+  stock: 2,
+  umbralAlerta: 2,
+  estado: "porAgotarse",
+  ultimaActualizacion: "2026-02-14T13:55:00Z",
+  notificado: false
+}
