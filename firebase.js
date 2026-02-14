@@ -87,8 +87,7 @@ async function mostrarClientes() {
     // Encabezado con nombre, fecha y total
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-    headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${total}`;
-    li.appendChild(headerDiv);
+    headerDiv.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${total}`;    li.appendChild(headerDiv);
 
     // Menú Ubicación
     const ubicacionSelect = document.createElement("select");
@@ -306,8 +305,7 @@ async function mostrarVentasCerradas() {
     const data = docSnap.data();
 
     const li = document.createElement("li");
-    li.textContent = `${data.nombre} - ${data.fecha} | Total: $${data.total}`;
-
+li.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${data.total}`;
     const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
