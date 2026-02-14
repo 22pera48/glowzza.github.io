@@ -124,12 +124,12 @@ terminarButton.addEventListener("click", async () => {
       ubicacion: ubicacionSelect.value
     });
 
-    // 🔹 Borrar de clientes
+    // Borrar de clientes
     await deleteDoc(doc(db, "clientes", docSnap.id));
 
     alert("Compra cerrada y movida a lista de ventas cerradas!");
 
-    // 🔹 Actualizar ambas listas en pantalla
+    // Actualizar ambas listas
     mostrarClientes();
     mostrarVentasCerradas();
 
@@ -139,7 +139,6 @@ terminarButton.addEventListener("click", async () => {
 });
 
 li.appendChild(terminarButton);
-
 // Botón "+"
 const addButton = document.createElement("button");
 addButton.textContent = "+";
