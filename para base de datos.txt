@@ -1,7 +1,6 @@
 pass y usuario
-
-
-poder poner buscardor filtro para nombres
+codigo unico para un cliente
+hacer codigo mas potable para escribir
 codigo unico para hacer codigos de barras
 subir productos al server y precios
 
