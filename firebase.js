@@ -136,10 +136,17 @@ mostrarVentasCerradas();
 li.appendChild(terminarButton);
 
     // Botón "+"
-    const addButton = document.createElement("button");
-    addButton.textContent = "+";
-    li.appendChild(addButton);
-
+addButton.addEventListener("click", () => {
+  if (productosSelect.style.display === "none") {
+    // Mostrar menú y cantidad
+    productosSelect.style.display = "inline-block";
+    cantidadInput.style.display = "inline-block";
+  } else {
+    // Ocultar menú y cantidad
+    productosSelect.style.display = "none";
+    cantidadInput.style.display = "none";
+  }
+});
     // Menú de productos (oculto al inicio)
     const productosSelect = document.createElement("select");
     productosSelect.style.display = "none";
