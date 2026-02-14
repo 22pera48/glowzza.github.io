@@ -114,6 +114,7 @@ terminarButton.addEventListener("click", async () => {
       totalFinal += p.precio * p.cantidad;
     });
 
+    // Guardar en ventasCerradas
     await addDoc(collection(db, "ventasCerradas"), {
       nombre: data.nombre,
       fecha: data.fecha,
@@ -123,10 +124,14 @@ terminarButton.addEventListener("click", async () => {
       ubicacion: ubicacionSelect.value
     });
 
-    alert("Compra cerrada y enviada a lista de ventas cerradas!");
-    
-// 🔹 Actualizar la lista en pantalla
-mostrarVentasCerradas();
+    // 🔹 Borrar de clientes
+    await deleteDoc(doc(db, "clientes", docSnap.id));
+
+    alert("Compra cerrada y movida a lista de ventas cerradas!");
+
+    // 🔹 Actualizar ambas listas en pantalla
+    mostrarClientes();
+    mostrarVentasCerradas();
 
   } else {
     alert("Solo se puede cerrar la compra si está PAGADO y DESPACHADO.");
@@ -135,80 +140,77 @@ mostrarVentasCerradas();
 
 li.appendChild(terminarButton);
 
-    // Botón "+"
+// Botón "+"
+const addButton = document.createElement("button");
+addButton.textContent = "+";
+li.appendChild(addButton);
+
+// Menú de productos (oculto al inicio)
+const productosSelect = document.createElement("select");
+productosSelect.style.display = "none";
+
+let opciones = `<option value="">Seleccionar producto...</option>`;
+catalogoProductos.forEach(p => {
+  opciones += `<option value="${p.nombre}">${p.nombre} - $${p.precio}</option>`;
+});
+productosSelect.innerHTML = opciones;
+li.appendChild(productosSelect);
+
+// Campo cantidad (oculto al inicio)
+const cantidadInput = document.createElement("input");
+cantidadInput.type = "number";
+cantidadInput.min = 1;
+cantidadInput.value = 1;
+cantidadInput.style.display = "none";
+li.appendChild(cantidadInput);
+
+// Contenedor para mostrar productos listados
+const productosList = document.createElement("ul");
+productosList.style.marginTop = "5px";
+if (data.productos && data.productos.length > 0) {
+  data.productos.forEach((p, index) => {
+    const item = document.createElement("li");
+    item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+
+    // Botón eliminar
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Eliminar";
+    deleteButton.style.marginLeft = "10px";
+
+    deleteButton.addEventListener("click", async () => {
+      let productosActuales = [...data.productos];
+      productosActuales.splice(index, 1);
+
+      await updateDoc(doc(db, "clientes", docSnap.id), {
+        productos: productosActuales
+      });
+
+      productosList.removeChild(item);
+
+      // Recalcular total
+      let nuevoTotal = 0;
+      productosActuales.forEach(prod => {
+        nuevoTotal += prod.precio * prod.cantidad;
+      });
+      headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
+    });
+
+    item.appendChild(deleteButton);
+    productosList.appendChild(item);
+  });
+}
+li.appendChild(productosList);
+
+// 🔹 Toggle mostrar/ocultar menú y cantidad al presionar "+"
 addButton.addEventListener("click", () => {
   if (productosSelect.style.display === "none") {
-    // Mostrar menú y cantidad
     productosSelect.style.display = "inline-block";
     cantidadInput.style.display = "inline-block";
   } else {
-    // Ocultar menú y cantidad
     productosSelect.style.display = "none";
     cantidadInput.style.display = "none";
   }
 });
-    // Menú de productos (oculto al inicio)
-    const productosSelect = document.createElement("select");
-    productosSelect.style.display = "none";
-
-    let opciones = `<option value="">Seleccionar producto...</option>`;
-    catalogoProductos.forEach(p => {
-      opciones += `<option value="${p.nombre}">${p.nombre} - $${p.precio}</option>`;
-    });
-    productosSelect.innerHTML = opciones;
-    li.appendChild(productosSelect);
-
-    // Campo cantidad (oculto al inicio)
-    const cantidadInput = document.createElement("input");
-    cantidadInput.type = "number";
-    cantidadInput.min = 1;
-    cantidadInput.value = 1;
-    cantidadInput.style.display = "none";
-    li.appendChild(cantidadInput);
-
-    // Contenedor para mostrar productos listados
-    const productosList = document.createElement("ul");
-    productosList.style.marginTop = "5px";
-    if (data.productos && data.productos.length > 0) {
-      data.productos.forEach((p, index) => {
-        const item = document.createElement("li");
-        item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
-
-        // Botón eliminar
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Eliminar";
-        deleteButton.style.marginLeft = "10px";
-
-        deleteButton.addEventListener("click", async () => {
-          let productosActuales = [...data.productos];
-          productosActuales.splice(index, 1);
-
-          await updateDoc(doc(db, "clientes", docSnap.id), {
-            productos: productosActuales
-          });
-
-          productosList.removeChild(item);
-
-          // Recalcular total
-          let nuevoTotal = 0;
-          productosActuales.forEach(prod => {
-            nuevoTotal += prod.precio * prod.cantidad;
-          });
-          headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
-        });
-
-        item.appendChild(deleteButton);
-        productosList.appendChild(item);
-      });
-    }
-    li.appendChild(productosList);
-
-    // Mostrar menú y cantidad al presionar "+"
-    addButton.addEventListener("click", () => {
-      productosSelect.style.display = "inline-block";
-      cantidadInput.style.display = "inline-block";
-    });
-
     // Guardar producto con cantidad y precio en Firestore
     productosSelect.addEventListener("change", async () => {
       const nombreProducto = productosSelect.value;
