@@ -1,3 +1,4 @@
+en lista de clientes que los productos se discriminen x color tipo u sabor
 pass y usuario
 codigo unico para un cliente
 hacer codigo mas potable para escribir
@@ -5,6 +6,13 @@ codigo unico para hacer codigos de barras
 subir productos al server y precios con exel
 agregar marca de agua de las fotos
 agregar en las fotos una imagen con glowzza
+ver sistema para coordinar envios
+contraseña para eliminar elementos
+ver alarmas de stock
+poner un buscador de productos
+ver tema de refresco de pagina cada vez que agregi un producto
+
+nuevo erro aparecen vacio los parentesis de color y si elimino una pplanchita y ahy 3 en el carro se elimina el total ademas muestra os cambios al actualizar
 
 
 agregar
@@ -26,3 +34,25 @@ await addDoc(collection(db, "productos"), {
   ultimaActualizacion: "2026-02-14T13:55:00Z",
   notificado: false
 }
+
+
+
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+
+  authDomain: "glowzzainventario.firebaseapp.com",
+
+  projectId: "glowzzainventario",
+
+  storageBucket: "glowzzainventario.firebasestorage.app",
+
+  messagingSenderId: "159721581844",
+
+  appId: "1:159721581844:web:f62cdb303258dc847b6601",
+
+  measurementId: "G-0FR3Q6P3L2"
+
+};
+
