@@ -222,10 +222,7 @@ deleteButton.addEventListener("click", async () => {
   productosList.removeChild(item);
 
   // Recalcular total
-  let nuevoTotal = productosActuales.reduce(
-    (acc, prod) => acc + prod.precio * prod.cantidad,
-    0
-  );
+  let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad,0);
 
   headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
 });
@@ -259,12 +256,15 @@ addButton.addEventListener("click", () => {
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
       let productosActuales = clienteSnap.data().productos || [];
-
-      productosActuales.push({ nombre: nombreProducto, precio, cantidad });
+const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+productosActuales.push({ id: productoId, nombre: nombreProducto, precio, cantidad });
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
       item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
+// Guardar el id en el DOM
+item.dataset.productoId = productoId;   // 👈 aquí va
+
 
       // Botón eliminar también para los nuevos
       const deleteButton = document.createElement("button");
