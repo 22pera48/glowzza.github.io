@@ -22,5 +22,64 @@
 
   <!-- Script de Firebase -->
   <script type="module" src="firebase.js"></script>
-</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } 
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_AUTH_DOMAIN",
+    projectId: "TU_PROJECT_ID",
+    storageBucket: "TU_STORAGE_BUCKET",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  document.getElementById("archivoExcel").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    Papa.parse(file, {
+      header: true,
+      complete: function(results) {
+        subirProductos(results.data);
+      }
+    });
+  });
+
+  async function subirProductos(productos) {
+    for (const prod of productos) {
+      try {
+        await addDoc(collection(db, "stock"), {
+          nombre: prod.nombre,
+          precio: Number(prod.precio),
+          stock: Number(prod.stock),
+          fecha: prod.fecha || new Date().toISOString()
+        });
+
+        // Mostrar en listado general
+        const li = document.createElement("li");
+        li.textContent = `${prod.nombre} - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+        document.getElementById("listaStock").appendChild(li);
+
+        // Alertas
+        if (Number(prod.stock) === 0) {
+          alert(`⚠️ El producto "${prod.nombre}" está AGOTADO`);
+          document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+        } else if (Number(prod.stock) <= 2) {
+          alert(`⚠️ El producto "${prod.nombre}" está por agotarse (quedan ${prod.stock})`);
+          document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+        }
+
+      } catch (err) {
+        console.error("Error al subir producto:", err);
+      }
+    }
+    alert("Carga de productos finalizada");
+  }
+</script></body>
 </html>
