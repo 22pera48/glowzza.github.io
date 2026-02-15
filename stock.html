@@ -26,7 +26,7 @@
   <!-- Script principal -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } 
+    import { getFirestore, doc, setDoc } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -41,7 +41,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Esperar a que el DOM esté listo
     document.addEventListener("DOMContentLoaded", () => {
       const input = document.getElementById("archivoExcel");
 
@@ -59,9 +58,12 @@
     async function subirProductos(productos) {
       for (const prod of productos) {
         try {
-          // Guardar en colección "productos"
-          await addDoc(collection(db, "productos"), {
+          // Construimos un ID único: nombre + color
+          const id = `${prod.nombre}_${prod.color}`.replace(/\s+/g, "_").toLowerCase();
+
+          await setDoc(doc(db, "productos", id), {
             nombre: prod.nombre,
+            color: prod.color,
             precio: Number(prod.precio),
             stock: Number(prod.stock),
             fecha: prod.fecha || new Date().toISOString()
@@ -69,15 +71,15 @@
 
           // Mostrar en listado general
           const li = document.createElement("li");
-          li.textContent = `${prod.nombre} - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+          li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
           document.getElementById("listaStock").appendChild(li);
 
           // Alertas
           if (Number(prod.stock) === 0) {
-            alert(`⚠️ El producto "${prod.nombre}" está AGOTADO`);
+            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está AGOTADO`);
             document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
           } else if (Number(prod.stock) <= 2) {
-            alert(`⚠️ El producto "${prod.nombre}" está por agotarse (quedan ${prod.stock})`);
+            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está por agotarse (quedan ${prod.stock})`);
             document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
           }
 
