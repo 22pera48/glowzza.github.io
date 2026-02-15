@@ -207,28 +207,36 @@ deleteButton.textContent = "Eliminar";
 deleteButton.style.marginLeft = "10px";
 
 deleteButton.addEventListener("click", async () => {
+  // Leer el cliente actualizado
   const clienteSnap = await getDoc(doc(db, "clientes", docSnap.id));
   let productosActuales = clienteSnap.data().productos || [];
 
+  // Calcular el índice del item en la lista
   const index = Array.from(productosList.children).indexOf(item);
+
+  // Eliminar solo ese producto
   productosActuales.splice(index, 1);
 
+  // Actualizar en Firebase
   await updateDoc(doc(db, "clientes", docSnap.id), {
     productos: productosActuales
   });
 
+  // Quitar el elemento de la lista en la UI
   productosList.removeChild(item);
 
-      // Recalcular total
-      let nuevoTotal = 0;
-      productosActuales.forEach(prod => {
-        nuevoTotal += prod.precio * prod.cantidad;
-      });
-      headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
-    });
+  // Recalcular total
+  let nuevoTotal = 0;
+  productosActuales.forEach(prod => {
+    nuevoTotal += prod.precio * prod.cantidad;
+  });
 
-    item.appendChild(deleteButton);
-    productosList.appendChild(item);
+  headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
+});
+
+// Agregar el botón al item y el item a la lista
+item.appendChild(deleteButton);
+productosList.appendChild(item);
   });
 }
 li.appendChild(productosList);
