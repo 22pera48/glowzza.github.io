@@ -180,10 +180,35 @@ productosSelect.style.display = "none";
 
 let opciones = `<option value="">Seleccionar producto...</option>`;
 catalogoProductos.forEach(p => {
-  opciones += `<option value="${p.nombre}">${p.nombre} - $${p.precio}</option>`;
+  opciones += `<option value="${p.id}">${p.nombre} - $${p.precio}</option>`;
 });
 productosSelect.innerHTML = opciones;
 li.appendChild(productosSelect);
+// 👉 Lógica de selección
+productosSelect.addEventListener("change", async () => {
+  const idSeleccionado = productosSelect.value;
+  if (!idSeleccionado) return;
+
+  // Buscar el producto completo en el catálogo
+  const producto = catalogoProductos.find(p => p.id === idSeleccionado);
+
+  if (producto) {
+    const productoCliente = {
+      id: producto.id,        // 👈 clave para eliminar después
+      nombre: producto.nombre,
+      color: producto.color || "",
+      precio: producto.precio,
+      cantidad: 1
+    };
+
+    // Actualizar el cliente en Firebase
+    productosActuales.push(productoCliente);
+    await updateDoc(clienteRef, { productos: productosActuales });
+
+    alert(`Producto "${producto.nombre}" agregado al cliente`);
+  }
+});
+
 
 // Campo cantidad (oculto al inicio)
 const cantidadInput = document.createElement("input");
