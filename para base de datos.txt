@@ -11,7 +11,9 @@ contraseña para eliminar elementos
 ver alarmas de stock
 poner un buscador de productos
 ver tema de refresco de pagina cada vez que agregi un producto
-
+poner reservas
+lista de cosas x pedido
+hacer scraper
 nuevo erro aparecen vacio los parentesis de color y si elimino una pplanchita y ahy 3 en el carro se elimina el total ademas muestra os cambios al actualizar
 
 
