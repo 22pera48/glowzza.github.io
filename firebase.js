@@ -199,7 +199,8 @@ productosList.style.marginTop = "5px";
 if (data.productos && data.productos.length > 0) {
   data.productos.forEach((p, index) => {
     const item = document.createElement("li");
-item.textContent = `Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
+    item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+
     // Botón eliminar
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Eliminar";
