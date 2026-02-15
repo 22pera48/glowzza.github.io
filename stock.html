@@ -74,8 +74,10 @@
     async function subirProductos(productos) {
       for (const prod of productos) {
         try {
-          // Construimos un ID único: nombre + color
-          const id = `${prod.nombre}_${prod.color}`.replace(/\s+/g, "_").toLowerCase();
+// Construimos un ID único: nombre + color (o "sincolor" si está vacío)
+      const id = `${prod.nombre}_${prod.color || "sincolor"}`
+                    .replace(/\s+/g, "_")
+                    .toLowerCase();
 
           await setDoc(doc(db, "productos", id), {
             nombre: prod.nombre,
