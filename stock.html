@@ -49,6 +49,9 @@
 
         const li = document.createElement("li");
         li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+        // Guardar el id en el elemento DOM
+    li.dataset.productoId = prod.id; // <-- aquí va
+
         document.getElementById("listaStock").appendChild(li);
 
         if (Number(prod.stock) === 0) {
