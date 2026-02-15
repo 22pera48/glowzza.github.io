@@ -202,19 +202,22 @@ if (data.productos && data.productos.length > 0) {
     item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
 
     // Botón eliminar
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Eliminar";
-    deleteButton.style.marginLeft = "10px";
+const deleteButton = document.createElement("button");
+deleteButton.textContent = "Eliminar";
+deleteButton.style.marginLeft = "10px";
 
-    deleteButton.addEventListener("click", async () => {
-      let productosActuales = [...data.productos];
-      productosActuales.splice(index, 1);
+deleteButton.addEventListener("click", async () => {
+  const clienteSnap = await getDoc(doc(db, "clientes", docSnap.id));
+  let productosActuales = clienteSnap.data().productos || [];
 
-      await updateDoc(doc(db, "clientes", docSnap.id), {
-        productos: productosActuales
-      });
+  const index = Array.from(productosList.children).indexOf(item);
+  productosActuales.splice(index, 1);
 
-      productosList.removeChild(item);
+  await updateDoc(doc(db, "clientes", docSnap.id), {
+    productos: productosActuales
+  });
+
+  productosList.removeChild(item);
 
       // Recalcular total
       let nuevoTotal = 0;
