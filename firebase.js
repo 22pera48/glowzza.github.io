@@ -27,22 +27,14 @@ const db = getFirestore(app);
 
 let catalogoProductos = [];
 
-// Cargar catálogo de productos (id + nombre + precio + otros)
+// Cargar catálogo de productos (nombre + precio)
 async function cargarCatalogo() {
   const querySnapshot = await getDocs(collection(db, "productos"));
   catalogoProductos = [];
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
-    catalogoProductos.push({
-      id: data.id || docSnap.id,   // 👈 clave para que funcione el find
-      nombre: data.nombre,
-      color: data.color || "",
-      precio: data.precio,
-      stock: data.stock
-    });
+    catalogoProductos.push({ nombre: data.nombre, precio: data.precio });
   });
-  console.log("Catálogo cargado:", catalogoProductos);
-
 }
 
 // Guardar cliente
@@ -188,35 +180,10 @@ productosSelect.style.display = "none";
 
 let opciones = `<option value="">Seleccionar producto...</option>`;
 catalogoProductos.forEach(p => {
-  opciones += `<option value="${p.id}">${p.nombre} - $${p.precio}</option>`;
+  opciones += `<option value="${p.nombre}">${p.nombre} - $${p.precio}</option>`;
 });
 productosSelect.innerHTML = opciones;
 li.appendChild(productosSelect);
-// 👉 Lógica de selección
-productosSelect.addEventListener("change", async () => {
-  const idSeleccionado = productosSelect.value;
-  if (!idSeleccionado) return;
-
-  // Buscar el producto completo en el catálogo
-  const producto = catalogoProductos.find(p => p.id === idSeleccionado);
-
-  if (producto) {
-    const productoCliente = {
-      id: producto.id,        // 👈 clave para eliminar después
-      nombre: producto.nombre,
-      color: producto.color || "",
-      precio: producto.precio,
-      cantidad: 1
-    };
-
-    // Actualizar el cliente en Firebase
-    productosActuales.push(productoCliente);
-    await updateDoc(clienteRef, { productos: productosActuales });
-
-    alert(`Producto "${producto.nombre}" agregado al cliente`);
-  }
-});
-
 
 // Campo cantidad (oculto al inicio)
 const cantidadInput = document.createElement("input");
@@ -239,13 +206,15 @@ if (data.productos && data.productos.length > 0) {
     deleteButton.textContent = "Eliminar";
     deleteButton.style.marginLeft = "10px";
 
-deleteButton.addEventListener("click", async () => {
-  // Usamos filter para eliminar por id único
-let productosActuales = (data.productos || []).filter(prod => prod.id !== p.id);
+    deleteButton.addEventListener("click", async () => {
+      let productosActuales = [...data.productos];
+      productosActuales.splice(index, 1);
 
-await updateDoc(doc(db, "clientes", docSnap.id), {
-  productos: productosActuales
-});      productosList.removeChild(item);
+      await updateDoc(doc(db, "clientes", docSnap.id), {
+        productos: productosActuales
+      });
+
+      productosList.removeChild(item);
 
       // Recalcular total
       let nuevoTotal = 0;
@@ -282,19 +251,11 @@ addButton.addEventListener("click", () => {
 
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
-let productosActuales = clienteSnap.data().productos || [];
+      let productosActuales = clienteSnap.data().productos || [];
 
-const productoCliente = {
-  id: producto.id,
-  nombre: producto.nombre,
-  color: producto.color || "",
-  precio: producto.precio,
-  cantidad: 1
-};
+      productosActuales.push({ nombre: nombreProducto, precio, cantidad });
+      await updateDoc(clienteRef, { productos: productosActuales });
 
-productosActuales.push(productoCliente);
-
-await updateDoc(clienteRef, { productos: productosActuales });
       const item = document.createElement("li");
       item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
 
