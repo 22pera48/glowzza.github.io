@@ -206,9 +206,10 @@ if (data.productos && data.productos.length > 0) {
     deleteButton.textContent = "Eliminar";
     deleteButton.style.marginLeft = "10px";
 
-    deleteButton.addEventListener("click", async () => {
-      let productosActuales = [...data.productos];
-      productosActuales.splice(index, 1);
+deleteButton.addEventListener("click", async () => {
+  // Usamos filter para eliminar por id único
+  let productosActuales = data.productos.filter(prod => prod.id !== p.id);
+
 
       await updateDoc(doc(db, "clientes", docSnap.id), {
         productos: productosActuales
