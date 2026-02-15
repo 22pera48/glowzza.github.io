@@ -257,7 +257,8 @@ addButton.addEventListener("click", () => {
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
-item.textContent = `Producto: ${nombreProducto} (${color}) (Cantidad: ${cantidad}) - $${precio}`;
+      item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
+
       // Botón eliminar también para los nuevos
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Eliminar";
