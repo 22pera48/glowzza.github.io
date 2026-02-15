@@ -208,6 +208,7 @@ if (data.productos && data.productos.length > 0) {
 
     deleteButton.addEventListener("click", async () => {
       let productosActuales = [...data.productos];
+      productosActuales.splice(index, 1);
 
       await updateDoc(doc(db, "clientes", docSnap.id), {
         productos: productosActuales
@@ -256,27 +257,26 @@ addButton.addEventListener("click", () => {
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
-      item.textContent = `Producto: ${nombreProducto} (${color}) (Cantidad: ${cantidad}) - $${precio}`;
+item.textContent = `Producto: ${nombreProducto} (${color}) (Cantidad: ${cantidad}) - $${precio}`;
       // Botón eliminar también para los nuevos
-const deleteButton = document.createElement("button");
-deleteButton.textContent = "Eliminar";
-deleteButton.style.marginLeft = "10px";
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Eliminar";
+      deleteButton.style.marginLeft = "10px";
 
-deleteButton.addEventListener("click", async () => {
-  // Filtramos usando el id único del producto
-  productosActuales = productosActuales.filter(prod => prod.id !== p.id);
+      deleteButton.addEventListener("click", async () => {
+        productosActuales = productosActuales.filter(prod => !(prod.nombre === nombreProducto && prod.cantidad === cantidad));
+        await updateDoc(clienteRef, { productos: productosActuales });
+        productosList.removeChild(item);
 
-  await updateDoc(clienteRef, { productos: productosActuales });
+        let nuevoTotal = 0;
+        productosActuales.forEach(p => {
+          nuevoTotal += p.precio * p.cantidad;
+        });
+        headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
+      });
 
-  productosList.removeChild(item);
-
-  // Recalcular total
-  let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-  headerDiv.textContent = `${data.nombre} - ${data.fecha} | Total: $${nuevoTotal}`;
-});
-
-item.appendChild(deleteButton);
-productosList.appendChild(item);
+      item.appendChild(deleteButton);
+      productosList.appendChild(item);
 
       // Recalcular total y actualizar encabezado en vivo
       let nuevoTotal = 0;
