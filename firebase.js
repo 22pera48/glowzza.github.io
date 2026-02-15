@@ -41,6 +41,8 @@ async function cargarCatalogo() {
       stock: data.stock
     });
   });
+  console.log("Catálogo cargado:", catalogoProductos);
+
 }
 
 // Guardar cliente
@@ -239,14 +241,11 @@ if (data.productos && data.productos.length > 0) {
 
 deleteButton.addEventListener("click", async () => {
   // Usamos filter para eliminar por id único
-  let productosActuales = data.productos.filter(prod => prod.id !== p.id);
+let productosActuales = (data.productos || []).filter(prod => prod.id !== p.id);
 
-
-      await updateDoc(doc(db, "clientes", docSnap.id), {
-        productos: productosActuales
-      });
-
-      productosList.removeChild(item);
+await updateDoc(doc(db, "clientes", docSnap.id), {
+  productos: productosActuales
+});      productosList.removeChild(item);
 
       // Recalcular total
       let nuevoTotal = 0;
@@ -283,11 +282,19 @@ addButton.addEventListener("click", () => {
 
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
-      let productosActuales = clienteSnap.data().productos || [];
+let productosActuales = clienteSnap.data().productos || [];
 
-      productosActuales.push({ nombre: nombreProducto, precio, cantidad });
-      await updateDoc(clienteRef, { productos: productosActuales });
+const productoCliente = {
+  id: producto.id,
+  nombre: producto.nombre,
+  color: producto.color || "",
+  precio: producto.precio,
+  cantidad: 1
+};
 
+productosActuales.push(productoCliente);
+
+await updateDoc(clienteRef, { productos: productosActuales });
       const item = document.createElement("li");
       item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
 
