@@ -78,6 +78,7 @@
           const id = `${prod.nombre}_${prod.color}`.replace(/\s+/g, "_").toLowerCase();
 
           await setDoc(doc(db, "productos", id), {
+            id: id, // <-- guardar el id como campo
             nombre: prod.nombre,
             color: prod.color,
             precio: Number(prod.precio),
@@ -88,6 +89,8 @@
           // Mostrar en listado general
           const li = document.createElement("li");
           li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+          li.dataset.productoId = id; // también lo guardás en el DOM
+
           document.getElementById("listaStock").appendChild(li);
 
           // Alertas
