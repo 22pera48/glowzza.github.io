@@ -59,7 +59,8 @@
     async function subirProductos(productos) {
       for (const prod of productos) {
         try {
-          await addDoc(collection(db, "stock"), {
+          // Guardar en colección "productos"
+          await addDoc(collection(db, "productos"), {
             nombre: prod.nombre,
             precio: Number(prod.precio),
             stock: Number(prod.stock),
