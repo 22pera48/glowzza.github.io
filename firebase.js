@@ -27,13 +27,19 @@ const db = getFirestore(app);
 
 let catalogoProductos = [];
 
-// Cargar catálogo de productos (nombre + precio)
+// Cargar catálogo de productos (id + nombre + precio + otros)
 async function cargarCatalogo() {
   const querySnapshot = await getDocs(collection(db, "productos"));
   catalogoProductos = [];
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
-    catalogoProductos.push({ nombre: data.nombre, precio: data.precio });
+    catalogoProductos.push({
+      id: data.id || docSnap.id,   // 👈 clave para que funcione el find
+      nombre: data.nombre,
+      color: data.color || "",
+      precio: data.precio,
+      stock: data.stock
+    });
   });
 }
 
