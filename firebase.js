@@ -271,11 +271,13 @@ item.dataset.productoId = productoId;   // 👈 aquí va
       deleteButton.textContent = "Eliminar";
       deleteButton.style.marginLeft = "10px";
 
-      deleteButton.addEventListener("click", async () => {
-        productosActuales = productosActuales.filter(prod => !(prod.nombre === nombreProducto && prod.cantidad === cantidad));
-        await updateDoc(clienteRef, { productos: productosActuales });
-        productosList.removeChild(item);
+deleteButton.addEventListener("click", async () => {
+  const productoId = item.dataset.productoId;
+  productosActuales = productosActuales.filter(prod => prod.id !== productoId);
 
+  await updateDoc(clienteRef, { productos: productosActuales });
+  productosList.removeChild(item);
+  
         let nuevoTotal = 0;
         productosActuales.forEach(p => {
           nuevoTotal += p.precio * p.cantidad;
