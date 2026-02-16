@@ -33,8 +33,10 @@
       addDoc,        
       getDocs, 
       collection, 
-      deleteDoc,     
-      doc            
+      updateDoc,
+      doc,
+      query,
+      where
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -95,7 +97,7 @@
               const parts = datos.split(",");
               if (parts.length >= 6) {
                 return {
-                  nombre: parts[0].trim(),
+                  nombre: parts[0].trim(),   // incluye marca en el nombre
                   color: parts[1].trim(),
                   precio: Number(parts[2]),
                   stock: Number(parts[3]),
@@ -116,27 +118,34 @@
     async function subirProductos(productos) {
       for (const prod of productos) {
         try {
-          const docRef = await addDoc(collection(db, "productos"), {
-            nombre: prod.nombre,
-            color: prod.color,
-            precio: Number(prod.precio),
-            stock: Number(prod.stock),
-            fecha: prod.fecha || new Date().toISOString(),
-            categoria: prod.categoria || ""
-          });
+          // Buscar coincidencia por nombre + color
+          const q = query(
+            collection(db, "productos"),
+            where("nombre", "==", prod.nombre),
+            where("color", "==", prod.color)
+          );
+          const snap = await getDocs(q);
 
-          const li = document.createElement("li");
-          li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
-          li.dataset.productoId = docRef.id;
-
-          document.getElementById("listaStock").appendChild(li);
-
-          if (Number(prod.stock) === 0) {
-            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está AGOTADO`);
-            document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
-          } else if (Number(prod.stock) <= 2) {
-            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está por agotarse (quedan ${prod.stock})`);
-            document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+          if (!snap.empty) {
+            // Ya existe → actualizar stock, precio y fecha
+            const docSnap = snap.docs[0];
+            await updateDoc(doc(db, "productos", docSnap.id), {
+              stock: Number(prod.stock),
+              precio: Number(prod.precio),
+              fecha: prod.fecha || new Date().toISOString()
+            });
+            console.log(`✅ Actualizado: ${prod.nombre} (${prod.color})`);
+          } else {
+            // No existe → crear nuevo
+            await addDoc(collection(db, "productos"), {
+              nombre: prod.nombre,
+              color: prod.color,
+              precio: Number(prod.precio),
+              stock: Number(prod.stock),
+              fecha: prod.fecha || new Date().toISOString(),
+              categoria: prod.categoria || ""
+            });
+            console.log(`➕ Agregado: ${prod.nombre} (${prod.color})`);
           }
         } catch (err) {
           console.error("Error al subir producto:", err);
