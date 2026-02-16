@@ -25,10 +25,15 @@
 
   <!-- Script principal -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDocs, collection } 
-      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  getFirestore, 
+  addDoc,        // 👈 para crear documentos con id automático
+  getDocs, 
+  collection, 
+  deleteDoc,     // 👈 para eliminar documentos por id
+  doc            // 👈 para referenciar documentos específicos
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
       authDomain: "glowzzainventario.firebaseapp.com",
@@ -43,23 +48,21 @@
 
     // Al cargar la página, leer productos desde Firebase
     document.addEventListener("DOMContentLoaded", async () => {
-      const productosSnap = await getDocs(collection(db, "productos"));
-      productosSnap.forEach((docSnap) => {
-        const prod = docSnap.data();
+ productosSnap.forEach((docSnap) => {
+  const prod = docSnap.data();
 
-        const li = document.createElement("li");
-        li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
-        // Guardar el id en el elemento DOM
-    li.dataset.productoId = prod.id; // <-- aquí va
+  const li = document.createElement("li");
+  li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+  li.dataset.productoId = docSnap.id; // 👈 id automático del documento
 
-        document.getElementById("listaStock").appendChild(li);
+  document.getElementById("listaStock").appendChild(li);
 
-        if (Number(prod.stock) === 0) {
-          document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
-        } else if (Number(prod.stock) <= 2) {
-          document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
-        }
-      });
+  if (Number(prod.stock) === 0) {
+    document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+  } else if (Number(prod.stock) <= 2) {
+    document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+  }
+});
 
       // Activar carga de CSV
       const input = document.getElementById("archivoExcel");
@@ -73,44 +76,38 @@
         });
       });
     });
+import { addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    async function subirProductos(productos) {
-      for (const prod of productos) {
-        try {
-          // Construimos un ID único: nombre + color
-          const id = `${prod.nombre}_${prod.color}`.replace(/\s+/g, "_").toLowerCase();
+async function subirProductos(productos) {
+  for (const prod of productos) {
+    try {
+      const docRef = await addDoc(collection(db, "productos"), {
+        nombre: prod.nombre,
+        color: prod.color,
+        precio: Number(prod.precio),
+        stock: Number(prod.stock),
+        fecha: prod.fecha || new Date().toISOString()
+      });
 
-          await setDoc(doc(db, "productos", id), {
-            id: id, // <-- guardar el id como campo
-            nombre: prod.nombre,
-            color: prod.color,
-            precio: Number(prod.precio),
-            stock: Number(prod.stock),
-            fecha: prod.fecha || new Date().toISOString()
-          });
+      const li = document.createElement("li");
+      li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+      li.dataset.productoId = docRef.id; // 👈 id automático
 
-          // Mostrar en listado general
-          const li = document.createElement("li");
-          li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
-          li.dataset.productoId = id; // también lo guardás en el DOM
+      document.getElementById("listaStock").appendChild(li);
 
-          document.getElementById("listaStock").appendChild(li);
-
-          // Alertas
-          if (Number(prod.stock) === 0) {
-            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está AGOTADO`);
-            document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
-          } else if (Number(prod.stock) <= 2) {
-            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está por agotarse (quedan ${prod.stock})`);
-            document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
-          }
-
-        } catch (err) {
-          console.error("Error al subir producto:", err);
-        }
+      if (Number(prod.stock) === 0) {
+        alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está AGOTADO`);
+        document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+      } else if (Number(prod.stock) <= 2) {
+        alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está por agotarse (quedan ${prod.stock})`);
+        document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
       }
-      alert("Carga de productos finalizada");
+    } catch (err) {
+      console.error("Error al subir producto:", err);
     }
+  }
+  alert("Carga de productos finalizada");
+}
   </script>
 </body>
 </html>
