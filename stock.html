@@ -25,15 +25,16 @@
 
   <!-- Script principal -->
   <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-  getFirestore, 
-  addDoc,        // 👈 para crear documentos con id automático
-  getDocs, 
-  collection, 
-  deleteDoc,     // 👈 para eliminar documentos por id
-  doc            // 👈 para referenciar documentos específicos
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      addDoc,        // 👈 para crear documentos con id automático
+      getDocs, 
+      collection, 
+      deleteDoc,     // 👈 para eliminar documentos por id
+      doc            // 👈 para referenciar documentos específicos
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
       authDomain: "glowzzainventario.firebaseapp.com",
@@ -48,21 +49,22 @@ import {
 
     // Al cargar la página, leer productos desde Firebase
     document.addEventListener("DOMContentLoaded", async () => {
- productosSnap.forEach((docSnap) => {
-  const prod = docSnap.data();
+      const productosSnap = await getDocs(collection(db, "productos"));
+      productosSnap.forEach((docSnap) => {
+        const prod = docSnap.data();
 
-  const li = document.createElement("li");
-  li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
-  li.dataset.productoId = docSnap.id; // 👈 id automático del documento
+        const li = document.createElement("li");
+        li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+        li.dataset.productoId = docSnap.id; // 👈 id automático del documento
 
-  document.getElementById("listaStock").appendChild(li);
+        document.getElementById("listaStock").appendChild(li);
 
-  if (Number(prod.stock) === 0) {
-    document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
-  } else if (Number(prod.stock) <= 2) {
-    document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
-  }
-});
+        if (Number(prod.stock) === 0) {
+          document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+        } else if (Number(prod.stock) <= 2) {
+          document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+        }
+      });
 
       // Activar carga de CSV
       const input = document.getElementById("archivoExcel");
@@ -76,38 +78,37 @@ import {
         });
       });
     });
-import { addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-async function subirProductos(productos) {
-  for (const prod of productos) {
-    try {
-      const docRef = await addDoc(collection(db, "productos"), {
-        nombre: prod.nombre,
-        color: prod.color,
-        precio: Number(prod.precio),
-        stock: Number(prod.stock),
-        fecha: prod.fecha || new Date().toISOString()
-      });
+    async function subirProductos(productos) {
+      for (const prod of productos) {
+        try {
+          const docRef = await addDoc(collection(db, "productos"), {
+            nombre: prod.nombre,
+            color: prod.color,
+            precio: Number(prod.precio),
+            stock: Number(prod.stock),
+            fecha: prod.fecha || new Date().toISOString()
+          });
 
-      const li = document.createElement("li");
-      li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
-      li.dataset.productoId = docRef.id; // 👈 id automático
+          const li = document.createElement("li");
+          li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+          li.dataset.productoId = docRef.id; // 👈 id automático
 
-      document.getElementById("listaStock").appendChild(li);
+          document.getElementById("listaStock").appendChild(li);
 
-      if (Number(prod.stock) === 0) {
-        alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está AGOTADO`);
-        document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
-      } else if (Number(prod.stock) <= 2) {
-        alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está por agotarse (quedan ${prod.stock})`);
-        document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+          if (Number(prod.stock) === 0) {
+            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está AGOTADO`);
+            document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+          } else if (Number(prod.stock) <= 2) {
+            alert(`⚠️ El producto "${prod.nombre} (${prod.color})" está por agotarse (quedan ${prod.stock})`);
+            document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+          }
+        } catch (err) {
+          console.error("Error al subir producto:", err);
+        }
       }
-    } catch (err) {
-      console.error("Error al subir producto:", err);
+      alert("Carga de productos finalizada");
     }
-  }
-  alert("Carga de productos finalizada");
-}
   </script>
 </body>
 </html>
