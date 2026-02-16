@@ -6,10 +6,12 @@
 </head>
 <body>
   <h2>Control de Stock</h2>
-  <button onclick="document.getElementById('archivoExcel').click()">Subir Excel</button>
+  <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
+  <button onclick="document.getElementById('archivoWhatsapp').click()">Subir WhatsApp</button>
   <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
 
   <input type="file" id="archivoExcel" style="display:none" accept=".csv">
+  <input type="file" id="archivoWhatsapp" style="display:none" accept=".txt">
 
   <h3>Listado General</h3>
   <ul id="listaStock"></ul>
@@ -28,11 +30,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
       getFirestore, 
-      addDoc,        // 👈 para crear documentos con id automático
+      addDoc,        
       getDocs, 
       collection, 
-      deleteDoc,     // 👈 para eliminar documentos por id
-      doc            // 👈 para referenciar documentos específicos
+      deleteDoc,     
+      doc            
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -55,7 +57,7 @@
 
         const li = document.createElement("li");
         li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
-        li.dataset.productoId = docSnap.id; // 👈 id automático del documento
+        li.dataset.productoId = docSnap.id;
 
         document.getElementById("listaStock").appendChild(li);
 
@@ -67,8 +69,8 @@
       });
 
       // Activar carga de CSV
-      const input = document.getElementById("archivoExcel");
-      input.addEventListener("change", function(e) {
+      const inputCSV = document.getElementById("archivoExcel");
+      inputCSV.addEventListener("change", function(e) {
         const file = e.target.files[0];
         Papa.parse(file, {
           header: true,
@@ -76,6 +78,38 @@
             subirProductos(results.data);
           }
         });
+      });
+
+      // Activar carga de TXT de WhatsApp
+      const inputWhatsapp = document.getElementById("archivoWhatsapp");
+      inputWhatsapp.addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const lines = ev.target.result.split("\n");
+
+          const productos = lines.map(line => {
+            const idx = line.indexOf("- Luli:");
+            if (idx !== -1) {
+              const datos = line.substring(idx + 7).trim();
+              const parts = datos.split(",");
+              if (parts.length >= 6) {
+                return {
+                  nombre: parts[0].trim(),
+                  color: parts[1].trim(),
+                  precio: Number(parts[2]),
+                  stock: Number(parts[3]),
+                  fecha: parts[4].trim(),
+                  categoria: parts[5].trim()
+                };
+              }
+            }
+            return null;
+          }).filter(p => p !== null);
+
+          subirProductos(productos);
+        };
+        reader.readAsText(file);
       });
     });
 
@@ -87,12 +121,13 @@
             color: prod.color,
             precio: Number(prod.precio),
             stock: Number(prod.stock),
-            fecha: prod.fecha || new Date().toISOString()
+            fecha: prod.fecha || new Date().toISOString(),
+            categoria: prod.categoria || ""
           });
 
           const li = document.createElement("li");
           li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
-          li.dataset.productoId = docRef.id; // 👈 id automático
+          li.dataset.productoId = docRef.id;
 
           document.getElementById("listaStock").appendChild(li);
 
