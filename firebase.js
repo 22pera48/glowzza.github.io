@@ -277,7 +277,6 @@ deleteButton.addEventListener("click", async () => {
 
   await updateDoc(clienteRef, { productos: productosActuales });
   productosList.removeChild(item);
-  
         let nuevoTotal = 0;
         productosActuales.forEach(p => {
           nuevoTotal += p.precio * p.cantidad;
