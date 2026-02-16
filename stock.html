@@ -34,6 +34,7 @@
       getDocs, 
       collection, 
       updateDoc,
+      deleteDoc,
       doc,
       query,
       where
@@ -51,16 +52,33 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Función para crear <li> con botón eliminar
+    function crearItem(prod, productoId) {
+      const li = document.createElement("li");
+      li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${productoId} `;
+
+      // Botón eliminar
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.style.marginLeft = "10px";
+      btnEliminar.onclick = async () => {
+        if (confirm(`¿Seguro que querés eliminar "${prod.nombre} (${prod.color})"?`)) {
+          await deleteDoc(doc(db, "productos", productoId));
+          li.remove();
+          alert(`Producto eliminado: ${prod.nombre} (${prod.color})`);
+        }
+      };
+
+      li.appendChild(btnEliminar);
+      return li;
+    }
+
     // Al cargar la página, leer productos desde Firebase
     document.addEventListener("DOMContentLoaded", async () => {
       const productosSnap = await getDocs(collection(db, "productos"));
       productosSnap.forEach((docSnap) => {
         const prod = docSnap.data();
-
-        const li = document.createElement("li");
-        // 👇 incluimos el ID en el texto
-        li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${docSnap.id}`;
-        li.dataset.productoId = docSnap.id;
+        const li = crearItem(prod, docSnap.id);
 
         document.getElementById("listaStock").appendChild(li);
 
@@ -98,7 +116,7 @@
               const parts = datos.split(",");
               if (parts.length >= 6) {
                 return {
-                  nombre: parts[0].trim(),   // incluye marca en el nombre
+                  nombre: parts[0].trim(),
                   color: parts[1].trim(),
                   precio: Number(parts[2]),
                   stock: Number(parts[3]),
@@ -152,11 +170,8 @@
             console.log(`➕ Agregado: ${prod.nombre} (${prod.color})`);
           }
 
-          // Mostrar en la lista con ID
-          const li = document.createElement("li");
-          li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${productoId}`;
-          li.dataset.productoId = productoId;
-
+          // Mostrar en la lista con ID y botón eliminar
+          const li = crearItem(prod, productoId);
           document.getElementById("listaStock").appendChild(li);
 
           if (Number(prod.stock) === 0) {
