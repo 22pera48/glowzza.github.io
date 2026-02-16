@@ -58,7 +58,8 @@
         const prod = docSnap.data();
 
         const li = document.createElement("li");
-        li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha}`;
+        // 👇 incluimos el ID en el texto
+        li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${docSnap.id}`;
         li.dataset.productoId = docSnap.id;
 
         document.getElementById("listaStock").appendChild(li);
@@ -126,10 +127,12 @@
           );
           const snap = await getDocs(q);
 
+          let productoId;
           if (!snap.empty) {
             // Ya existe → actualizar stock, precio y fecha
             const docSnap = snap.docs[0];
-            await updateDoc(doc(db, "productos", docSnap.id), {
+            productoId = docSnap.id;
+            await updateDoc(doc(db, "productos", productoId), {
               stock: Number(prod.stock),
               precio: Number(prod.precio),
               fecha: prod.fecha || new Date().toISOString()
@@ -137,7 +140,7 @@
             console.log(`✅ Actualizado: ${prod.nombre} (${prod.color})`);
           } else {
             // No existe → crear nuevo
-            await addDoc(collection(db, "productos"), {
+            const docRef = await addDoc(collection(db, "productos"), {
               nombre: prod.nombre,
               color: prod.color,
               precio: Number(prod.precio),
@@ -145,7 +148,21 @@
               fecha: prod.fecha || new Date().toISOString(),
               categoria: prod.categoria || ""
             });
+            productoId = docRef.id;
             console.log(`➕ Agregado: ${prod.nombre} (${prod.color})`);
+          }
+
+          // Mostrar en la lista con ID
+          const li = document.createElement("li");
+          li.textContent = `${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${productoId}`;
+          li.dataset.productoId = productoId;
+
+          document.getElementById("listaStock").appendChild(li);
+
+          if (Number(prod.stock) === 0) {
+            document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+          } else if (Number(prod.stock) <= 2) {
+            document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
           }
         } catch (err) {
           console.error("Error al subir producto:", err);
