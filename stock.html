@@ -99,7 +99,8 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-      await migrarClaveUnica();
+    // await migrarClaveUnica(); // ya no hace falta
+
       const productosSnap = await getDocs(collection(db, "productos"));
       productosSnap.forEach((docSnap) => {
         const prod = docSnap.data();
