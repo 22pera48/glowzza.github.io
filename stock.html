@@ -25,10 +25,8 @@
   <h3>Errores en carga (<span id="contadorErrores">0</span>)</h3>
   <ul id="listaErrores"></ul>
 
-  <!-- Librería PapaParse -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
-  <!-- Script principal -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -73,7 +71,7 @@
       }
 
       const texto = document.createTextNode(
-        `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - Categoría: ${prod.categoria} - ID: ${productoId}`
+        `[${prod.orden}] ${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - Categoría: ${prod.categoria} - ID: ${productoId}`
       );
       li.appendChild(texto);
 
@@ -128,7 +126,8 @@
             const parts = line.split(",");
             if (parts.length >= 6) {
               productos.push({
-                nombre: `[${contador}] ${parts[0].trim()}`,
+                orden: contador,
+                nombre: parts[0].trim(), // limpio, sin número
                 color: parts[1].trim(),
                 precio: Number(parts[2]),
                 stock: Number(parts[3]),
@@ -145,7 +144,7 @@
 
           const listaErrores = document.getElementById("listaErrores");
           const contadorErrores = document.getElementById("contadorErrores");
-          contadorErrores.textContent = errores.length; // mostrar cantidad de errores
+          contadorErrores.textContent = errores.length;
 
           errores.forEach(err => {
             const li = document.createElement("li");
@@ -175,7 +174,8 @@
               stock: Number(prod.stock),
               precio: Number(prod.precio),
               fecha: prod.fecha || new Date().toISOString(),
-              categoria: prod.categoria || ""
+              categoria: prod.categoria || "",
+              orden: prod.orden
             });
           } else {
             const docRef = await addDoc(collection(db, "productos"), {
@@ -184,7 +184,8 @@
               precio: Number(prod.precio),
               stock: Number(prod.stock),
               fecha: prod.fecha || new Date().toISOString(),
-              categoria: prod.categoria || ""
+              categoria: prod.categoria || "",
+              orden: prod.orden
             });
             productoId = docRef.id;
           }
