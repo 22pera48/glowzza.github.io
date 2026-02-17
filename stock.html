@@ -109,25 +109,25 @@
         reader.onload = (ev) => {
           const lines = ev.target.result.split("\n");
 
-          const productos = lines.map(line => {
-            const idx = line.indexOf("- Luli:");
-            if (idx !== -1) {
-              const datos = line.substring(idx + 7).trim();
-              const parts = datos.split(",");
-              if (parts.length >= 6) {
-                return {
-                  nombre: parts[0].trim(),
-                  color: parts[1].trim(),
-                  precio: Number(parts[2]),
-                  stock: Number(parts[3]),
-                  fecha: parts[4].trim(),
-                  categoria: parts[5].trim()
-                };
-              }
-            }
-            return null;
-          }).filter(p => p !== null);
-
+const productos = lines.map(line => {
+  // Busca cualquier línea que tenga ":" en vez de solo "- Luli:"
+  const idx = line.indexOf(":");
+  if (idx !== -1) {
+    const datos = line.substring(idx + 1).trim();
+    const parts = datos.split(",");
+    if (parts.length >= 4) { // más tolerante
+      return {
+        nombre: parts[0].trim(),
+        color: parts[1]?.trim() || "",
+        precio: Number(parts[2]) || 0,
+        stock: Number(parts[3]) || 0,
+        fecha: parts[4]?.trim() || new Date().toISOString(),
+        categoria: parts[5]?.trim() || ""
+      };
+    }
+  }
+  return null;
+}).filter(p => p !== null);
           subirProductos(productos);
         };
         reader.readAsText(file);
