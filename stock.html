@@ -31,6 +31,10 @@
   <ul id="listaAgotados"></ul>
 
   <h3>Errores en carga (<span id="contadorErrores">0</span>)</h3>
+
+  <h3>Historial de cambios</h3>
+<ul id="listaHistorial"></ul>
+
   <ul id="listaErrores"></ul>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -116,7 +120,15 @@
           document.getElementById("listaPorAgotarse").appendChild(liPorAgotarse);
         }
       });
+      // ⚡ Cargar historial
+  const historialSnap = await getDocs(collection(db, "historial"));
+  historialSnap.forEach((docSnap) => {
+    const h = docSnap.data();
+    const li = document.createElement("li");
+    li.textContent = `[${h.fechaCambio}] ${h.claveUnica} → ${h.cambio}`;
+    document.getElementById("listaHistorial").appendChild(li);
 
+      });
       const inputCSV = document.getElementById("archivoExcel");
       inputCSV.addEventListener("change", function(e) {
         const file = e.target.files[0];
@@ -203,6 +215,14 @@ async function subirProductos(productos) {
           fecha: prod.fecha || new Date().toISOString(),
           categoria: prod.categoria || ""
         });
+        // Guardar historial
+await addDoc(collection(db, "historial"), {
+  productoId,
+  claveUnica: prod.claveUnica,
+  cambio: `Stock: ${prod.stock}, Precio: $${prod.precio}`,
+  fechaCambio: new Date().toISOString()
+});
+
       } else {
         const docRef = await addDoc(collection(db, "productos"), {
           orden: prod.orden,
@@ -214,7 +234,15 @@ async function subirProductos(productos) {
           categoria: prod.categoria || "",
           claveUnica: prod.claveUnica
         });
-        productoId = docRef.id;
+       productoId = docRef.id;
+  // Guardar historial
+  await addDoc(collection(db, "historial"), {
+    productoId,
+    claveUnica: prod.claveUnica,
+    cambio: `Creado → Stock: ${prod.stock}, Precio: $${prod.precio}`,
+    fechaCambio: new Date().toISOString()
+  });
+
       }
 
       const liGeneral = crearItem(prod, productoId, true);
