@@ -160,56 +160,58 @@
       });
     });
 
-    async function subirProductos(productos) {
-      for (const prod of productos) {
-        try {
-          const q = query(
-            collection(db, "productos"),
-            where("nombre", "==", prod.nombre),
-            where("color", "==", prod.color)
-          );
-          const snap = await getDocs(q);
+async function subirProductos(productos) {
+  for (const prod of productos) {
+    try {
+      const q = query(
+        collection(db, "productos"),
+        where("nombre", "==", prod.nombre),
+        where("color", "==", prod.color)
+      );
+      const snap = await getDocs(q);
 
-          let productoId;
-          if (!snap.empty) {
-            const docSnap = snap.docs[0];
-            productoId = docSnap.id;
-            await updateDoc(doc(db, "productos", productoId), {
-              stock: Number(prod.stock),
-              precio: Number(prod.precio),
-              fecha: prod.fecha || new Date().toISOString(),
-              categoria: prod.categoria || "",
-              orden: prod.orden
-            });
-          } else {
-            const docRef = await addDoc(collection(db, "productos"), {
-              nombre: prod.nombre,
-              color: prod.color,
-              precio: Number(prod.precio),
-              stock: Number(prod.stock),
-              fecha: prod.fecha || new Date().toISOString(),
-              categoria: prod.categoria || "",
-              orden: prod.orden
-            });
-            productoId = docRef.id;
-          }
-
-          const liGeneral = crearItem(prod, productoId, true);
-          document.getElementById("listaStock").appendChild(liGeneral);
-
-          if (Number(prod.stock) === 0) {
-            const liAgotado = crearItem(prod, productoId, false);
-            document.getElementById("listaAgotados").appendChild(liAgotado);
-          } else if (Number(prod.stock) <= 2) {
-            const liPorAgotarse = crearItem(prod, productoId, false);
-            document.getElementById("listaPorAgotarse").appendChild(liPorAgotarse);
-          }
-        } catch (err) {
-          console.error("Error al subir producto:", err);
-        }
+      let productoId;
+      if (!snap.empty) {
+        // Si ya existe, actualizamos stock, precio, etc. pero NO tocamos el orden
+        const docSnap = snap.docs[0];
+        productoId = docSnap.id;
+        await updateDoc(doc(db, "productos", productoId), {
+          stock: Number(prod.stock),
+          precio: Number(prod.precio),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || ""
+          // 👆 orden no se actualiza, queda fijo
+        });
+      } else {
+        // Si es nuevo, guardamos el orden fijo
+        const docRef = await addDoc(collection(db, "productos"), {
+          orden: prod.orden, // se guarda en Firebase
+          nombre: prod.nombre,
+          color: prod.color,
+          precio: Number(prod.precio),
+          stock: Number(prod.stock),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || ""
+        });
+        productoId = docRef.id;
       }
-      alert("Carga de productos finalizada");
+
+      const liGeneral = crearItem(prod, productoId, true);
+      document.getElementById("listaStock").appendChild(liGeneral);
+
+      if (Number(prod.stock) === 0) {
+        const liAgotado = crearItem(prod, productoId, false);
+        document.getElementById("listaAgotados").appendChild(liAgotado);
+      } else if (Number(prod.stock) <= 2) {
+        const liPorAgotarse = crearItem(prod, productoId, false);
+        document.getElementById("listaPorAgotarse").appendChild(liPorAgotarse);
+      }
+    } catch (err) {
+      console.error("Error al subir producto:", err);
     }
+  }
+  alert("Carga de productos finalizada");
+}
 
 // 🔎 Buscador de productos
 document.getElementById("buscador").addEventListener("input", async (e) => {
