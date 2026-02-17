@@ -61,6 +61,18 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    async function migrarClaveUnica() {
+  const productosSnap = await getDocs(collection(db, "productos"));
+  productosSnap.forEach(async (docSnap) => {
+    const prod = docSnap.data();
+    if (!prod.claveUnica) {
+      const claveUnica = `${prod.nombre}|${prod.color}|${prod.categoria}`;
+      await updateDoc(doc(db, "productos", docSnap.id), { claveUnica });
+    }
+  });
+  alert("Migración de claveUnica finalizada");
+}
+
     function crearItem(prod, productoId, conBoton = true) {
       const li = document.createElement("li");
 
