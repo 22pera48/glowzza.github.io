@@ -27,8 +27,8 @@
   <input type="text" id="buscadorEspecial" placeholder="Escribí un ID o número de orden...">
   <ul id="resultadosBusquedaEspecial"></ul>
 
-  <h3>Listado General</h3>
-  <ul id="listaStock"></ul>
+<h3>Listado General (<span id="contadorProductos">0</span>)</h3>
+<ul id="listaStock"></ul>
 
   <h3>Por Agotarse (≤2 unidades)</h3>
   <ul id="listaPorAgotarse"></ul>
@@ -126,6 +126,9 @@
           document.getElementById("listaPorAgotarse").appendChild(liPorAgotarse);
         }
       });
+      // ⚡ Actualizar contador
+  document.getElementById("contadorProductos").textContent = totalProductos;
+
       // ⚡ Cargar historial
   const historialSnap = await getDocs(collection(db, "historial"));
   historialSnap.forEach((docSnap) => {
