@@ -108,15 +108,16 @@
       return li;
     }
 
-    document.addEventListener("DOMContentLoaded", async () => {
-    // await migrarClaveUnica(); // ya no hace falta
+document.addEventListener("DOMContentLoaded", async () => {
+  const productosSnap = await getDocs(collection(db, "productos"));
+  let totalProductos = 0; // inicializar contador
 
-      const productosSnap = await getDocs(collection(db, "productos"));
-      productosSnap.forEach((docSnap) => {
-        const prod = docSnap.data();
+  productosSnap.forEach((docSnap) => {
+    const prod = docSnap.data();
+    totalProductos++; // sumar cada producto
 
-        const liGeneral = crearItem(prod, docSnap.id, true);
-        document.getElementById("listaStock").appendChild(liGeneral);
+    const liGeneral = crearItem(prod, docSnap.id, true);
+    document.getElementById("listaStock").appendChild(liGeneral);
 
         if (Number(prod.stock) === 0) {
           const liAgotado = crearItem(prod, docSnap.id, false);
