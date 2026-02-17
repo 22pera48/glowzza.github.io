@@ -52,24 +52,31 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Función para crear <li> con botón eliminar
-    function crearItem(prod, productoId) {
+    // Función para crear <li> con o sin botón eliminar
+    function crearItem(prod, productoId, conBoton = true) {
       const li = document.createElement("li");
-      li.textContent = `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${productoId} `;
 
-      // Botón eliminar
-      const btnEliminar = document.createElement("button");
-      btnEliminar.textContent = "Eliminar";
-      btnEliminar.style.marginLeft = "10px";
-      btnEliminar.onclick = async () => {
-        if (confirm(`¿Seguro que querés eliminar "${prod.nombre} (${prod.color})"?`)) {
-          await deleteDoc(doc(db, "productos", productoId));
-          li.remove();
-          alert(`Producto eliminado: ${prod.nombre} (${prod.color})`);
-        }
-      };
+      if (conBoton) {
+        // Botón eliminar al inicio
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "Eliminar";
+        btnEliminar.style.marginRight = "10px";
+        btnEliminar.onclick = async () => {
+          if (confirm(`¿Seguro que querés eliminar "${prod.nombre} (${prod.color})"?`)) {
+            await deleteDoc(doc(db, "productos", productoId));
+            li.remove();
+            alert(`Producto eliminado: ${prod.nombre} (${prod.color})`);
+          }
+        };
+        li.appendChild(btnEliminar);
+      }
 
-      li.appendChild(btnEliminar);
+      // Texto del producto
+      const texto = document.createTextNode(
+        `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${productoId}`
+      );
+      li.appendChild(texto);
+
       return li;
     }
 
@@ -78,14 +85,18 @@
       const productosSnap = await getDocs(collection(db, "productos"));
       productosSnap.forEach((docSnap) => {
         const prod = docSnap.data();
-        const li = crearItem(prod, docSnap.id);
 
-        document.getElementById("listaStock").appendChild(li);
+        // Lista general con botón
+        const liGeneral = crearItem(prod, docSnap.id, true);
+        document.getElementById("listaStock").appendChild(liGeneral);
 
+        // Listas secundarias sin botón
         if (Number(prod.stock) === 0) {
-          document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+          const liAgotado = crearItem(prod, docSnap.id, false);
+          document.getElementById("listaAgotados").appendChild(liAgotado);
         } else if (Number(prod.stock) <= 2) {
-          document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+          const liPorAgotarse = crearItem(prod, docSnap.id, false);
+          document.getElementById("listaPorAgotarse").appendChild(liPorAgotarse);
         }
       });
 
@@ -179,14 +190,17 @@
             console.log(`➕ Agregado: ${prod.nombre} (${prod.color})`);
           }
 
-          // Mostrar en la lista con ID y botón eliminar
-          const li = crearItem(prod, productoId);
-          document.getElementById("listaStock").appendChild(li);
+          // Mostrar en lista general con botón
+          const liGeneral = crearItem(prod, productoId, true);
+          document.getElementById("listaStock").appendChild(liGeneral);
 
+          // Mostrar en listas secundarias sin botón
           if (Number(prod.stock) === 0) {
-            document.getElementById("listaAgotados").appendChild(li.cloneNode(true));
+            const liAgotado = crearItem(prod, productoId, false);
+            document.getElementById("listaAgotados").appendChild(liAgotado);
           } else if (Number(prod.stock) <= 2) {
-            document.getElementById("listaPorAgotarse").appendChild(li.cloneNode(true));
+            const liPorAgotarse = crearItem(prod, productoId, false);
+            document.getElementById("listaPorAgotarse").appendChild(liPorAgotarse);
           }
         } catch (err) {
           console.error("Error al subir producto:", err);
