@@ -22,6 +22,9 @@
   <h3>Agotados</h3>
   <ul id="listaAgotados"></ul>
 
+  <h3>Errores en carga (<span id="contadorErrores">0</span>)</h3>
+  <ul id="listaErrores"></ul>
+
   <!-- Librería PapaParse -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -52,12 +55,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Función para crear <li> con o sin botón eliminar
     function crearItem(prod, productoId, conBoton = true) {
       const li = document.createElement("li");
 
       if (conBoton) {
-        // Botón eliminar al inicio
         const btnEliminar = document.createElement("button");
         btnEliminar.textContent = "Eliminar";
         btnEliminar.style.marginRight = "10px";
@@ -71,7 +72,6 @@
         li.appendChild(btnEliminar);
       }
 
-      // Texto del producto (incluye categoría)
       const texto = document.createTextNode(
         `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - Categoría: ${prod.categoria} - ID: ${productoId}`
       );
@@ -80,17 +80,14 @@
       return li;
     }
 
-    // Al cargar la página, leer productos desde Firebase
     document.addEventListener("DOMContentLoaded", async () => {
       const productosSnap = await getDocs(collection(db, "productos"));
       productosSnap.forEach((docSnap) => {
         const prod = docSnap.data();
 
-        // Lista general con botón
         const liGeneral = crearItem(prod, docSnap.id, true);
         document.getElementById("listaStock").appendChild(liGeneral);
 
-        // Listas secundarias sin botón
         if (Number(prod.stock) === 0) {
           const liAgotado = crearItem(prod, docSnap.id, false);
           document.getElementById("listaAgotados").appendChild(liAgotado);
@@ -100,7 +97,6 @@
         }
       });
 
-      // Activar carga de CSV
       const inputCSV = document.getElementById("archivoExcel");
       inputCSV.addEventListener("change", function(e) {
         const file = e.target.files[0];
@@ -112,7 +108,6 @@
         });
       });
 
-      // Activar carga de TXT de WhatsApp
       const inputWhatsapp = document.getElementById("archivoWhatsapp");
       inputWhatsapp.addEventListener("change", function(e) {
         const file = e.target.files[0];
@@ -120,39 +115,43 @@
         reader.onload = (ev) => {
           const lines = ev.target.result.split("\n");
 
-          let contador = 1; // numeración de productos
+          let contador = 1;
+          const productos = [];
+          const errores = [];
 
-          const productos = lines.map(line => {
-            // 1. Eliminar fecha y hora inicial
+          lines.forEach(line => {
             line = line.replace(/^\d{1,2}\/\d{1,2}\/\d{4},\s*\d{1,2}:\d{2}\s*-\s*/, "");
-
-            // 2. Eliminar contacto (todo hasta el primer ":")
             const idx = line.indexOf(":");
-            if (idx !== -1) {
-              line = line.substring(idx + 1).trim();
-            }
-
-            // 3. Eliminar texto de edición
+            if (idx !== -1) line = line.substring(idx + 1).trim();
             line = line.replace(/<Se editó.*?>/i, "").trim();
 
-            // 4. Separar por comas
             const parts = line.split(",");
             if (parts.length >= 6) {
-              const producto = {
-                nombre: `[${contador}] ${parts[0].trim()}`, // número entre corchetes
+              productos.push({
+                nombre: `[${contador}] ${parts[0].trim()}`,
                 color: parts[1].trim(),
                 precio: Number(parts[2]),
                 stock: Number(parts[3]),
                 fecha: parts[4].trim(),
-                categoria: parts[5].trim() // ahora sí se guarda la categoría
-              };
+                categoria: parts[5].trim()
+              });
               contador++;
-              return producto;
+            } else {
+              errores.push(line);
             }
-            return null;
-          }).filter(p => p !== null);
+          });
 
           subirProductos(productos);
+
+          const listaErrores = document.getElementById("listaErrores");
+          const contadorErrores = document.getElementById("contadorErrores");
+          contadorErrores.textContent = errores.length; // mostrar cantidad de errores
+
+          errores.forEach(err => {
+            const li = document.createElement("li");
+            li.textContent = `Error: ${err}`;
+            listaErrores.appendChild(li);
+          });
         };
         reader.readAsText(file);
       });
@@ -161,7 +160,6 @@
     async function subirProductos(productos) {
       for (const prod of productos) {
         try {
-          // Buscar coincidencia por nombre + color
           const q = query(
             collection(db, "productos"),
             where("nombre", "==", prod.nombre),
@@ -171,7 +169,6 @@
 
           let productoId;
           if (!snap.empty) {
-            // Ya existe → actualizar stock, precio y fecha
             const docSnap = snap.docs[0];
             productoId = docSnap.id;
             await updateDoc(doc(db, "productos", productoId), {
@@ -180,9 +177,7 @@
               fecha: prod.fecha || new Date().toISOString(),
               categoria: prod.categoria || ""
             });
-            console.log(`✅ Actualizado: ${prod.nombre} (${prod.color})`);
           } else {
-            // No existe → crear nuevo
             const docRef = await addDoc(collection(db, "productos"), {
               nombre: prod.nombre,
               color: prod.color,
@@ -192,14 +187,11 @@
               categoria: prod.categoria || ""
             });
             productoId = docRef.id;
-            console.log(`➕ Agregado: ${prod.nombre} (${prod.color})`);
           }
 
-          // Mostrar en lista general con botón
           const liGeneral = crearItem(prod, productoId, true);
           document.getElementById("listaStock").appendChild(liGeneral);
 
-          // Mostrar en listas secundarias sin botón
           if (Number(prod.stock) === 0) {
             const liAgotado = crearItem(prod, productoId, false);
             document.getElementById("listaAgotados").appendChild(liAgotado);
