@@ -211,19 +211,27 @@
       alert("Carga de productos finalizada");
     }
 
-    // 🔎 Buscador de productos
-    document.getElementById("buscador").addEventListener("input", async (e) => {
-      const palabra = e.target.value.toLowerCase();
-      const resultados = document.getElementById("resultadosBusqueda");
-      resultados.innerHTML = "";
+// 🔎 Buscador de productos
+document.getElementById("buscador").addEventListener("input", async (e) => {
+  const palabra = e.target.value.toLowerCase();
+  const resultados = document.getElementById("resultadosBusqueda");
+  resultados.innerHTML = "";
 
-      if (palabra.length < 2) return;
+  if (palabra.length < 2) return;
 
-      const productosSnap = await getDocs(collection(db, "productos"));
-      productosSnap.forEach((docSnap) => {
-        const prod = docSnap.data();
-        const textoProducto = `${prod.nombre} ${prod.color} ${prod.categoria}`.toLowerCase();
+  const productosSnap = await getDocs(collection(db, "productos"));
+  productosSnap.forEach((docSnap) => {
+    const prod = docSnap.data();
+    const textoProducto = `${prod.nombre} ${prod.color} ${prod.categoria}`.toLowerCase();
 
-        if (textoProducto.includes(palabra)) {
-          const li = document.createElement("li");
-          li.textContent = `[${prod.orden}] ${prod.nombre} (${prod.color}) - Stock:
+    if (textoProducto.includes(palabra)) {
+      const li = document.createElement("li");
+      li.textContent = `[${prod.orden}] ${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Categoría: ${prod.categoria}`;
+      resultados.appendChild(li);
+    }
+  });
+
+  if (resultados.innerHTML === "") {
+    resultados.innerHTML = "<li>No se encontraron coincidencias</li>";
+  }
+});
