@@ -140,7 +140,8 @@
                 precio: Number(parts[2]),
                 stock: Number(parts[3]),
                 fecha: parts[4].trim(),
-                categoria: parts[5].trim()
+                categoria: parts[5].trim(),
+                claveUnica: `${parts[0].trim()}|${parts[1].trim()}|${parts[5].trim()}`
               });
               contador++;
             } else if (line.trim() !== "") {
@@ -169,14 +170,13 @@ async function subirProductos(productos) {
     try {
       const q = query(
         collection(db, "productos"),
-        where("nombre", "==", prod.nombre),
-        where("color", "==", prod.color)
+        where("claveUnica", "==", prod.claveUnica)
       );
       const snap = await getDocs(q);
 
       let productoId;
       if (!snap.empty) {
-        // Si ya existe, actualizamos stock, precio, etc. pero NO tocamos el orden
+        // Ya existe → actualizar
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
         await updateDoc(doc(db, "productos", productoId), {
@@ -184,18 +184,18 @@ async function subirProductos(productos) {
           precio: Number(prod.precio),
           fecha: prod.fecha || new Date().toISOString(),
           categoria: prod.categoria || ""
-          // 👆 orden no se actualiza, queda fijo
         });
       } else {
-        // Si es nuevo, guardamos el orden fijo
+        // Nuevo → guardar con claveUnica
         const docRef = await addDoc(collection(db, "productos"), {
-          orden: prod.orden, // se guarda en Firebase
+          orden: prod.orden,
           nombre: prod.nombre,
           color: prod.color,
           precio: Number(prod.precio),
           stock: Number(prod.stock),
           fecha: prod.fecha || new Date().toISOString(),
-          categoria: prod.categoria || ""
+          categoria: prod.categoria || "",
+          claveUnica: prod.claveUnica
         });
         productoId = docRef.id;
       }
@@ -216,7 +216,6 @@ async function subirProductos(productos) {
   }
   alert("Carga de productos finalizada");
 }
-
 // 🔎 Buscador de productos
 document.getElementById("buscador").addEventListener("input", async (e) => {
   const palabra = e.target.value.toLowerCase();
