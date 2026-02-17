@@ -180,6 +180,11 @@
     });
 
 async function subirProductos(productos) {
+  // limpiar listas antes de volver a llenarlas
+  document.getElementById("listaStock").innerHTML = "";
+  document.getElementById("listaAgotados").innerHTML = "";
+  document.getElementById("listaPorAgotarse").innerHTML = "";
+
   for (const prod of productos) {
     try {
       const q = query(
@@ -190,7 +195,6 @@ async function subirProductos(productos) {
 
       let productoId;
       if (!snap.empty) {
-        // Ya existe → actualizar
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
         await updateDoc(doc(db, "productos", productoId), {
@@ -200,7 +204,6 @@ async function subirProductos(productos) {
           categoria: prod.categoria || ""
         });
       } else {
-        // Nuevo → guardar con claveUnica
         const docRef = await addDoc(collection(db, "productos"), {
           orden: prod.orden,
           nombre: prod.nombre,
@@ -229,8 +232,7 @@ async function subirProductos(productos) {
     }
   }
   alert("Carga de productos finalizada");
-}
-// 🔎 Buscador de productos
+}// 🔎 Buscador de productos
 document.getElementById("buscador").addEventListener("input", async (e) => {
   const palabra = e.target.value.toLowerCase();
   const resultados = document.getElementById("resultadosBusqueda");
