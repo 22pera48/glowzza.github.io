@@ -71,9 +71,9 @@
         li.appendChild(btnEliminar);
       }
 
-      // Texto del producto
+      // Texto del producto (incluye categoría)
       const texto = document.createTextNode(
-        `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - ID: ${productoId}`
+        `${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - Categoría: ${prod.categoria} - ID: ${productoId}`
       );
       li.appendChild(texto);
 
@@ -120,6 +120,8 @@
         reader.onload = (ev) => {
           const lines = ev.target.result.split("\n");
 
+          let contador = 1; // numeración de productos
+
           const productos = lines.map(line => {
             // 1. Eliminar fecha y hora inicial
             line = line.replace(/^\d{1,2}\/\d{1,2}\/\d{4},\s*\d{1,2}:\d{2}\s*-\s*/, "");
@@ -136,14 +138,16 @@
             // 4. Separar por comas
             const parts = line.split(",");
             if (parts.length >= 6) {
-              return {
-                nombre: parts[0].trim(),
+              const producto = {
+                nombre: `[${contador}] ${parts[0].trim()}`, // número entre corchetes
                 color: parts[1].trim(),
                 precio: Number(parts[2]),
                 stock: Number(parts[3]),
                 fecha: parts[4].trim(),
-                categoria: parts[5].trim()
+                categoria: parts[5].trim() // ahora sí se guarda la categoría
               };
+              contador++;
+              return producto;
             }
             return null;
           }).filter(p => p !== null);
@@ -173,7 +177,8 @@
             await updateDoc(doc(db, "productos", productoId), {
               stock: Number(prod.stock),
               precio: Number(prod.precio),
-              fecha: prod.fecha || new Date().toISOString()
+              fecha: prod.fecha || new Date().toISOString(),
+              categoria: prod.categoria || ""
             });
             console.log(`✅ Actualizado: ${prod.nombre} (${prod.color})`);
           } else {
