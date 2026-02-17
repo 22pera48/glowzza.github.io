@@ -224,11 +224,11 @@ document.getElementById("buscador").addEventListener("input", async (e) => {
   const productosSnap = await getDocs(collection(db, "productos"));
   productosSnap.forEach((docSnap) => {
     const prod = docSnap.data();
-    const textoProducto = `${prod.nombre} ${prod.color} ${prod.categoria}`.toLowerCase();
+    const textoProducto = `${prod.orden} ${docSnap.id} ${prod.nombre} ${prod.color} ${prod.categoria}`.toLowerCase();
 
     if (textoProducto.includes(palabra)) {
       const li = document.createElement("li");
-      li.textContent = `[${prod.orden}] ${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Categoría: ${prod.categoria}`;
+      li.textContent = `[${prod.orden}] ${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Categoría: ${prod.categoria} - ID: ${docSnap.id}`;
       resultados.appendChild(li);
     }
   });
