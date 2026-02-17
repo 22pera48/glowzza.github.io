@@ -13,6 +13,10 @@
   <input type="file" id="archivoExcel" style="display:none" accept=".csv">
   <input type="file" id="archivoWhatsapp" style="display:none" accept=".txt">
 
+  <h3>Buscar producto</h3>
+  <input type="text" id="buscador" placeholder="Escribí una palabra clave...">
+  <ul id="resultadosBusqueda"></ul>
+
   <h3>Listado General</h3>
   <ul id="listaStock"></ul>
 
@@ -127,7 +131,7 @@
             if (parts.length >= 6) {
               productos.push({
                 orden: contador,
-                nombre: parts[0].trim(), // limpio, sin número
+                nombre: parts[0].trim(),
                 color: parts[1].trim(),
                 precio: Number(parts[2]),
                 stock: Number(parts[3]),
@@ -135,7 +139,7 @@
                 categoria: parts[5].trim()
               });
               contador++;
-            } else {
+            } else if (line.trim() !== "") {
               errores.push(line);
             }
           });
@@ -206,6 +210,20 @@
       }
       alert("Carga de productos finalizada");
     }
-  </script>
-</body>
-</html>
+
+    // 🔎 Buscador de productos
+    document.getElementById("buscador").addEventListener("input", async (e) => {
+      const palabra = e.target.value.toLowerCase();
+      const resultados = document.getElementById("resultadosBusqueda");
+      resultados.innerHTML = "";
+
+      if (palabra.length < 2) return;
+
+      const productosSnap = await getDocs(collection(db, "productos"));
+      productosSnap.forEach((docSnap) => {
+        const prod = docSnap.data();
+        const textoProducto = `${prod.nombre} ${prod.color} ${prod.categoria}`.toLowerCase();
+
+        if (textoProducto.includes(palabra)) {
+          const li = document.createElement("li");
+          li.textContent = `[${prod.orden}] ${prod.nombre} (${prod.color}) - Stock:
