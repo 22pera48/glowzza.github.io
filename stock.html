@@ -5,6 +5,12 @@
   <title>Control de Stock</title>
 </head>
 <body>
+  <h2>Secciones</h2>
+<button onclick="document.getElementById('listaHistorial').scrollIntoView()">Historial de cambios</button>
+<button onclick="document.getElementById('listaErrores').scrollIntoView()">Errores en carga</button>
+<button onclick="document.getElementById('listaAgotados').scrollIntoView()">Agotados</button>
+<button onclick="document.getElementById('listaPorAgotarse').scrollIntoView()">Por Agotarse (≤2 unidades)</button>
+<button onclick="document.getElementById('listaStock').scrollIntoView()">Listado General</button>
   <h2>Control de Stock</h2>
   <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
   <button onclick="document.getElementById('archivoWhatsapp').click()">Subir WhatsApp</button>
