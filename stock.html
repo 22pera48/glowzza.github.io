@@ -17,6 +17,10 @@
   <input type="text" id="buscador" placeholder="Escribí una palabra clave...">
   <ul id="resultadosBusqueda"></ul>
 
+  <h3>Buscar por ID / Número</h3>
+  <input type="text" id="buscadorEspecial" placeholder="Escribí un ID o número de orden...">
+  <ul id="resultadosBusquedaEspecial"></ul>
+
   <h3>Listado General</h3>
   <ul id="listaStock"></ul>
 
@@ -227,6 +231,37 @@ document.getElementById("buscador").addEventListener("input", async (e) => {
     const textoProducto = `${prod.orden} ${docSnap.id} ${prod.nombre} ${prod.color} ${prod.categoria}`.toLowerCase();
 
     if (textoProducto.includes(palabra)) {
+      const li = document.createElement("li");
+      li.textContent = `[${prod.orden}] ${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Categoría: ${prod.categoria} - ID: ${docSnap.id}`;
+      resultados.appendChild(li);
+    }
+  });
+
+  if (resultados.innerHTML === "") {
+    resultados.innerHTML = "<li>No se encontraron coincidencias</li>";
+  }
+});
+// 🔎 Buscador especializado (ID o número de orden)
+document.getElementById("buscadorEspecial").addEventListener("input", async (e) => {
+  let palabra = e.target.value.trim();
+
+  // limpiar corchetes si los hay
+  const palabraSinCorchetes = palabra.replace(/\[|\]/g, "");
+
+  const resultados = document.getElementById("resultadosBusquedaEspecial");
+  resultados.innerHTML = "";
+
+  if (palabra.length < 1) return;
+
+  const productosSnap = await getDocs(collection(db, "productos"));
+  productosSnap.forEach((docSnap) => {
+    const prod = docSnap.data();
+
+    const ordenStr = String(prod.orden);
+    const idStr = docSnap.id.toLowerCase();
+
+    // Coincidencia exacta por número o ID
+    if (ordenStr === palabraSinCorchetes || idStr === palabra.toLowerCase()) {
       const li = document.createElement("li");
       li.textContent = `[${prod.orden}] ${prod.nombre} (${prod.color}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Categoría: ${prod.categoria} - ID: ${docSnap.id}`;
       resultados.appendChild(li);
