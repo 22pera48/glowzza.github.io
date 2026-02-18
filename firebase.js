@@ -262,49 +262,47 @@ buscadorInput.addEventListener("input", () => {
     });
 
     // Guardar producto nuevo
-    productosSelect.addEventListener("change", async () => {
-      const nombreProducto = productosSelect.value;
-      const cantidad = parseInt(cantidadInput.value, 10);
-      if (!nombreProducto) return;
-
-      const productoInfo = catalogoProductos.find(p => p.nombre === nombreProducto);
-      const precio = productoInfo ? productoInfo.precio : 0;
-
-      const clienteRef = doc(db, "clientes", docSnap.id);
-      const clienteSnap = await getDoc(clienteRef);
-      let productosActuales = clienteSnap.data().productos || [];
-
-      const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-      productosActuales.push({ id: productoId, nombre: nombreProducto, precio, cantidad });
-      await updateDoc(clienteRef, { productos: productosActuales });
-
-      const item = document.createElement("li");
-      item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
-      item.dataset.productoId = productoId;
-
-      const deleteButton = document.createElement("button");
-      deleteButton.textContent = "Eliminar";
-      deleteButton.style.marginLeft = "10px";
-
-      deleteButton.addEventListener("click", () => {
-        eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
-      });
-
-      item.appendChild(deleteButton);
-      productosList.appendChild(item);
-
-      // Recalcular total y actualizar encabezado
-      let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-      headerDiv.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${nuevoTotal}`;
-
-      productosSelect.style.display = "none";
-      cantidadInput.style.display = "none";
-    });
 
     lista.appendChild(li);
   });
 }
+async function agregarProductoACliente(clienteId, producto, cantidad, headerDiv, resultadosList) {
+  const clienteRef = doc(db, "clientes", clienteId);
+  const clienteSnap = await getDoc(clienteRef);
+  let productosActuales = clienteSnap.data().productos || [];
 
+  const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+
+  productosActuales.push({
+    id: productoId,
+    nombre: producto.nombre,
+    precio: producto.precio,
+    cantidad: cantidad
+  });
+
+  await updateDoc(clienteRef, { productos: productosActuales });
+
+  const item = document.createElement("li");
+  item.textContent = `Producto: ${producto.nombre} (Cantidad: ${cantidad}) - $${producto.precio}`;
+  item.dataset.productoId = productoId;
+
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "Eliminar";
+  deleteButton.style.marginLeft = "10px";
+  deleteButton.addEventListener("click", () => {
+    eliminarProducto(clienteId, item.dataset.productoId, item, headerDiv);
+  });
+
+  item.appendChild(deleteButton);
+
+  const productosList = headerDiv.parentElement.querySelector("ul");
+  productosList.appendChild(item);
+
+  let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
+  headerDiv.textContent = `${clienteSnap.data().nombre} - ${clienteSnap.data().fecha} | Código: ${clienteSnap.data().etiqueta} | Total: $${nuevoTotal}`;
+
+  resultadosList.style.display = "none";
+}
 // Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
   const lista = document.getElementById("listaVentasCerradas");
