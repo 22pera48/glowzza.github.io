@@ -31,7 +31,14 @@ async function cargarCatalogo() {
   catalogoProductos = [];
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
-    catalogoProductos.push({ nombre: data.nombre, precio: data.precio });
+catalogoProductos.push({ 
+  id: docSnap.id,
+  orden: data.orden,
+  nombre: data.nombre,
+  precio: data.precio,
+  color: data.color,
+  categoria: data.categoria
+});
   });
 }
 
@@ -166,7 +173,7 @@ async function mostrarClientes() {
     productosSelect.style.display = "none";
     let opciones = `<option value="">Seleccionar producto...</option>`;
     catalogoProductos.forEach(p => {
-      opciones += `<option value="${p.nombre}">${p.nombre} - $${p.precio}</option>`;
+ opciones += `<option value="${p.nombre}">[${p.orden}] ${p.nombre} - $${p.precio}</option>`;
     });
     productosSelect.innerHTML = opciones;
     li.appendChild(productosSelect);
