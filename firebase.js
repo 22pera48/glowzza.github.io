@@ -164,17 +164,64 @@ async function mostrarClientes() {
     });
     li.appendChild(terminarButton);
 
-    // Botón "+"
-    const addButton = document.createElement("button");
-    addButton.textContent = "+";
-    li.appendChild(addButton);
+// Botón "+"
+const addButton = document.createElement("button");
+addButton.textContent = "+";
+li.appendChild(addButton);
 
-    const productosSelect = document.createElement("select");
-    productosSelect.style.display = "none";
-    let opciones = `<option value="">Seleccionar producto...</option>`;
-    catalogoProductos.forEach(p => {
- opciones += `<option value="${p.nombre}">[${p.orden}] ${p.nombre} - $${p.precio}</option>`;
+// Campo de búsqueda
+const buscadorInput = document.createElement("input");
+buscadorInput.type = "text";
+buscadorInput.placeholder = "Buscar producto por nombre o [orden]";
+buscadorInput.style.display = "none";
+li.appendChild(buscadorInput);
+
+// Lista de resultados
+const resultadosList = document.createElement("ul");
+resultadosList.style.display = "none";
+li.appendChild(resultadosList);
+
+// Toggle al apretar "+"
+addButton.addEventListener("click", () => {
+  const visible = buscadorInput.style.display === "none";
+  buscadorInput.style.display = visible ? "inline-block" : "none";
+  resultadosList.style.display = visible ? "block" : "none";
+
+  if (visible) {
+    mostrarProductos(resultadosList, docSnap.id, headerDiv);
+  }
+});
+
+// Función para mostrar todos los productos
+function mostrarProductos(resultadosList, clienteId, headerDiv) {
+  resultadosList.innerHTML = "";
+  catalogoProductos.forEach(p => {
+    const item = document.createElement("li");
+    item.textContent = `[${p.orden}] ${p.nombre} - $${p.precio}`;
+    item.addEventListener("click", () => {
+      agregarProductoACliente(clienteId, p, 1, headerDiv, resultadosList);
     });
+    resultadosList.appendChild(item);
+  });
+}
+
+// Filtrar mientras escribís
+buscadorInput.addEventListener("input", () => {
+  const filtro = buscadorInput.value.toLowerCase();
+  resultadosList.innerHTML = "";
+  catalogoProductos.forEach(p => {
+    const texto = `${p.orden} ${p.nombre} ${p.categoria}`.toLowerCase();
+    if (texto.includes(filtro)) {
+      const item = document.createElement("li");
+      item.textContent = `[${p.orden}] ${p.nombre} - $${p.precio}`;
+      item.addEventListener("click", () => {
+        agregarProductoACliente(docSnap.id, p, 1, headerDiv, resultadosList);
+      });
+      resultadosList.appendChild(item);
+    }
+  });
+});
+
     productosSelect.innerHTML = opciones;
     li.appendChild(productosSelect);
 
