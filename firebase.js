@@ -273,11 +273,8 @@ async function mostrarClientes() {
 
     // Renderizar productos existentes con número de orden
     (data.productos || []).forEach((p) => {
-      const productoInfo = catalogoProductos.find(prod => prod.nombre === p.nombre);
-      const numeroOrden = productoInfo ? productoInfo.orden : "";
-
       const item = document.createElement("li");
-      item.textContent = `[${numeroOrden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+      item.textContent = `[${p.orden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
       item.dataset.productoId = p.id;
 
       const deleteButton = document.createElement("button");
@@ -315,7 +312,7 @@ async function mostrarClientes() {
       let productosActuales = clienteSnap.data().productos || [];
 
       const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-      productosActuales.push({ id: productoId, nombre: nombreProducto, precio, cantidad });
+      productosActuales.push({ id: productoId, nombre: nombreProducto, precio, cantidad, orden: numeroOrden });
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
@@ -360,11 +357,8 @@ async function mostrarVentasCerradas() {
     li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${data.total}`;
     const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
-      const productoInfo = catalogoProductos.find(prod => prod.nombre === p.nombre);
-      const numeroOrden = productoInfo ? productoInfo.orden : "";
-
       const item = document.createElement("li");
-      item.textContent = `[${numeroOrden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+      item.textContent = `[${p.orden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
       productosList.appendChild(item);
     });
 
