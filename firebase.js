@@ -1,11 +1,13 @@
+// 🔹 Imports de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
+import {
   getFirestore, collection, addDoc, getDocs, updateDoc, doc, getDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { 
+import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// 🔹 Configuración Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
   authDomain: "glowzzainventario.firebaseapp.com",
@@ -22,15 +24,14 @@ const auth = getAuth(app);
 
 let catalogoProductos = [];
 
-// 🔽 Aquí va la lógica de login/logout
-// Referencias a los elementos del DOM
+// 🔹 Referencias a elementos del DOM
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const menuLink = document.getElementById("menu-link");
 
-// 🔽 Lógica de login
+// 🔹 Login
 if (loginBtn && emailInput && passwordInput) {
   loginBtn.addEventListener("click", async () => {
     try {
@@ -52,7 +53,7 @@ if (loginBtn && emailInput && passwordInput) {
   });
 }
 
-// 🔽 Lógica de logout
+// 🔹 Logout
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
     await signOut(auth);
@@ -65,52 +66,59 @@ if (logoutBtn) {
   });
 }
 
-// 🔽 Control de sesión y visibilidad del menú
+// 🔹 Control de sesión
 onAuthStateChanged(auth, (user) => {
   if (menuLink) {
     menuLink.style.display = user ? "inline" : "none";
   }
 });
 
-// Cargar catálogo de productos
+// 🔹 Cargar catálogo de productos
 async function cargarCatalogo() {
   const querySnapshot = await getDocs(collection(db, "productos"));
   catalogoProductos = [];
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
-catalogoProductos.push({ 
-  id: docSnap.id,
-  orden: data.orden,
-  nombre: data.nombre,
-  precio: data.precio,
-  color: data.color,
-  categoria: data.categoria
-});
+    catalogoProductos.push({
+      id: docSnap.id,
+      orden: data.orden,
+      nombre: data.nombre,
+      precio: data.precio,
+      color: data.color,
+      categoria: data.categoria
+    });
   });
 }
 
-// Guardar cliente
-document.getElementById("clienteForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const nombre = document.getElementById("nombre").value;
-  const fecha = document.getElementById("fecha").value;
+// 🔹 Guardar cliente
+const clienteForm = document.getElementById("clienteForm");
+if (clienteForm) {
+  clienteForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById("nombre").value;
+    const fecha = document.getElementById("fecha").value;
 
-  const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 
-  await addDoc(collection(db, "clientes"), { 
-    nombre, 
-    fecha,
-    ubicacion: "deposito",
-    pago: "no",
-    productos: [],
-    etiqueta: etiquetaUnica
+    await addDoc(collection(db, "clientes"), {
+      nombre,
+      fecha,
+      ubicacion: "deposito",
+      pago: "no",
+      productos: [],
+      etiqueta: etiquetaUnica
+    });
+
+    const msg = document.getElementById("statusMsg");
+    if (msg) {
+      msg.style.color = "green";
+      msg.innerText = "Cliente guardado!";
+    }
+    mostrarClientes();
   });
+}
 
-  alert("Cliente guardado!");
-  mostrarClientes();
-});
-
-// 🔹 Función unificada para eliminar producto
+// 🔹 Eliminar producto
 async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   const clienteRef = doc(db, "clientes", clienteId);
   const clienteSnap = await getDoc(clienteRef);
@@ -126,7 +134,7 @@ async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   headerDiv.textContent = `${clienteSnap.data().nombre} - ${clienteSnap.data().fecha} | Código: ${clienteSnap.data().etiqueta} | Total: $${nuevoTotal}`;
 }
 
-// Mostrar clientes
+// 🔹 Mostrar clientes
 async function mostrarClientes() {
   await cargarCatalogo();
   const lista = document.getElementById("listaClientes");
@@ -183,7 +191,11 @@ async function mostrarClientes() {
       const clienteData = clienteSnap.data();
 
       if (!clienteData.productos || clienteData.productos.length === 0) {
-        alert("No se puede cerrar la compra: el cliente no tiene productos cargados.");
+        const msg = document.getElementById("statusMsg");
+        if (msg) {
+          msg.style.color = "red";
+          msg.innerText = "No se puede cerrar la compra: el cliente no tiene productos cargados.";
+        }
         return;
       }
 
@@ -202,16 +214,25 @@ async function mostrarClientes() {
 
         await deleteDoc(clienteRef);
 
-        alert("Compra cerrada y movida a lista de ventas cerradas!");
+        const msg = document.getElementById("statusMsg");
+        if (msg) {
+          msg.style.color = "green";
+          msg.innerText = "Compra cerrada y movida a lista de ventas cerradas!";
+        }
+
         mostrarClientes();
         mostrarVentasCerradas();
       } else {
-        alert("Solo se puede cerrar la compra si está PAGADO y DESPACHADO.");
+        const msg = document.getElementById("statusMsg");
+        if (msg) {
+          msg.style.color = "red";
+          msg.innerText = "Solo se puede cerrar la compra si está PAGADO y DESPACHADO.";
+        }
       }
     });
     li.appendChild(terminarButton);
 
-    // Botón "+"
+    // Botón "+" para agregar productos
     const addButton = document.createElement("button");
     addButton.textContent = "+";
     li.appendChild(addButton);
@@ -220,7 +241,7 @@ async function mostrarClientes() {
     productosSelect.style.display = "none";
     let opciones = `<option value="">Seleccionar producto...</option>`;
     catalogoProductos.forEach(p => {
- opciones += `<option value="${p.nombre}">[${p.orden}] ${p.nombre} - $${p.precio}</option>`;
+      opciones += `<option value="${p.nombre}">[${p.orden}] ${p.nombre} - $${p.precio}</option>`;
     });
     productosSelect.innerHTML = opciones;
     li.appendChild(productosSelect);
@@ -285,7 +306,6 @@ async function mostrarClientes() {
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Eliminar";
       deleteButton.style.marginLeft = "10px";
-
       deleteButton.addEventListener("click", () => {
         eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
       });
@@ -305,7 +325,7 @@ async function mostrarClientes() {
   });
 }
 
-// Mostrar ventas cerradas
+// 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
   const lista = document.getElementById("listaVentasCerradas");
   if (!lista) return;
@@ -331,6 +351,6 @@ async function mostrarVentasCerradas() {
   });
 }
 
-// Cargar listas al abrir
+// 🔹 Cargar listas al abrir
 mostrarClientes();
 mostrarVentasCerradas();
