@@ -131,8 +131,7 @@ async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   item.remove();
 
   let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-  headerDiv.textContent = `${clienteSnap.data().nombre} - ${clienteSnap.data().fecha} | Código: ${clienteSnap.data().etiqueta} | Total: $${nuevoTotal}`;
-}
+headerDiv.textContent = `${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;}
 
 // 🔹 Mostrar clientes
 async function mostrarClientes() {
