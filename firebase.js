@@ -36,14 +36,12 @@ if (loginBtn && emailInput && passwordInput) {
   loginBtn.addEventListener("click", async () => {
     try {
       await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-      console.log("Login correcto");
       const msg = document.getElementById("loginMsg");
       if (msg) {
         msg.style.color = "green";
         msg.innerText = "Ingreso exitoso ✅";
       }
     } catch (error) {
-      console.error("Error en login:", error.message);
       const msg = document.getElementById("loginMsg");
       if (msg) {
         msg.style.color = "red";
@@ -57,7 +55,6 @@ if (loginBtn && emailInput && passwordInput) {
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
     await signOut(auth);
-    console.log("Sesión cerrada");
     const msg = document.getElementById("loginMsg");
     if (msg) {
       msg.style.color = "blue";
@@ -217,10 +214,11 @@ async function mostrarClientes() {
           }
         }
 
+        // 🔹 Guardar venta cerrada con teléfono y nemónico
         await addDoc(collection(db, "ventasCerradas"), {
           nombre: clienteData.nombre,
-          telefono: clienteData.telefono,   // 🔹 agregado
-          nemonico: clienteData.nemonico,   // 🔹 agregado
+          telefono: clienteData.telefono,
+          nemonico: clienteData.nemonico,
           fecha: clienteData.fecha,
           productos: clienteData.productos,
           total: totalFinal,
@@ -273,10 +271,13 @@ async function mostrarClientes() {
     const productosList = document.createElement("ul");
     productosList.style.marginTop = "5px";
 
-    // Renderizar productos existentes
+    // Renderizar productos existentes con número de orden
     (data.productos || []).forEach((p) => {
+      const productoInfo = catalogoProductos.find(prod => prod.nombre === p.nombre);
+      const numeroOrden = productoInfo ? productoInfo.orden : "";
+
       const item = document.createElement("li");
-      item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+      item.textContent = `[${numeroOrden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
       item.dataset.productoId = p.id;
 
       const deleteButton = document.createElement("button");
@@ -307,6 +308,7 @@ async function mostrarClientes() {
 
       const productoInfo = catalogoProductos.find(p => p.nombre === nombreProducto);
       const precio = productoInfo ? productoInfo.precio : 0;
+      const numeroOrden = productoInfo ? productoInfo.orden : "";
 
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
@@ -317,7 +319,7 @@ async function mostrarClientes() {
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
-      item.textContent = `Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
+      item.textContent = `[${numeroOrden}] Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
       item.dataset.productoId = productoId;
 
       const deleteButton = document.createElement("button");
@@ -344,6 +346,7 @@ async function mostrarClientes() {
 
 // 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
+  await cargarCatalogo();
   const lista = document.getElementById("listaVentasCerradas");
   if (!lista) return;
   lista.innerHTML = "";
@@ -357,8 +360,11 @@ async function mostrarVentasCerradas() {
     li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${data.total}`;
     const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
+      const productoInfo = catalogoProductos.find(prod => prod.nombre === p.nombre);
+      const numeroOrden = productoInfo ? productoInfo.orden : "";
+
       const item = document.createElement("li");
-      item.textContent = `Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
+      item.textContent = `[${numeroOrden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
       productosList.appendChild(item);
     });
 
