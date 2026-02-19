@@ -97,7 +97,7 @@ if (clienteForm) {
     e.preventDefault();
     const nombre = document.getElementById("nombre").value;
     const fecha = document.getElementById("fecha").value;
-
+    const telefono = document.getElementById("telefono").value; 
     const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 
     await addDoc(collection(db, "clientes"), {
