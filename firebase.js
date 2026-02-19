@@ -1,14 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  updateDoc, 
-  doc, 
-  getDoc, 
-  deleteDoc
+  getFirestore, collection, addDoc, getDocs, updateDoc, doc, getDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
@@ -22,6 +18,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 let catalogoProductos = [];
 
@@ -287,3 +284,27 @@ async function mostrarVentasCerradas() {
 // Cargar listas al abrir
 mostrarClientes();
 mostrarVentasCerradas();
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  try {
+    await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+    alert("Bienvenido: " + emailInput.value);
+  } catch (error) {
+    alert("Error en login: " + error.message);
+  }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  alert("Sesión cerrada");
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById("menu-link").style.display = "inline";
+  } else {
+    document.getElementById("menu-link").style.display = "none";
+  }
+});
