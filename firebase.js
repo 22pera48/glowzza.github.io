@@ -1,7 +1,7 @@
 // 🔹 Imports de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, getDocs, updateDoc, doc, getDoc, deleteDoc
+  getFirestore, collection, addDoc, getDocs, updateDoc, doc, getDoc, deleteDoc, setDoc, increment
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -85,7 +85,8 @@ async function cargarCatalogo() {
       nombre: data.nombre,
       precio: data.precio,
       color: data.color,
-      categoria: data.categoria
+      categoria: data.categoria,
+      stock: data.stock
     });
   });
 }
@@ -99,12 +100,12 @@ if (clienteForm) {
     const fecha = document.getElementById("fecha").value;
     const telefono = document.getElementById("telefono").value; 
     const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-    const nemonico = document.getElementById("nemonico").value;   // 🔹 leer nemonico
+    const nemonico = document.getElementById("nemonico").value;
 
     await addDoc(collection(db, "clientes"), {
       nombre,
       telefono, 
-      nemonico,   // 🔹 guardar nemonic
+      nemonico,
       fecha,
       ubicacion: "deposito",
       pago: "no",
@@ -121,7 +122,7 @@ if (clienteForm) {
   });
 }
 
-// 🔹 Eliminar producto
+// 🔹 Eliminar producto del cliente (no toca stock global)
 async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   const clienteRef = doc(db, "clientes", clienteId);
   const clienteSnap = await getDoc(clienteRef);
@@ -134,7 +135,7 @@ async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   item.remove();
 
   let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-  headerDiv.textContent = `${clienteSnap.data().nombre} - ${clienteSnap.data().fecha} | Código: ${clienteSnap.data().etiqueta} | Total: $${nuevoTotal}`;
+  headerDiv.textContent = `[${clienteSnap.data().nemonico || ""}] ${clienteSnap.data().nombre} - Tel: ${clienteSnap.data().telefono || "N/A"} - ${clienteSnap.data().fecha} | Código: ${clienteSnap.id} | Total: $${nuevoTotal}`;
 }
 
 // 🔹 Mostrar clientes
@@ -158,8 +159,8 @@ async function mostrarClientes() {
 
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-     headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;
-  li.appendChild(headerDiv);
+    headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;
+    li.appendChild(headerDiv);
 
     // Menús de ubicación y pago
     const ubicacionSelect = document.createElement("select");
@@ -205,6 +206,17 @@ async function mostrarClientes() {
       if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
         let totalFinal = clienteData.productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
+        // 🔹 Descontar stock global al cerrar la venta
+        for (const p of clienteData.productos) {
+          const productoRef = doc(db, "productos", p.nombre);
+          const productoSnap = await getDoc(productoRef);
+          if (productoSnap.exists()) {
+            await updateDoc(productoRef, {
+              stock: increment(-p.cantidad)
+            });
+          }
+        }
+
         await addDoc(collection(db, "ventasCerradas"), {
           nombre: clienteData.nombre,
           fecha: clienteData.fecha,
@@ -235,7 +247,7 @@ async function mostrarClientes() {
     });
     li.appendChild(terminarButton);
 
-    // Botón "+" para agregar productos
+    // Botón "+" para agregar productos (no toca stock global)
     const addButton = document.createElement("button");
     addButton.textContent = "+";
     li.appendChild(addButton);
@@ -285,7 +297,7 @@ async function mostrarClientes() {
       cantidadInput.style.display = visible ? "inline-block" : "none";
     });
 
-    // Guardar producto nuevo
+    // Guardar producto nuevo en cliente (no toca stock global)
     productosSelect.addEventListener("change", async () => {
       const nombreProducto = productosSelect.value;
       const cantidad = parseInt(cantidadInput.value, 10);
@@ -318,7 +330,7 @@ async function mostrarClientes() {
 
       // Recalcular total y actualizar encabezado
       let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-      headerDiv.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${nuevoTotal}`;
+      headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${nuevoTotal}`;
 
       productosSelect.style.display = "none";
       cantidadInput.style.display = "none";
