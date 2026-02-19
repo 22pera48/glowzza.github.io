@@ -88,6 +88,34 @@ async function cargarCatalogo() {
   });
 }
 
+// 🔹 Procesar productos desde TXT (reforma para sumar stock)
+async function cargarProductoDesdeTXT(nombre, precio, cantidad, orden, color, categoria, fecha) {
+  const productoRef = doc(db, "productos", nombre); // usamos el nombre como ID
+  const productoSnap = await getDoc(productoRef);
+
+  if (productoSnap.exists()) {
+    // 🔹 Si existe, sumamos stock en vez de pisar
+    await updateDoc(productoRef, {
+      stock: increment(cantidad),
+      precio: precio,
+      color: color,
+      categoria: categoria,
+      fecha: fecha
+    });
+  } else {
+    // 🔹 Si no existe, lo creamos
+    await setDoc(productoRef, {
+      nombre,
+      precio,
+      stock: cantidad,
+      orden,
+      color,
+      categoria,
+      fecha
+    });
+  }
+}
+
 // 🔹 Guardar cliente
 const clienteForm = document.getElementById("clienteForm");
 if (clienteForm) {
