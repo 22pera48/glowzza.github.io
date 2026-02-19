@@ -100,8 +100,6 @@ const telefono = document.getElementById("telefono").value;
 const fecha = document.getElementById("fecha").value;
 const etiquetaManual = document.getElementById("etiqueta").value;
 
-// Si querés usar la etiqueta generada automáticamente, mantené la lógica actual.
-// Si preferís usar la ingresada por el usuario, reemplazá etiquetaUnica por etiquetaManual.
 await addDoc(collection(db, "clientes"), {
   nombre,
   telefono,
@@ -109,7 +107,7 @@ await addDoc(collection(db, "clientes"), {
   ubicacion: "deposito",
   pago: "no",
   productos: [],
-  etiqueta: etiquetaManual || etiquetaUnica
+  etiqueta: etiquetaManual || (Date.now().toString(36) + Math.random().toString(36).substring(2, 8))
 });
 
     const msg = document.getElementById("statusMsg");
@@ -158,7 +156,7 @@ async function mostrarClientes() {
 
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-    headerDiv.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${total}`;
+headerDiv.textContent = `${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${total}`;
     li.appendChild(headerDiv);
 
     // Menús de ubicación y pago
