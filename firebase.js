@@ -22,6 +22,36 @@ const auth = getAuth(app);
 
 let catalogoProductos = [];
 
+// 🔽 Aquí va la lógica de login/logout
+document.getElementById("loginBtn").addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      console.log("Login correcto");
+    })
+    .catch((error) => {
+      console.error("Error en login:", error.message);
+    });
+});
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  signOut(auth).then(() => {
+    console.log("Sesión cerrada");
+  });
+});
+
+onAuthStateChanged(auth, (user) => {
+  const menuLink = document.getElementById("menu-link");
+  if (user) {
+    menuLink.style.display = "inline"; // mostrar enlace
+  } else {
+    menuLink.style.display = "none";   // ocultar enlace
+  }
+});
+
+
 // Cargar catálogo de productos
 async function cargarCatalogo() {
   const querySnapshot = await getDocs(collection(db, "productos"));
