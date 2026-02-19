@@ -95,19 +95,22 @@ const clienteForm = document.getElementById("clienteForm");
 if (clienteForm) {
   clienteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nombre = document.getElementById("nombre").value;
-    const fecha = document.getElementById("fecha").value;
+const nombre = document.getElementById("nombre").value;
+const telefono = document.getElementById("telefono").value;
+const fecha = document.getElementById("fecha").value;
+const etiquetaManual = document.getElementById("etiqueta").value;
 
-    const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-
-    await addDoc(collection(db, "clientes"), {
-      nombre,
-      fecha,
-      ubicacion: "deposito",
-      pago: "no",
-      productos: [],
-      etiqueta: etiquetaUnica
-    });
+// Si querés usar la etiqueta generada automáticamente, mantené la lógica actual.
+// Si preferís usar la ingresada por el usuario, reemplazá etiquetaUnica por etiquetaManual.
+await addDoc(collection(db, "clientes"), {
+  nombre,
+  telefono,
+  fecha,
+  ubicacion: "deposito",
+  pago: "no",
+  productos: [],
+  etiqueta: etiquetaManual || etiquetaUnica
+});
 
     const msg = document.getElementById("statusMsg");
     if (msg) {
