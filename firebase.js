@@ -102,6 +102,7 @@ if (clienteForm) {
 
     await addDoc(collection(db, "clientes"), {
       nombre,
+      telefono, 
       fecha,
       ubicacion: "deposito",
       pago: "no",
