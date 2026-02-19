@@ -219,6 +219,8 @@ async function mostrarClientes() {
 
         await addDoc(collection(db, "ventasCerradas"), {
           nombre: clienteData.nombre,
+          telefono: clienteData.telefono,   // 🔹 agregado
+          nemonico: clienteData.nemonico,   // 🔹 agregado
           fecha: clienteData.fecha,
           productos: clienteData.productos,
           total: totalFinal,
@@ -352,8 +354,7 @@ async function mostrarVentasCerradas() {
     const data = docSnap.data();
 
     const li = document.createElement("li");
-    li.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${data.total}`;
-
+    li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${data.total}`;
     const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
