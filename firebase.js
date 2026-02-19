@@ -108,6 +108,7 @@ if (clienteForm) {
       productos: [],
       etiqueta: etiquetaUnica
     });
+
     const msg = document.getElementById("statusMsg");
     if (msg) {
       msg.style.color = "green";
