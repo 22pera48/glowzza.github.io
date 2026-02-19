@@ -99,10 +99,12 @@ if (clienteForm) {
     const fecha = document.getElementById("fecha").value;
     const telefono = document.getElementById("telefono").value; 
     const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    const nemonico = document.getElementById("nemonico").value;   // 🔹 leer nemonico
 
     await addDoc(collection(db, "clientes"), {
       nombre,
       telefono, 
+      nemonico,   // 🔹 guardar nemonic
       fecha,
       ubicacion: "deposito",
       pago: "no",
@@ -156,7 +158,7 @@ async function mostrarClientes() {
 
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-headerDiv.textContent = `${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;  
+     headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;
   li.appendChild(headerDiv);
 
     // Menús de ubicación y pago
