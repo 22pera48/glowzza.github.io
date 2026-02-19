@@ -8,8 +8,18 @@
   <a href="#contacto">Contacto</a>
   <a href="#cuidado-personal">Cuidado personal</a>
   <a href="#perfumeria">Perfumeria y esencias</a>
-  <a href="menu.html">Registro de Clientes</a>
+<span id="menu-link" style="display:none;">
+    <a href="menu.html">Registro de Clientes</a>
+  </span>
 </nav>
+<!-- Paso 2: Formulario de login -->
+  <div id="auth-section">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button id="loginBtn">Ingresar</button>
+    <button id="logoutBtn">Salir</button>
+  </div>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glowzza</title>
@@ -1622,15 +1632,13 @@ Swal.fire({
 
 
 
-
-
-
-
     <div class="modal-imagen">
       <img src="images/peluqueria/pl1.jpeg" alt="Cepillo Anti-Frizz" class="imagen-grande">
     </div>
 
   </div>
+
+  <script type="module" src="firebase.js"></script>
 </div>
 </body>
 </html>       
