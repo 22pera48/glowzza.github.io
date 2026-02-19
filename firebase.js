@@ -131,7 +131,8 @@ async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   item.remove();
 
   let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-headerDiv.textContent = `${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;}
+  headerDiv.textContent = `${clienteSnap.data().nombre} - ${clienteSnap.data().fecha} | Código: ${clienteSnap.data().etiqueta} | Total: $${nuevoTotal}`;
+}
 
 // 🔹 Mostrar clientes
 async function mostrarClientes() {
@@ -154,8 +155,8 @@ async function mostrarClientes() {
 
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-    headerDiv.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${total}`;
-    li.appendChild(headerDiv);
+headerDiv.textContent = `${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;  
+  li.appendChild(headerDiv);
 
     // Menús de ubicación y pago
     const ubicacionSelect = document.createElement("select");
