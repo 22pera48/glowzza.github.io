@@ -95,20 +95,19 @@ const clienteForm = document.getElementById("clienteForm");
 if (clienteForm) {
   clienteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-const nombre = document.getElementById("nombre").value;
-const telefono = document.getElementById("telefono").value;
-const fecha = document.getElementById("fecha").value;
-const etiquetaManual = document.getElementById("etiqueta").value;
+    const nombre = document.getElementById("nombre").value;
+    const fecha = document.getElementById("fecha").value;
 
-await addDoc(collection(db, "clientes"), {
-  nombre,
-  telefono,
-  fecha,
-  ubicacion: "deposito",
-  pago: "no",
-  productos: [],
-  etiqueta: etiquetaManual || (Date.now().toString(36) + Math.random().toString(36).substring(2, 8))
-});
+    const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+
+    await addDoc(collection(db, "clientes"), {
+      nombre,
+      fecha,
+      ubicacion: "deposito",
+      pago: "no",
+      productos: [],
+      etiqueta: etiquetaUnica
+    });
 
     const msg = document.getElementById("statusMsg");
     if (msg) {
@@ -156,7 +155,7 @@ async function mostrarClientes() {
 
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-headerDiv.textContent = `${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${total}`;
+    headerDiv.textContent = `${data.nombre} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${total}`;
     li.appendChild(headerDiv);
 
     // Menús de ubicación y pago
