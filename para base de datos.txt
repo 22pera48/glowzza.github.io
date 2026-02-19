@@ -1,41 +1,32 @@
-en lista de clientes que los productos se discriminen x color tipo u sabor
-pass y usuario
+ver si historial consume mucha lectura o ver  plan pago de firebase
+
+que la parte de produto de clientes tambien actue como buscador
+cuando elimino de stock no se elmina de inmediato en cliente
+contraseña para eliminar elementos
+colocar en la lista de clientes totales
+colocar totale sen la lista de stock
+agregar totales de productos
+sector donde calculo ganancia bruto neto y estipule porcentaje de compra para stock
+hacer scraper
+corregir alertas
+poder descargar registro de ventas y cleitnes
+que el stock haga la lista de pedidos solo
+agregar funcion de calñculo de ingresos y egresos
+problema que no se elimina en tiempo real
 codigo unico para un cliente
 hacer codigo mas potable para escribir
 codigo unico para hacer codigos de barras
-subir productos al server y precios con exel
+cuando elimino de stock no se elmina de inmediato en cliente
 agregar marca de agua de las fotos
 agregar en las fotos una imagen con glowzza
 ver sistema para coordinar envios
-contraseña para eliminar elementos
-ver alarmas de stock
-poner un buscador de productos
-ver tema de refresco de pagina cada vez que agregi un producto
-poner reservas
-lista de cosas x pedido
-hacer scraper
-nuevo erro aparecen vacio los parentesis de color y si elimino una pplanchita y ahy 3 en el carro se elimina el total ademas muestra os cambios al actualizar
+agregar id personalizados par alos clientes que yo pueda poner a gusto
+agregar numeros de telefonos
 
 
-agregar
-await addDoc(collection(db, "productos"), {
-  nombre: "Labial Rojo",
-  precio: 2500,
-  stock: 20,
-  categoria: "maquillaje",
-  descripcion: "Labial mate de larga duración",
-  imagenURL: "https://tuservidor.com/labial.jpg",
-  codigo: "PROD-0001"
-});
-{
-  nombre: "Labial Rojo",
-  precio: 2500,
-  stock: 2,
-  umbralAlerta: 2,
-  estado: "porAgotarse",
-  ultimaActualizacion: "2026-02-14T13:55:00Z",
-  notificado: false
-}
+
+
+
 
 
 
