@@ -23,34 +23,54 @@ const auth = getAuth(app);
 let catalogoProductos = [];
 
 // 🔽 Aquí va la lógica de login/logout
-document.getElementById("loginBtn").addEventListener("click", () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+// Referencias a los elementos del DOM
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const menuLink = document.getElementById("menu-link");
 
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
+// 🔽 Lógica de login
+if (loginBtn && emailInput && passwordInput) {
+  loginBtn.addEventListener("click", async () => {
+    try {
+      await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
       console.log("Login correcto");
-    })
-    .catch((error) => {
+      const msg = document.getElementById("loginMsg");
+      if (msg) {
+        msg.style.color = "green";
+        msg.innerText = "Ingreso exitoso ✅";
+      }
+    } catch (error) {
       console.error("Error en login:", error.message);
-    });
-});
-
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  signOut(auth).then(() => {
-    console.log("Sesión cerrada");
+      const msg = document.getElementById("loginMsg");
+      if (msg) {
+        msg.style.color = "red";
+        msg.innerText = "Error: " + error.message;
+      }
+    }
   });
-});
+}
 
+// 🔽 Lógica de logout
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    console.log("Sesión cerrada");
+    const msg = document.getElementById("loginMsg");
+    if (msg) {
+      msg.style.color = "blue";
+      msg.innerText = "Sesión cerrada";
+    }
+  });
+}
+
+// 🔽 Control de sesión y visibilidad del menú
 onAuthStateChanged(auth, (user) => {
-  const menuLink = document.getElementById("menu-link");
-  if (user) {
-    menuLink.style.display = "inline"; // mostrar enlace
-  } else {
-    menuLink.style.display = "none";   // ocultar enlace
+  if (menuLink) {
+    menuLink.style.display = user ? "inline" : "none";
   }
 });
-
 
 // Cargar catálogo de productos
 async function cargarCatalogo() {
@@ -314,27 +334,3 @@ async function mostrarVentasCerradas() {
 // Cargar listas al abrir
 mostrarClientes();
 mostrarVentasCerradas();
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  try {
-    await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-    alert("Bienvenido: " + emailInput.value);
-  } catch (error) {
-    alert("Error en login: " + error.message);
-  }
-});
-
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  await signOut(auth);
-  alert("Sesión cerrada");
-});
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    document.getElementById("menu-link").style.display = "inline";
-  } else {
-    document.getElementById("menu-link").style.display = "none";
-  }
-});
