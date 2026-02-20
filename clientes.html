@@ -7,6 +7,7 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+      background: #f4f6f8;
     }
     h2 {
       margin-top: 0;
@@ -22,6 +23,7 @@
       background: #ddd;
       cursor: pointer;
       border-radius: 5px 5px 0 0;
+      font-weight: bold;
     }
     .tabs button.active {
       background: #4CAF50;
@@ -32,15 +34,24 @@
       border-radius: 0 5px 5px 5px;
       padding: 20px;
       margin-top: -1px;
+      background: white;
+    }
+    .counter {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
     }
     ul {
       list-style: none;
       padding: 0;
     }
     li {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
       margin-bottom: 10px;
-      padding: 10px;
-      border-bottom: 1px solid #eee;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
     }
   </style>
 </head>
@@ -64,12 +75,14 @@
   <!-- Contenido de pestañas -->
   <div id="tabClientes" class="tab-content">
     <h2>Lista de Clientes</h2>
+    <div class="counter">Total clientes: <span id="contadorClientes">0</span></div>
     <input type="text" id="buscadorClientes" placeholder="Buscar cliente por nombre o ID">
     <ul id="listaClientes"></ul>
   </div>
 
   <div id="tabVentas" class="tab-content" style="display:none;">
     <h2>Lista de Ventas Cerradas</h2>
+    <div class="counter">Total ventas cerradas: <span id="contadorVentas">0</span></div>
     <input type="text" id="buscadorVentas" placeholder="Buscar venta cerrada por nombre o etiqueta">
     <ul id="listaVentasCerradas"></ul>
   </div>
@@ -110,6 +123,19 @@
         venta.style.display = texto.includes(filtro) ? "" : "none";
       });
     });
+
+    // Contadores dinámicos
+    function actualizarContadores() {
+      document.getElementById("contadorClientes").textContent = listaClientes.querySelectorAll("li").length;
+      document.getElementById("contadorVentas").textContent = listaVentas.querySelectorAll("li").length;
+    }
+
+    // Observadores para actualizar automáticamente
+    const observerClientes = new MutationObserver(actualizarContadores);
+    observerClientes.observe(listaClientes, { childList: true });
+
+    const observerVentas = new MutationObserver(actualizarContadores);
+    observerVentas.observe(listaVentas, { childList: true });
   </script>
 </body>
 </html>
