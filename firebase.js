@@ -407,6 +407,7 @@ item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Canti
       const productoInfo = catalogoProductos.find(p => p.nombre === nombreProducto);
       const precio = productoInfo ? productoInfo.precio : 0;
       const numeroOrden = productoInfo ? productoInfo.orden : "";
+      const color = productoInfo ? productoInfo.color : "";   // ✅ ahora sí existe
 
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
