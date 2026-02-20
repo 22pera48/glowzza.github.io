@@ -220,7 +220,7 @@ async function subirProductos(productos) {
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
         await updateDoc(doc(db, "productos", productoId), {
-          stock: Number(prod.stock),
+          stock: increment(Number(prod.stock)),
           precio: Number(prod.precio),
           fecha: prod.fecha || new Date().toISOString(),
           categoria: prod.categoria || ""
