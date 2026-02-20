@@ -11,8 +11,8 @@
     h1 {
       color: #4CAF50;
     }
-    #resultado {
-      font-size: 24px;
+    #resultado, #ventas {
+      font-size: 22px;
       font-weight: bold;
       margin-top: 20px;
     }
@@ -37,8 +37,9 @@
   </style>
 </head>
 <body>
-  <h1>Balance de Stock</h1>
-  <div id="resultado">Calculando...</div>
+  <h1>Balance General</h1>
+  <div id="resultado">Calculando stock...</div>
+  <div id="ventas">Calculando ventas cerradas...</div>
 
   <!-- Botón volver -->
   <div>
@@ -67,8 +68,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔹 Calcular balance
-    async function calcularBalance() {
+    // 🔹 Calcular balance de stock
+    async function calcularBalanceStock() {
       const querySnapshot = await getDocs(collection(db, "productos"));
       let total = 0;
 
@@ -83,7 +84,24 @@
         "Valor total del stock: $" + total.toLocaleString("es-AR");
     }
 
-    calcularBalance();
+    // 🔹 Calcular total de ventas cerradas
+    async function calcularVentasCerradas() {
+      const querySnapshot = await getDocs(collection(db, "ventasCerradas"));
+      let totalVentas = 0;
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const total = Number(data.total) || 0;
+        totalVentas += total;
+      });
+
+      document.getElementById("ventas").innerText = 
+        "Valor total de ventas cerradas: $" + totalVentas.toLocaleString("es-AR");
+    }
+
+    // Ejecutar ambos cálculos
+    calcularBalanceStock();
+    calcularVentasCerradas();
   </script>
 </body>
 </html>
