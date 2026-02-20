@@ -3,59 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <title>Glowzza - Panel Principal</title>
-<style>
-  .boton-grande {
-    width: 280px;
-    height: 160px;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 12px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    transition: transform 0.2s, background-color 0.2s;
-  }
-  .boton-grande:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-  }
+  <style>
+    .boton-grande {
+      width: 280px;
+      height: 160px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-grande:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
 
-  /* Estilo especial para el botón de volver */
-  .boton-volver {
-    width: 280px;
-    height: 80px;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 12px;
-    background-color: #777; /* gris elegante */
-    color: white;
-    border: none;
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    transition: transform 0.2s, background-color 0.2s;
-  }
-  .boton-volver:hover {
-    background-color: #555;
-    transform: scale(1.05);
-  }
-</style></head>
+    /* Estilo especial para el botón de volver */
+    .boton-volver {
+      width: 280px;
+      height: 80px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #777; /* gris elegante */
+      color: white;
+      border: none;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-volver:hover {
+      background-color: #555;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
 <body>
   <h1>Glowzza - Panel Principal</h1>
-<div class="menu-principal">
-  <button onclick="location.href='clientes.html'" class="boton-grande">
-    Registro de Clientes
-  </button>
-  <button onclick="location.href='stock.html'" class="boton-grande">
-    Control de Stock
-  </button>
-</div>
+  <div class="menu-principal">
+    <button onclick="location.href='clientes.html'" class="boton-grande">
+      Registro de Clientes
+    </button>
+    <button onclick="location.href='stock.html'" class="boton-grande">
+      Control de Stock
+    </button>
+    <!-- 🔹 Nuevo botón Balance -->
+    <button onclick="location.href='balance.html'" class="boton-grande">
+      Balance
+    </button>
+  </div>
 
-<!-- Botón de volver -->
-<div style="margin-top:40px;">
-  <button onclick="location.href='https://www.glowzza.com.ar'" class="boton-volver">
-    Volver a Glowzza
-  </button>
-</div></body>
+  <!-- Botón de volver -->
+  <div style="margin-top:40px;">
+    <button onclick="location.href='https://www.glowzza.com.ar'" class="boton-volver">
+      Volver a Glowzza
+    </button>
+  </div>
+</body>
 </html>
