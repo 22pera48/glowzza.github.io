@@ -418,8 +418,7 @@ item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Canti
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
-      item.textContent = `[${numeroOrden}] Producto: ${nombreProducto} (Cantidad: ${cantidad}) - $${precio}`;
-      item.dataset.productoId = productoId;
+item.textContent = `[${numeroOrden}] Producto: ${nombreProducto} (${color}) (Cantidad: ${cantidad}) - $${precio}`;      item.dataset.productoId = productoId;
 
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Eliminar";
