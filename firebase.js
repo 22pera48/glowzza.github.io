@@ -460,8 +460,7 @@ async function mostrarVentasCerradas() {
     const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
-      item.textContent = `[${p.orden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
-      productosList.appendChild(item);
+item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;      productosList.appendChild(item);
     });
 
     li.appendChild(productosList);
