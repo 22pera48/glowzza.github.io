@@ -185,8 +185,12 @@ async function mostrarClientes() {
 
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-    headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${total}`;
-    li.appendChild(headerDiv);
+let totalCompra = (data.productos || []).reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+let cuotas = data.cuotas || [null, null, null, null, null, null];
+let totalPagado = cuotas.reduce((acc, val) => acc + (val?.monto || 0), 0);
+let saldoPendiente = totalCompra - totalPagado;
+
+headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${totalCompra} | Pagado: $${totalPagado} | Pendiente: $${saldoPendiente}`;    li.appendChild(headerDiv);
 
     // Menús de ubicación y pago
     const ubicacionSelect = document.createElement("select");
@@ -286,7 +290,6 @@ cuotasContainer.style.marginTop = "10px";
 cuotasContainer.style.flexDirection = "column";
 li.appendChild(cuotasContainer);
 
-let cuotas = data.cuotas || [null, null, null, null, null, null];
 let cuotaSeleccionada = null;
 
 cuotaBtn.addEventListener("click", () => {
