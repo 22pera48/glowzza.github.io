@@ -275,6 +275,63 @@ async function mostrarClientes() {
       }
     });
     li.appendChild(terminarButton);
+    const cuotaBtn = document.createElement("button");
+cuotaBtn.textContent = "Cuotas";
+cuotaBtn.style.marginLeft = "10px";
+li.appendChild(cuotaBtn);
+
+const cuotasContainer = document.createElement("div");
+cuotasContainer.style.display = "none";
+cuotasContainer.style.marginTop = "10px";
+cuotasContainer.style.flexDirection = "column";
+li.appendChild(cuotasContainer);
+
+let cuotas = data.cuotas || [null, null, null, null, null, null];
+let cuotaSeleccionada = null;
+
+cuotaBtn.addEventListener("click", () => {
+  cuotasContainer.style.display = cuotasContainer.style.display === "none" ? "flex" : "none";
+  renderCuotas();
+});
+
+function renderCuotas() {
+  cuotasContainer.innerHTML = "";
+  cuotas.forEach((valor, i) => {
+    const div = document.createElement("div");
+    div.style.border = "1px solid #ccc";
+    div.style.background = valor ? "#d4edda" : "#fff";
+    div.style.padding = "10px";
+    div.style.margin = "5px 0";
+    div.style.width = "250px";
+    div.style.cursor = "pointer";
+    div.textContent = valor ? `${i+1}. $${valor.monto} – Fecha: ${new Date(valor.fecha).toLocaleDateString()}` : `${i+1}.`;
+    div.onclick = () => cuotaSeleccionada = i;
+    cuotasContainer.appendChild(div);
+  });
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.placeholder = "Monto cuota";
+  input.style.marginTop = "10px";
+
+  const registrarBtn = document.createElement("button");
+  registrarBtn.textContent = "Registrar";
+  registrarBtn.style.marginLeft = "10px";
+
+  registrarBtn.onclick = async () => {
+    if (cuotaSeleccionada !== null && input.value) {
+      cuotas[cuotaSeleccionada] = {
+        monto: Number(input.value),
+        fecha: new Date().toISOString()
+      };
+      await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
+      mostrarClientes(); // refrescar lista
+    }
+  };
+
+  cuotasContainer.appendChild(input);
+  cuotasContainer.appendChild(registrarBtn);
+}
 
     // Botón "+" para agregar productos (no toca stock global)
     const addButton = document.createElement("button");
