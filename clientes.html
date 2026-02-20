@@ -3,66 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <title>Registro de Clientes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .tabs button {
+      padding: 10px 20px;
+      border: none;
+      background: #ddd;
+      cursor: pointer;
+      border-radius: 5px 5px 0 0;
+    }
+    .tabs button.active {
+      background: #4CAF50;
+      color: white;
+    }
+    .tab-content {
+      border: 1px solid #ccc;
+      border-radius: 0 5px 5px 5px;
+      padding: 20px;
+      margin-top: -1px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+  </style>
 </head>
 <body>
-<h2>Registrar Cliente</h2>
-<form id="clienteForm">
-  <input type="text" id="nombre" placeholder="Nombre" required>
-  <input type="tel" id="telefono" placeholder="Teléfono" required>
-  <input type="text" id="nemonico" placeholder="#nemonico">
-  <input type="date" id="fecha" required>
-  <button type="submit">Guardar</button>
-  <button type="button" onclick="location.href='menu.html'">Volver al Menú Principal</button>
-</form>
+  <h2>Registrar Cliente</h2>
+  <form id="clienteForm">
+    <input type="text" id="nombre" placeholder="Nombre" required>
+    <input type="tel" id="telefono" placeholder="Teléfono" required>
+    <input type="text" id="nemonico" placeholder="#nemonico">
+    <input type="date" id="fecha" required>
+    <button type="submit">Guardar</button>
+    <button type="button" onclick="location.href='menu.html'">Volver al Menú Principal</button>
+  </form>
 
-  <div style="display:flex; gap:40px; margin-top:20px;">
-    <div>
-<h2>Lista de Clientes</h2>
-<input type="text" id="buscadorClientes" placeholder="Buscar cliente por nombre o ID">
-<ul id="listaClientes">
-  <!-- Aquí se cargan los clientes -->
-</ul>
-    </div>
-    <div>
-<h2>Lista de Ventas Cerradas</h2>
-<input type="text" id="buscadorVentas" placeholder="Buscar venta cerrada por nombre o etiqueta">
-<ul id="listaVentasCerradas">
-  <!-- Aquí se cargan las ventas cerradas -->
-</ul>
-    </div>
+  <!-- Pestañas -->
+  <div class="tabs">
+    <button class="active" onclick="mostrarTab('clientes')">Clientes</button>
+    <button onclick="mostrarTab('ventas')">Ventas Cerradas</button>
+  </div>
+
+  <!-- Contenido de pestañas -->
+  <div id="tabClientes" class="tab-content">
+    <h2>Lista de Clientes</h2>
+    <input type="text" id="buscadorClientes" placeholder="Buscar cliente por nombre o ID">
+    <ul id="listaClientes"></ul>
+  </div>
+
+  <div id="tabVentas" class="tab-content" style="display:none;">
+    <h2>Lista de Ventas Cerradas</h2>
+    <input type="text" id="buscadorVentas" placeholder="Buscar venta cerrada por nombre o etiqueta">
+    <ul id="listaVentasCerradas"></ul>
   </div>
 
   <!-- Script de Firebase -->
   <script type="module" src="firebase.js"></script>
-<script>
-  // Buscador de clientes
-  const buscadorClientes = document.getElementById("buscadorClientes");
-  const listaClientes = document.getElementById("listaClientes");
+  <script>
+    function mostrarTab(tab) {
+      document.getElementById("tabClientes").style.display = (tab === "clientes") ? "block" : "none";
+      document.getElementById("tabVentas").style.display = (tab === "ventas") ? "block" : "none";
 
-  buscadorClientes.addEventListener("input", () => {
-    const filtro = buscadorClientes.value.toLowerCase();
-    const clientes = listaClientes.querySelectorAll("li");
+      const buttons = document.querySelectorAll(".tabs button");
+      buttons.forEach(btn => btn.classList.remove("active"));
+      if (tab === "clientes") buttons[0].classList.add("active");
+      else buttons[1].classList.add("active");
+    }
 
-    clientes.forEach(cliente => {
-      const texto = cliente.textContent.toLowerCase();
-      cliente.style.display = texto.includes(filtro) ? "" : "none";
+    // Buscador de clientes
+    const buscadorClientes = document.getElementById("buscadorClientes");
+    const listaClientes = document.getElementById("listaClientes");
+    buscadorClientes.addEventListener("input", () => {
+      const filtro = buscadorClientes.value.toLowerCase();
+      const clientes = listaClientes.querySelectorAll("li");
+      clientes.forEach(cliente => {
+        const texto = cliente.textContent.toLowerCase();
+        cliente.style.display = texto.includes(filtro) ? "" : "none";
+      });
     });
-  });
 
-  // Buscador de ventas cerradas
-  const buscadorVentas = document.getElementById("buscadorVentas");
-  const listaVentas = document.getElementById("listaVentasCerradas");
-
-  buscadorVentas.addEventListener("input", () => {
-    const filtro = buscadorVentas.value.toLowerCase();
-    const ventas = listaVentas.querySelectorAll("li");
-
-    ventas.forEach(venta => {
-      const texto = venta.textContent.toLowerCase();
-      venta.style.display = texto.includes(filtro) ? "" : "none";
+    // Buscador de ventas cerradas
+    const buscadorVentas = document.getElementById("buscadorVentas");
+    const listaVentas = document.getElementById("listaVentasCerradas");
+    buscadorVentas.addEventListener("input", () => {
+      const filtro = buscadorVentas.value.toLowerCase();
+      const ventas = listaVentas.querySelectorAll("li");
+      ventas.forEach(venta => {
+        const texto = venta.textContent.toLowerCase();
+        venta.style.display = texto.includes(filtro) ? "" : "none";
+      });
     });
-  });
-</script>
-
+  </script>
 </body>
 </html>
