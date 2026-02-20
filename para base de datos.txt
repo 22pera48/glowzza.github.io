@@ -20,11 +20,13 @@ cuando elimino de stock no se elmina de inmediato en cliente
 agregar marca de agua de las fotos
 agregar en las fotos una imagen con glowzza
 ver sistema para coordinar envios
-agregar id personalizados par alos clientes que yo pueda poner a gusto
-agregar numeros de telefonos
+cuando pongo producto se borran datos 
+probar funcion actualizar stock
+ver si nemonico y telefono aparecen en venta cerrada
+resolver tema colores en clientes
 
-
-
+hay numeros duplicados en stock y no actualiza stock al subir txt
+verificar si desde ventas cerradas se hace el descuento de stock general
 
 
 
