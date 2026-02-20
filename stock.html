@@ -109,6 +109,33 @@
 
       return li;
     }
+// 🔹 Refrescar listado desde Firestore
+async function refrescarLista() {
+  document.getElementById("listaStock").innerHTML = "";
+  document.getElementById("listaAgotados").innerHTML = "";
+  document.getElementById("listaPorAgotarse").innerHTML = "";
+
+  const productosSnap = await getDocs(collection(db, "productos"));
+  let totalProductos = 0;
+
+  productosSnap.forEach((docSnap) => {
+    const prod = docSnap.data();
+    totalProductos++;
+
+    const liGeneral = crearItem(prod, docSnap.id, true);
+    document.getElementById("listaStock").appendChild(liGeneral);
+
+    if (Number(prod.stock) === 0) {
+      const liAgotado = crearItem(prod, docSnap.id, false);
+      document.getElementById("listaAgotados").appendChild(liAgotado);
+    } else if (Number(prod.stock) <= 2) {
+      const liPorAgotarse = crearItem(prod, docSnap.id, false);
+      document.getElementById("listaPorAgotarse").appendChild(liPorAgotarse);
+    }
+  });
+
+  document.getElementById("contadorProductos").textContent = totalProductos;
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
   const productosSnap = await getDocs(collection(db, "productos"));
@@ -272,6 +299,8 @@ async function subirProductos(productos) {
       console.error("Error al subir producto:", err);
     }
   }
+  // 🔹 refrescar la lista desde Firestore
+  await refrescarLista();
   alert("Carga de productos finalizada");
 }
 document.getElementById("buscador").addEventListener("input", async (e) => {
