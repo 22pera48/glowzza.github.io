@@ -305,6 +305,19 @@ function renderCuotas() {
     div.style.width = "250px";
     div.style.cursor = "pointer";
     div.textContent = valor ? `${i+1}. $${valor.monto} – Fecha: ${new Date(valor.fecha).toLocaleDateString()}` : `${i+1}.`;
+     // 🔹 Botón eliminar
+  if (valor) {
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Eliminar";
+    deleteBtn.style.marginLeft = "10px";
+    deleteBtn.onclick = async () => {
+      cuotas[i] = null; // borra la cuota
+      await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
+      mostrarClientes(); // refresca lista
+    };
+    div.appendChild(deleteBtn);
+  }
+    
     div.onclick = () => cuotaSeleccionada = i;
     cuotasContainer.appendChild(div);
   });
