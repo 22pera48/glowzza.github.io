@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glowzza - Balance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    h1 {
+      color: #4CAF50;
+    }
+    #resultado {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .boton-volver {
+      margin-top: 40px;
+      width: 200px;
+      height: 60px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 10px;
+      background-color: #777;
+      color: white;
+      border: none;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-volver:hover {
+      background-color: #555;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Balance de Stock</h1>
+  <div id="resultado">Calculando...</div>
+
+  <!-- Botón volver -->
+  <div>
+    <button onclick="location.href='menu.html'" class="boton-volver">
+      Volver al Menú
+    </button>
+  </div>
+
+  <!-- 🔹 Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, getDocs, collection } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Configuración Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+      authDomain: "glowzzainventario.firebaseapp.com",
+      projectId: "glowzzainventario",
+      storageBucket: "glowzzainventario.firebasestorage.app",
+      messagingSenderId: "159721581844",
+      appId: "1:159721581844:web:f62cdb303258dc847b6601",
+      measurementId: "G-0FR3Q6P3L2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 🔹 Calcular balance
+    async function calcularBalance() {
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      let total = 0;
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const precio = Number(data.precio) || 0;
+        const stock = Number(data.stock) || 0;
+        total += precio * stock;
+      });
+
+      document.getElementById("resultado").innerText = 
+        "Valor total del stock: $" + total.toLocaleString("es-AR");
+    }
+
+    calcularBalance();
+  </script>
+</body>
+</html>
