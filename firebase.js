@@ -413,7 +413,7 @@ item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Canti
       let productosActuales = clienteSnap.data().productos || [];
 
       const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-      productosActuales.push({ id: productoId, nombre: nombreProducto,color: colorProducto || "", precio, cantidad, orden: numeroOrden });
+      productosActuales.push({ id: productoId, nombre: nombreProducto,color: color, precio, cantidad, orden: numeroOrden });
       await updateDoc(clienteRef, { productos: productosActuales });
 
       const item = document.createElement("li");
