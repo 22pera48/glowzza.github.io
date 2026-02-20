@@ -376,8 +376,7 @@ function renderCuotas() {
     // Renderizar productos existentes con número de orden
     (data.productos || []).forEach((p) => {
       const item = document.createElement("li");
-      item.textContent = `[${p.orden}] Producto: ${p.nombre} (Cantidad: ${p.cantidad}) - $${p.precio}`;
-      item.dataset.productoId = p.id;
+item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;      item.dataset.productoId = p.id;
 
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Eliminar";
@@ -460,7 +459,8 @@ async function mostrarVentasCerradas() {
     const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
-item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;      productosList.appendChild(item);
+item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;      
+productosList.appendChild(item);
     });
 
     li.appendChild(productosList);
