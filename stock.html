@@ -56,7 +56,9 @@
       deleteDoc,
       doc,
       query,
-      where
+      where,
+      increment   // 🔹 agregado aquí
+
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -219,19 +221,21 @@ async function subirProductos(productos) {
       if (!snap.empty) {
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
+
+        // 🔹 ahora sí se acumula stock
         await updateDoc(doc(db, "productos", productoId), {
           stock: increment(Number(prod.stock)),
           precio: Number(prod.precio),
           fecha: prod.fecha || new Date().toISOString(),
           categoria: prod.categoria || ""
         });
-        // Guardar historial
-await addDoc(collection(db, "historial"), {
-  productoId,
-  claveUnica: prod.claveUnica,
-  cambio: `Stock: ${prod.stock}, Precio: $${prod.precio}`,
-  fechaCambio: new Date().toISOString()
-});
+
+        await addDoc(collection(db, "historial"), {
+          productoId,
+          claveUnica: prod.claveUnica,
+          cambio: `Stock +${prod.stock}, Precio: $${prod.precio}`,
+          fechaCambio: new Date().toISOString()
+        });
 
       } else {
         const docRef = await addDoc(collection(db, "productos"), {
@@ -244,15 +248,14 @@ await addDoc(collection(db, "historial"), {
           categoria: prod.categoria || "",
           claveUnica: prod.claveUnica
         });
-       productoId = docRef.id;
-  // Guardar historial
-  await addDoc(collection(db, "historial"), {
-    productoId,
-    claveUnica: prod.claveUnica,
-    cambio: `Creado → Stock: ${prod.stock}, Precio: $${prod.precio}`,
-    fechaCambio: new Date().toISOString()
-  });
+        productoId = docRef.id;
 
+        await addDoc(collection(db, "historial"), {
+          productoId,
+          claveUnica: prod.claveUnica,
+          cambio: `Creado → Stock: ${prod.stock}, Precio: $${prod.precio}`,
+          fechaCambio: new Date().toISOString()
+        });
       }
 
       const liGeneral = crearItem(prod, productoId, true);
@@ -270,7 +273,7 @@ await addDoc(collection(db, "historial"), {
     }
   }
   alert("Carga de productos finalizada");
-}// 🔎 Buscador de productos
+}
 document.getElementById("buscador").addEventListener("input", async (e) => {
   const palabra = e.target.value.toLowerCase();
   const resultados = document.getElementById("resultadosBusqueda");
