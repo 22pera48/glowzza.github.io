@@ -1,8 +1,7 @@
 // 🔹 Imports de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
-  getFirestore, addDoc, getDocs, collection, updateDoc,getDoc, deleteDoc, doc, query, where, increment, arrayUnion 
- 
+  getFirestore, addDoc, getDocs, collection, updateDoc,getDoc, deleteDoc, doc, query, where, increment 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -212,35 +211,6 @@ async function mostrarClientes() {
     });
     li.appendChild(pagoSelect);
 
-     // 🔹 Input y botón para registrar cuota
-    const cuotaInput = document.createElement("input");
-    cuotaInput.type = "number";
-    cuotaInput.placeholder = "Monto cuota";
-    cuotaInput.style.marginLeft = "10px";
-
-    const cuotaBtn = document.createElement("button");
-    cuotaBtn.textContent = "Registrar cuota";
-    cuotaBtn.style.marginLeft = "5px";
-    cuotaBtn.addEventListener("click", async () => {
-      const monto = Number(cuotaInput.value);
-      if (monto > 0) {
-        await updateDoc(doc(db, "clientes", docSnap.id), {
-          cuotas: arrayUnion({
-            fecha: new Date().toISOString(),
-            monto
-          })
-        });
-        mostrarClientes(); // refrescar lista
-      }
-    });
-
-    li.appendChild(cuotaInput);
-    li.appendChild(cuotaBtn);
-
-    lista.appendChild(li);
-  });
-}
-
     // Botón Terminar compra
     const terminarButton = document.createElement("button");
     terminarButton.textContent = "Terminar compra";
@@ -397,8 +367,8 @@ async function mostrarClientes() {
     });
 
     lista.appendChild(li);
-  
-
+  });
+}
 
 // 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
