@@ -411,6 +411,7 @@ item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Canti
       const clienteRef = doc(db, "clientes", docSnap.id);
       const clienteSnap = await getDoc(clienteRef);
       let productosActuales = clienteSnap.data().productos || [];
+      const color = productoInfo ? productoInfo.color : "";   // 🔹 acá tomás el color real
 
       const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
       productosActuales.push({ id: productoId, nombre: nombreProducto,color: color, precio, cantidad, orden: numeroOrden });
