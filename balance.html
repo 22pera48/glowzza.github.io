@@ -11,7 +11,7 @@
     h1 {
       color: #4CAF50;
     }
-    #resultado, #ventas {
+    #resultado, #ventas, #clientes {
       font-size: 22px;
       font-weight: bold;
       margin-top: 20px;
@@ -40,6 +40,7 @@
   <h1>Balance General</h1>
   <div id="resultado">Calculando stock...</div>
   <div id="ventas">Calculando ventas cerradas...</div>
+  <div id="clientes">Calculando clientes activos...</div>
 
   <!-- Botón volver -->
   <div>
@@ -99,9 +100,30 @@
         "Valor total de ventas cerradas: $" + totalVentas.toLocaleString("es-AR");
     }
 
-    // Ejecutar ambos cálculos
+    // 🔹 Calcular total de clientes activos
+    async function calcularClientesActivos() {
+      const querySnapshot = await getDocs(collection(db, "clientes"));
+      let totalClientes = 0;
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data.productos && data.productos.length > 0) {
+          data.productos.forEach(p => {
+            const precio = Number(p.precio) || 0;
+            const cantidad = Number(p.cantidad) || 0;
+            totalClientes += precio * cantidad;
+          });
+        }
+      });
+
+      document.getElementById("clientes").innerText = 
+        "Valor total de clientes activos: $" + totalClientes.toLocaleString("es-AR");
+    }
+
+    // Ejecutar todos los cálculos
     calcularBalanceStock();
     calcularVentasCerradas();
+    calcularClientesActivos();
   </script>
 </body>
 </html>
