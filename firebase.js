@@ -336,6 +336,7 @@ function renderCuotas() {
     // Botón "+" para agregar productos (no toca stock global)
     const addButton = document.createElement("button");
     addButton.textContent = "+";
+    addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
     li.appendChild(addButton);
 
     const productosSelect = document.createElement("select");
