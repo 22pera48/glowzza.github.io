@@ -308,19 +308,20 @@ function renderCuotas() {
     div.style.width = "250px";
     div.style.cursor = "pointer";
     div.textContent = valor ? `${i+1}. $${valor.monto} – Fecha: ${new Date(valor.fecha).toLocaleDateString()}` : `${i+1}.`;
-     // 🔹 Botón eliminar
-  if (valor) {
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "Eliminar";
-    deleteBtn.style.marginLeft = "10px";
-    deleteBtn.onclick = async () => {
-      cuotas[i] = null; // borra la cuota
-      await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
-      mostrarClientes(); // refresca lista
-    };
-    div.appendChild(deleteBtn);
-  }
-    
+
+    // 🔹 Botón eliminar
+    if (valor) {
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Eliminar";
+      deleteBtn.style.marginLeft = "10px";
+      deleteBtn.onclick = async () => {
+        cuotas[i] = null; // borra la cuota
+        await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
+        mostrarClientes(); // refresca lista
+      };
+      div.appendChild(deleteBtn);
+    }
+
     div.onclick = () => cuotaSeleccionada = i;
     cuotasContainer.appendChild(div);
   });
@@ -349,119 +350,127 @@ function renderCuotas() {
   cuotasContainer.appendChild(registrarBtn);
 }
 
-    // Botón "+" para agregar productos (no toca stock global)
-    const addButton = document.createElement("button");
-    addButton.textContent = "+";
-    addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
-    li.appendChild(addButton);
+// Botón "+" para agregar productos (no toca stock global)
+const addButton = document.createElement("button");
+addButton.textContent = "+";
+addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
+li.appendChild(addButton);
 
-    const productosSelect = document.createElement("select");
-    productosSelect.style.display = "none";
-    let opciones = `<option value="">Seleccionar producto...</option>`;
-    catalogoProductos.forEach(p => {
-    opciones += `<option value="${p.nombre}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;    });
-    productosSelect.innerHTML = opciones;
-    li.appendChild(productosSelect);
+const productosSelect = document.createElement("select");
+productosSelect.style.display = "none";
+let opciones = `<option value="">Seleccionar producto...</option>`;
+catalogoProductos.forEach(p => {
+  opciones += `<option value="${p.nombre}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;
+});
+productosSelect.innerHTML = opciones;
+li.appendChild(productosSelect);
 
-    const cantidadInput = document.createElement("input");
-    cantidadInput.type = "number";
-    cantidadInput.min = 1;
-    cantidadInput.value = 1;
+const cantidadInput = document.createElement("input");
+cantidadInput.type = "number";
+cantidadInput.min = 1;
+cantidadInput.value = 1;
 // 🔹 Validación inmediata: evita que el usuario ponga 0 o negativos
 cantidadInput.addEventListener("input", () => {
   if (cantidadInput.value <= 0) {
     cantidadInput.value = 1; // fuerza mínimo 1
   }
 });
+cantidadInput.style.display = "none";
+li.appendChild(cantidadInput);
 
-const existente = productosActuales.find(p => p.nombre === nombreProducto);
-if (existente) {
-  alert(`El producto "${nombreProducto}" ya estaba cargado. Se sumaron ${cantidad} unidades más.`);
-  existente.cantidad += cantidad;   // 🔹 suma cantidad si ya existe
-} else {
-  productosActuales.push({ 
-    id: productoId, 
-    nombre: nombreProducto, 
-    color, 
-    precio, 
-    cantidad, 
-    orden: numeroOrden 
+const productosList = document.createElement("ul");
+productosList.style.marginTop = "5px";
+
+// Renderizar productos existentes con número de orden
+(data.productos || []).forEach((p) => {
+  const item = document.createElement("li");
+  item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
+  item.dataset.productoId = p.id;
+
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "Eliminar";
+  deleteButton.style.marginLeft = "10px";
+  deleteButton.addEventListener("click", () => {
+    eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
   });
-}    cantidadInput.style.display = "none";
-    li.appendChild(cantidadInput);
 
-    const productosList = document.createElement("ul");
-    productosList.style.marginTop = "5px";
+  item.appendChild(deleteButton);
+  productosList.appendChild(item);
+});
+li.appendChild(productosList);
 
-    // Renderizar productos existentes con número de orden
-    (data.productos || []).forEach((p) => {
-      const item = document.createElement("li");
-item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;      item.dataset.productoId = p.id;
+// Toggle menú de productos
+addButton.addEventListener("click", () => {
+  const visible = productosSelect.style.display === "none";
+  productosSelect.style.display = visible ? "inline-block" : "none";
+  cantidadInput.style.display = visible ? "inline-block" : "none";
+});
 
-      const deleteButton = document.createElement("button");
-      deleteButton.textContent = "Eliminar";
-      deleteButton.style.marginLeft = "10px";
-      deleteButton.addEventListener("click", () => {
-        eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
-      });
+// Guardar producto nuevo en cliente (no toca stock global)
+productosSelect.addEventListener("change", async () => {
+  const nombreProducto = productosSelect.value;
+  const cantidad = parseInt(cantidadInput.value, 10);
+  if (!nombreProducto) return;
+  if (isNaN(cantidad) || cantidad <= 0) {
+    alert("La cantidad debe ser mayor a 0");
+    return;
+  }
 
-      item.appendChild(deleteButton);
-      productosList.appendChild(item);
+  const productoInfo = catalogoProductos.find(p => p.nombre === nombreProducto);
+  const precio = productoInfo ? productoInfo.precio : 0;
+  const numeroOrden = productoInfo ? productoInfo.orden : "";
+  const color = productoInfo ? productoInfo.color : "";
+
+  const clienteRef = doc(db, "clientes", docSnap.id);
+  const clienteSnap = await getDoc(clienteRef);
+  let productosActuales = clienteSnap.data().productos || [];
+
+  const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+
+  // 🔹 Validación de duplicados
+  const existente = productosActuales.find(p => p.nombre === nombreProducto);
+  if (existente) {
+    alert(`El producto "${nombreProducto}" ya estaba cargado. Se sumaron ${cantidad} unidades más.`);
+    existente.cantidad += cantidad;
+  } else {
+    productosActuales.push({
+      id: productoId,
+      nombre: nombreProducto,
+      color,
+      precio,
+      cantidad,
+      orden: numeroOrden
     });
+  }
 
-    li.appendChild(productosList);
+  await updateDoc(clienteRef, { productos: productosActuales });
 
-    // Toggle menú de productos
-    addButton.addEventListener("click", () => {
-      const visible = productosSelect.style.display === "none";
-      productosSelect.style.display = visible ? "inline-block" : "none";
-      cantidadInput.style.display = visible ? "inline-block" : "none";
-    });
+  // Render inmediato
+  const item = document.createElement("li");
+  item.textContent = `[${numeroOrden}] Producto: ${nombreProducto} (${color}) (Cantidad: ${cantidad}) - $${precio}`;
+  item.dataset.productoId = productoId;
 
-    // Guardar producto nuevo en cliente (no toca stock global)
-    productosSelect.addEventListener("change", async () => {
-      const nombreProducto = productosSelect.value;
-      const cantidad = parseInt(cantidadInput.value, 10);
-      if (!nombreProducto) return;
-
-      const productoInfo = catalogoProductos.find(p => p.nombre === nombreProducto);
-      const precio = productoInfo ? productoInfo.precio : 0;
-      const numeroOrden = productoInfo ? productoInfo.orden : "";
-      const color = productoInfo ? productoInfo.color : "";   // ✅ ahora sí existe
-
-      const clienteRef = doc(db, "clientes", docSnap.id);
-      const clienteSnap = await getDoc(clienteRef);
-      let productosActuales = clienteSnap.data().productos || [];
-
-      const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-      productosActuales.push({ id: productoId, nombre: nombreProducto,color: color, precio, cantidad, orden: numeroOrden });
-      await updateDoc(clienteRef, { productos: productosActuales });
-
-      const item = document.createElement("li");
-item.textContent = `[${numeroOrden}] Producto: ${nombreProducto} (${color}) (Cantidad: ${cantidad}) - $${precio}`;      item.dataset.productoId = productoId;
-
-      const deleteButton = document.createElement("button");
-      deleteButton.textContent = "Eliminar";
-      deleteButton.style.marginLeft = "10px";
-      deleteButton.addEventListener("click", () => {
-        eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
-      });
-
-      item.appendChild(deleteButton);
-      productosList.appendChild(item);
-
-      // Recalcular total y actualizar encabezado
-      let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-      headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${nuevoTotal}`;
-
-      productosSelect.style.display = "none";
-      cantidadInput.style.display = "none";
-    });
-
-    lista.appendChild(li);
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "Eliminar";
+  deleteButton.style.marginLeft = "10px";
+  deleteButton.addEventListener("click", () => {
+    eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
   });
+
+  item.appendChild(deleteButton);
+  productosList.appendChild(item);
+
+  // Recalcular total
+  let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
+  headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${nuevoTotal}`;
+
+  productosSelect.style.display = "none";
+  cantidadInput.style.display = "none";
+});
+
+lista.appendChild(li);
+});
 }
-
 // 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
   await cargarCatalogo();
@@ -479,8 +488,8 @@ async function mostrarVentasCerradas() {
     const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
-item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;      
-productosList.appendChild(item);
+      item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
+      productosList.appendChild(item);
     });
 
     li.appendChild(productosList);
