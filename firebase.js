@@ -499,6 +499,12 @@ async function mostrarVentasCerradas() {
 async function terminarCompra(clienteId) {
   const clienteRef = doc(db, "clientes", clienteId);
   const clienteSnap = await getDoc(clienteRef);
+
+  if (!clienteSnap.exists()) {
+    console.error(`Cliente con id ${clienteId} no encontrado`);
+    return;
+  }
+
   const clienteData = clienteSnap.data();
 
   // Guardar venta cerrada (siempre nuevo doc)
@@ -506,19 +512,25 @@ async function terminarCompra(clienteId) {
 
   // 🔹 Restar stock general
   for (const prod of clienteData.productos || []) {
-    if (!prod.id) continue; // seguridad
-    const productoRef = doc(db, "productos", prod.id); // usa el ID real
-    const productoSnap = await getDoc(productoRef);
-    if (productoSnap.exists()) {
-      const data = productoSnap.data();
-      const stockActual = data.stock || 0;
-      const nuevoStock = Math.max(0, stockActual - prod.cantidad);
-
-      await updateDoc(productoRef, { stock: nuevoStock });
-      console.log(`Stock actualizado: ${prod.nombre} → ${nuevoStock}`);
-    } else {
-      console.warn(`Producto con id ${prod.id} no encontrado en Firestore`);
+    if (!prod.id) {
+      console.warn("Producto sin id en cliente:", prod);
+      continue;
     }
+
+    const productoRef = doc(db, "productos", prod.id);
+    const productoSnap = await getDoc(productoRef);
+
+    if (!productoSnap.exists()) {
+      console.warn(`Producto con id ${prod.id} no encontrado en Firestore`);
+      continue;
+    }
+
+    const data = productoSnap.data();
+    const stockActual = typeof data.stock === "number" ? data.stock : 0;
+    const nuevoStock = Math.max(0, stockActual - prod.cantidad);
+
+    await updateDoc(productoRef, { stock: nuevoStock });
+    console.log(`Stock actualizado: ${prod.nombre} → ${nuevoStock}`);
   }
 
   // Eliminar cliente
