@@ -1,6 +1,140 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    margin: 20px;
+    color: #333;
+  }
+
+  h2, h3 {
+    margin-top: 25px;
+    color: #007bff;
+  }
+
+  button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+
+  input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 300px;
+    margin-bottom: 10px;
+  }
+
+  /* Listados en tarjetas */
+  ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  ul li {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 12px;
+    width: 280px;
+    transition: transform 0.2s ease;
+  }
+  ul li:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Estados de stock */
+  .stock-ok { color: #28a745; font-weight: bold; }
+  .stock-low { color: #ffc107; font-weight: bold; }
+  .stock-out { color: #dc3545; font-weight: bold; }
+
+  /* Badge contador */
+  #contadorProductos, #contadorErrores {
+    background: #007bff;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+  }
+</style>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    margin: 20px;
+    color: #333;
+  }
+
+  h2, h3 {
+    margin-top: 25px;
+    color: #007bff;
+  }
+
+  button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+
+  /* Listados en tarjetas */
+  ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  ul li {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 12px;
+    width: 280px;
+    transition: transform 0.2s ease;
+  }
+  ul li:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Estados de stock */
+  .stock-ok { color: #28a745; font-weight: bold; }
+  .stock-low { color: #ffc107; font-weight: bold; }
+  .stock-out { color: #dc3545; font-weight: bold; }
+
+  /* Badge contador */
+  #contadorProductos, #contadorErrores {
+    background: #007bff;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+  }
+</style>
   <meta charset="UTF-8">
   <title>Control de Stock</title>
 </head>
@@ -102,13 +236,20 @@
         li.appendChild(btnEliminar);
       }
 
-      const texto = document.createTextNode(
-        `[${prod.orden}] ${prod.nombre} (${prod.color || ""}) - Stock: ${prod.stock} - Precio: $${prod.precio} - Fecha: ${prod.fecha} - Categoría: ${prod.categoria} - ID: ${productoId}`
-      );
-      li.appendChild(texto);
+      // 🔹 acá reemplazás el createTextNode por tu bloque con innerHTML
+  li.innerHTML += `
+    <h4>${prod.nombre} (${prod.color || ""})</h4>
+    <p>Precio: $${prod.precio}</p>
+    <p class="${prod.stock === 0 ? 'stock-out' : prod.stock <= 2 ? 'stock-low' : 'stock-ok'}">
+      Stock: ${prod.stock} unidades
+    </p>
+    <p>Categoría: ${prod.categoria}</p>
+    <p>ID: ${productoId}</p>
+  `;
 
-      return li;
-    }
+  return li;
+}
+
 // 🔹 Refrescar listado desde Firestore
 async function refrescarLista() {
   document.getElementById("listaStock").innerHTML = "";
