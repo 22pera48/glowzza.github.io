@@ -496,7 +496,30 @@ async function mostrarVentasCerradas() {
     lista.appendChild(li);
   });
 }
+// 🔹 Terminar compra y actualizar stock
+async function terminarCompra(clienteId) {
+  const clienteRef = doc(db, "clientes", clienteId);
+  const clienteSnap = await getDoc(clienteRef);
+  const clienteData = clienteSnap.data();
 
-// 🔹 Cargar listas al abrir
-mostrarClientes();
-mostrarVentasCerradas();
+  // Guardar venta cerrada
+  await setDoc(doc(collection(db, "ventasCerradas")), clienteData);
+
+  // Restar stock general
+  for (const prod of clienteData.productos || []) {
+    const productoRef = doc(db, "productos", prod.id); // ⚠️ usa el ID único de producto en tu colección de stock
+    const productoSnap = await getDoc(productoRef);
+    if (productoSnap.exists()) {
+      const stockActual = productoSnap.data().stock || 0;
+      const nuevoStock = Math.max(0, stockActual - prod.cantidad);
+      await updateDoc(productoRef, { stock: nuevoStock });
+    }
+  }
+
+  // Eliminar cliente de "clientes"
+  await deleteDoc(clienteRef);
+
+  // Refrescar listas
+  mostrarClientes();
+  mostrarVentasCerradas();
+}
