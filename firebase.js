@@ -367,6 +367,18 @@ function renderCuotas() {
     cantidadInput.type = "number";
     cantidadInput.min = 1;
     cantidadInput.value = 1;
+    // 🔹 Validación inmediata: evita que el usuario ponga 0 o negativos
+cantidadInput.addEventListener("input", () => {
+  if (cantidadInput.value <= 0) {
+    cantidadInput.value = 1; // fuerza mínimo 1
+  }
+});
+const existente = productosActuales.find(p => p.nombre === nombreProducto);
+if (existente) {
+  existente.cantidad += cantidad;
+} else {
+  productosActuales.push({ id: productoId, nombre: nombreProducto, color, precio, cantidad, orden: numeroOrden });
+}
     cantidadInput.style.display = "none";
     li.appendChild(cantidadInput);
 
