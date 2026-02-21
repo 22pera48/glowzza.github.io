@@ -92,7 +92,7 @@ async function cargarProductoDesdeTXT(nombre, precio, cantidad, orden, color, ca
   // Normalizamos el nombre para evitar duplicados por espacios o mayúsculas
   const nombreNormalizado = nombre.trim();
 
-  const productoRef = doc(db, "productos", nombreNormalizado);
+const productoRef = doc(db, "productos", p.id);
   const productoSnap = await getDoc(productoRef);
 
   if (productoSnap.exists()) {
