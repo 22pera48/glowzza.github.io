@@ -497,6 +497,8 @@ async function mostrarVentasCerradas() {
 }
 // 🔹 Terminar compra y actualizar stock
 async function terminarCompra(clienteId) {
+    console.log(">>> terminarCompra fue llamada con clienteId:", clienteId);
+
   const clienteRef = doc(db, "clientes", clienteId);
   const clienteSnap = await getDoc(clienteRef);
 
