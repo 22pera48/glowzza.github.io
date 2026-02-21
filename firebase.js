@@ -531,11 +531,12 @@ async function terminarCompra(clienteId) {
       continue;
     }
 
-    const data = productoSnap.data();
-    const stockActual = typeof data.stock === "number" ? data.stock : 0;
-    const nuevoStock = Math.max(0, stockActual - prod.cantidad);
+const data = productoSnap.data();
+const stockActual = Number(data.stock) || 0;
+const cantidad = Number(prod.cantidad) || 0;
+const nuevoStock = Math.max(0, stockActual - cantidad);
 
-    await updateDoc(productoRef, { stock: nuevoStock });
+await updateDoc(productoRef, { stock: nuevoStock });
 
     // 🔹 Confirmación inmediata
     const checkSnap = await getDoc(productoRef);
