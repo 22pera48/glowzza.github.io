@@ -1,4 +1,6 @@
 // 🔹 Imports de Firebase
+
+console.log(">>> Script cargado correctamente");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
   getFirestore, addDoc, getDocs, collection, updateDoc,getDoc, deleteDoc, doc, query, where, increment 
