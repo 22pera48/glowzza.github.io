@@ -501,13 +501,13 @@ async function terminarCompra(clienteId) {
   const clienteSnap = await getDoc(clienteRef);
   const clienteData = clienteSnap.data();
 
-  // Guardar venta cerrada
+  // Guardar venta cerrada (siempre nuevo doc)
   await addDoc(collection(db, "ventasCerradas"), clienteData);
 
   // 🔹 Restar stock general
   for (const prod of clienteData.productos || []) {
     if (!prod.id) continue; // seguridad
-    const productoRef = doc(db, "productos", prod.id); // 🔹 usa el ID real
+    const productoRef = doc(db, "productos", prod.id); // usa el ID real
     const productoSnap = await getDoc(productoRef);
     if (productoSnap.exists()) {
       const data = productoSnap.data();
@@ -526,7 +526,3 @@ async function terminarCompra(clienteId) {
   mostrarClientes();
   mostrarVentasCerradas();
 }
-document.addEventListener("DOMContentLoaded", () => {
-  mostrarClientes();
-  mostrarVentasCerradas();
-});
