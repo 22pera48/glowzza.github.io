@@ -21,7 +21,7 @@ agregar marca de agua de las fotos
 agregar en las fotos una imagen con glowzza
 ver sistema para coordinar envios
 cuando pongo producto se borran datos 
-  
+ cuando se pase de clietne a venta cerrada falta la fecha 
 que saque el valor del stock cpn el pago en bruto pra tner el neto
 el contador de clientes no cuenta clientes sino productos
 cuadro ventas dia dia 
