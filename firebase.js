@@ -520,6 +520,9 @@ async function terminarCompra(clienteId) {
   await deleteDoc(clienteRef);
 
   // Refrescar listas
+
+}
+document.addEventListener("DOMContentLoaded", () => {
   mostrarClientes();
   mostrarVentasCerradas();
-}
+});
