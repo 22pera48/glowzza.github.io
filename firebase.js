@@ -430,8 +430,8 @@ productosSelect.addEventListener("change", async () => {
   // 🔹 Validación de duplicados
   const existente = productosActuales.find(p => p.nombre === nombreProducto);
   if (existente) {
-    alert(`El producto "${nombreProducto}" ya estaba cargado. Se sumaron ${cantidad} unidades más.`);
-    existente.cantidad += cantidad;
+    alert(`El producto "${nombreProducto}" ya estaba cargado.`);
+  return; // 🔹 corta acá y no agrega nada
   } else {
     productosActuales.push({
       id: productoId,
