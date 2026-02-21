@@ -507,11 +507,17 @@ async function terminarCompra(clienteId) {
 
   const clienteData = clienteSnap.data();
 
+  // 🔹 Log inicial
+  console.log("Cliente completo:", clienteData);
+  console.log("Productos del cliente:", clienteData.productos);
+
   // Guardar venta cerrada (siempre nuevo doc)
   await addDoc(collection(db, "ventasCerradas"), clienteData);
 
   // 🔹 Restar stock general
   for (const prod of clienteData.productos || []) {
+    console.log("Procesando producto:", prod);
+
     if (!prod.id) {
       console.warn("Producto sin id en cliente:", prod);
       continue;
@@ -530,7 +536,10 @@ async function terminarCompra(clienteId) {
     const nuevoStock = Math.max(0, stockActual - prod.cantidad);
 
     await updateDoc(productoRef, { stock: nuevoStock });
-    console.log(`Stock actualizado: ${prod.nombre} → ${nuevoStock}`);
+
+    // 🔹 Confirmación inmediata
+    const checkSnap = await getDoc(productoRef);
+    console.log(`Stock confirmado en Firestore: ${checkSnap.data().stock}`);
   }
 
   // Eliminar cliente
