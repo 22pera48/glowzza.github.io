@@ -408,38 +408,38 @@ addButton.addEventListener("click", () => {
 
 // Guardar producto nuevo en cliente (no toca stock global)
 productosSelect.addEventListener("change", async () => {
-  const nombreProducto = productosSelect.value;
+  const productoId = productosSelect.value; // 🔹 ahora es el ID real
   const cantidad = parseInt(cantidadInput.value, 10);
-  if (!nombreProducto) return;
+  if (!productoId) return;
   if (isNaN(cantidad) || cantidad <= 0) {
     alert("La cantidad debe ser mayor a 0");
     return;
   }
 
-  const productoInfo = catalogoProductos.find(p => p.nombre === nombreProducto);
-  const precio = productoInfo ? productoInfo.precio : 0;
-  const numeroOrden = productoInfo ? productoInfo.orden : "";
-  const color = productoInfo ? productoInfo.color : "";
+  // 🔹 Buscar producto por ID en el catálogo
+  const productoInfo = catalogoProductos.find(p => p.id === productoId);
+  if (!productoInfo) {
+    alert("Producto no encontrado en catálogo");
+    return;
+  }
 
   const clienteRef = doc(db, "clientes", docSnap.id);
   const clienteSnap = await getDoc(clienteRef);
   let productosActuales = clienteSnap.data().productos || [];
 
-  const productoId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-
-  // 🔹 Validación de duplicados
-  const existente = productosActuales.find(p => p.nombre === nombreProducto);
+  // 🔹 Validación de duplicados por ID
+  const existente = productosActuales.find(p => p.id === productoId);
   if (existente) {
-    alert(`El producto "${nombreProducto}" ya estaba cargado.`);
-  return; // 🔹 corta acá y no agrega nada
+    alert(`El producto "${productoInfo.nombre}" ya estaba cargado.`);
+    return;
   } else {
     productosActuales.push({
-      id: productoId,
-      nombre: nombreProducto,
-      color,
-      precio,
+      id: productoInfo.id, // 🔹 ID real de Firestore
+      nombre: productoInfo.nombre,
+      color: productoInfo.color,
+      precio: productoInfo.precio,
       cantidad,
-      orden: numeroOrden
+      orden: productoInfo.orden
     });
   }
 
@@ -447,8 +447,8 @@ productosSelect.addEventListener("change", async () => {
 
   // Render inmediato
   const item = document.createElement("li");
-  item.textContent = `[${numeroOrden}] Producto: ${nombreProducto} (${color}) (Cantidad: ${cantidad}) - $${precio}`;
-  item.dataset.productoId = productoId;
+  item.textContent = `[${productoInfo.orden}] Producto: ${productoInfo.nombre} (${productoInfo.color}) (Cantidad: ${cantidad}) - $${productoInfo.precio}`;
+  item.dataset.productoId = productoInfo.id;
 
   const deleteButton = document.createElement("button");
   deleteButton.textContent = "Eliminar";
@@ -467,7 +467,6 @@ productosSelect.addEventListener("change", async () => {
   productosSelect.style.display = "none";
   cantidadInput.style.display = "none";
 });
-
 lista.appendChild(li);
 });
 }
