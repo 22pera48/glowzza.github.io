@@ -502,24 +502,29 @@ async function terminarCompra(clienteId) {
   const clienteData = clienteSnap.data();
 
   // Guardar venta cerrada
-  await setDoc(doc(collection(db, "ventasCerradas")), clienteData);
+  await addDoc(collection(db, "ventasCerradas"), clienteData);
 
-  // Restar stock general
+  // 🔹 Restar stock general
   for (const prod of clienteData.productos || []) {
-    const productoRef = doc(db, "productos", prod.id); // ⚠️ usa el ID único de producto en tu colección de stock
+    if (!prod.id) continue; // seguridad
+    const productoRef = doc(db, "productos", prod.id); // 🔹 usa el ID real
     const productoSnap = await getDoc(productoRef);
     if (productoSnap.exists()) {
-      const stockActual = productoSnap.data().stock || 0;
+      const data = productoSnap.data();
+      const stockActual = data.stock || 0;
       const nuevoStock = Math.max(0, stockActual - prod.cantidad);
+
       await updateDoc(productoRef, { stock: nuevoStock });
+      console.log(`Stock actualizado: ${prod.nombre} → ${nuevoStock}`);
     }
   }
 
-  // Eliminar cliente de "clientes"
+  // Eliminar cliente
   await deleteDoc(clienteRef);
 
   // Refrescar listas
-
+  mostrarClientes();
+  mostrarVentasCerradas();
 }
 document.addEventListener("DOMContentLoaded", () => {
   mostrarClientes();
