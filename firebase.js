@@ -515,28 +515,30 @@ async function terminarCompra(clienteId) {
   await addDoc(collection(db, "ventasCerradas"), clienteData);
 
   // 🔹 Restar stock general
-  for (const prod of clienteData.productos || []) {
-    console.log("Procesando producto:", prod);
+for (const prod of clienteData.productos || []) {
+  console.log("Procesando producto:", prod);
 
-    if (!prod.id) {
-      console.warn("Producto sin id en cliente:", prod);
-      continue;
-    }
+  if (!prod.id) {
+    console.warn("Producto sin ID, no se descuenta:", prod);
+    continue;
+  }
 
-    const productoRef = doc(db, "productos", prod.id);
-    const productoSnap = await getDoc(productoRef);
+  const productoRef = doc(db, "productos", prod.id);
+  const productoSnap = await getDoc(productoRef);
 
-    if (!productoSnap.exists()) {
-      console.warn(`Producto con id ${prod.id} no encontrado en Firestore`);
-      continue;
-    }
+  if (!productoSnap.exists()) {
+    console.warn("No existe producto en Firestore con ID:", prod.id);
+    continue;
+  }
 
-const data = productoSnap.data();
-const stockActual = Number(data.stock) || 0;
-const cantidad = Number(prod.cantidad) || 0;
-const nuevoStock = Math.max(0, stockActual - cantidad);
+  const data = productoSnap.data();
+  const stockActual = Number(data.stock) || 0;
+  const cantidad = Number(prod.cantidad) || 0;
+  const nuevoStock = Math.max(0, stockActual - cantidad);
 
-await updateDoc(productoRef, { stock: nuevoStock });
+  console.log(`Stock actual: ${stockActual}, cantidad vendida: ${cantidad}, nuevo stock: ${nuevoStock}`);
+
+  await updateDoc(productoRef, { stock: nuevoStock });
 
     // 🔹 Confirmación inmediata
     const checkSnap = await getDoc(productoRef);
