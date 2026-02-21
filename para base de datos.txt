@@ -29,9 +29,8 @@ hay numeros duplicados en stock y no actualiza stock al subir txt
 verificar si desde ventas cerradas se hace el descuento de stock general
 poder eliminar usuarios
 poder subir lista de proveedores
-
-cuando aya 2 productos iguales que en vez de aparecer que no se agrege
-
+mejorar estetica
+agregar buscador de productos en cleintes
 
 
 const firebaseConfig = {
