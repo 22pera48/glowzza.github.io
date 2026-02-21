@@ -360,7 +360,7 @@ const productosSelect = document.createElement("select");
 productosSelect.style.display = "none";
 let opciones = `<option value="">Seleccionar producto...</option>`;
 catalogoProductos.forEach(p => {
-  opciones += `<option value="${p.nombre}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;
+  opciones += `<option value="${p.id}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;
 });
 productosSelect.innerHTML = opciones;
 li.appendChild(productosSelect);
