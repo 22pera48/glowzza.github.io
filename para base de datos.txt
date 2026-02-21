@@ -21,7 +21,7 @@ agregar marca de agua de las fotos
 agregar en las fotos una imagen con glowzza
 ver sistema para coordinar envios
 cuando pongo producto se borran datos 
-   me quedo 3 cosas el dñado esta en glowzza.. pero esta completo... el back es muy viejo.... y el de git es muy viejo
+  
 que saque el valor del stock cpn el pago en bruto pra tner el neto
 el contador de clientes no cuenta clientes sino productos
 cuadro ventas dia dia 
@@ -29,8 +29,8 @@ hay numeros duplicados en stock y no actualiza stock al subir txt
 verificar si desde ventas cerradas se hace el descuento de stock general
 poder eliminar usuarios
 poder subir lista de proveedores
-en ventas cerradas no se guarda el color
 
+cuando aya 2 productos iguales que en vez de aparecer que no se agrege
 
 
 
