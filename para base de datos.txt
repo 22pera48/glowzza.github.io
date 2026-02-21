@@ -29,7 +29,7 @@ hay numeros duplicados en stock y no actualiza stock al subir txt
 verificar si desde ventas cerradas se hace el descuento de stock general
 poder eliminar usuarios
 poder subir lista de proveedores
-
+cuando quieras pedir algo que no hay que te mande un cartel x falta de stock
 agregar buscador de productos en cleintes
 
 
