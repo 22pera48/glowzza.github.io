@@ -501,13 +501,13 @@ async function terminarCompra(clienteId) {
   const clienteSnap = await getDoc(clienteRef);
   const clienteData = clienteSnap.data();
 
-  // Guardar venta cerrada
+  // Guardar venta cerrada (siempre nuevo doc)
   await addDoc(collection(db, "ventasCerradas"), clienteData);
 
   // 🔹 Restar stock general
   for (const prod of clienteData.productos || []) {
     if (!prod.id) continue; // seguridad
-    const productoRef = doc(db, "productos", prod.id); // 🔹 usa el ID real
+    const productoRef = doc(db, "productos", prod.id); // usa el ID real
     const productoSnap = await getDoc(productoRef);
     if (productoSnap.exists()) {
       const data = productoSnap.data();
@@ -516,6 +516,8 @@ async function terminarCompra(clienteId) {
 
       await updateDoc(productoRef, { stock: nuevoStock });
       console.log(`Stock actualizado: ${prod.nombre} → ${nuevoStock}`);
+    } else {
+      console.warn(`Producto con id ${prod.id} no encontrado en Firestore`);
     }
   }
 
@@ -526,6 +528,8 @@ async function terminarCompra(clienteId) {
   mostrarClientes();
   mostrarVentasCerradas();
 }
+
+// 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
 document.addEventListener("DOMContentLoaded", () => {
   mostrarClientes();
   mostrarVentasCerradas();
