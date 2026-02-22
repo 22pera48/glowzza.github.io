@@ -236,17 +236,30 @@ headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.t
       if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
         let totalFinal = clienteData.productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
-        // 🔹 Descontar stock global al cerrar la venta
-        for (const p of clienteData.productos) {
-const productoRef = doc(db, "productos", p.id);
-          const productoSnap = await getDoc(productoRef);
-          if (productoSnap.exists()) {
-            await updateDoc(productoRef, {
-              stock: increment(-p.cantidad)
-            });
-          }
-        }
+// 🔹 Descontar stock global al cerrar la venta
+for (const p of clienteData.productos) {
+  const productoRef = doc(db, "productos", p.id);
+  const productoSnap = await getDoc(productoRef);
 
+  if (productoSnap.exists()) {
+    const stockActual = productoSnap.data().stock || 0;
+
+    if (stockActual < p.cantidad) {
+      // 🚫 No hay stock suficiente, mostrar error y cortar
+      const msg = document.getElementById("statusMsg");
+      if (msg) {
+        msg.style.color = "red";
+        msg.innerText = `No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`;
+      }
+      return; // corta el cierre de venta completo
+    }
+
+    // ✅ Si hay stock suficiente, descontar
+    await updateDoc(productoRef, {
+      stock: increment(-p.cantidad)
+    });
+  }
+}
         // 🔹 Guardar venta cerrada con teléfono y nemónico
         await addDoc(collection(db, "ventasCerradas"), {
           nombre: clienteData.nombre,
