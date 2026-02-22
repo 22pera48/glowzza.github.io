@@ -1,6 +1,4 @@
 // 🔹 Imports de Firebase
-
-console.log(">>> Script cargado correctamente");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
   getFirestore, addDoc, getDocs, collection, updateDoc,getDoc, deleteDoc, doc, query, where, increment 
@@ -240,7 +238,7 @@ headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.t
 
         // 🔹 Descontar stock global al cerrar la venta
         for (const p of clienteData.productos) {
-          const productoRef = doc(db, "productos", p.nombre);
+const productoRef = doc(db, "productos", p.id);
           const productoSnap = await getDoc(productoRef);
           if (productoSnap.exists()) {
             await updateDoc(productoRef, {
@@ -499,8 +497,7 @@ async function mostrarVentasCerradas() {
 }
 // 🔹 Terminar compra y actualizar stock
 async function terminarCompra(clienteId) {
-    console.log(">>> terminarCompra fue llamada con clienteId:", clienteId);
-
+  
   const clienteRef = doc(db, "clientes", clienteId);
   const clienteSnap = await getDoc(clienteRef);
 
