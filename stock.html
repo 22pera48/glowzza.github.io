@@ -219,25 +219,25 @@
   alert("Migración de claveUnica finalizada");
 }
 
-    function crearItem(prod, productoId, conBoton = true) {
-      const li = document.createElement("li");
+function crearItem(prod, productoId, conBoton = true) {
+  const li = document.createElement("li");
 
-      if (conBoton) {
-        const btnEliminar = document.createElement("button");
-        btnEliminar.textContent = "Eliminar";
-        btnEliminar.style.marginRight = "10px";
-        btnEliminar.onclick = async () => {
-          if (confirm(`¿Seguro que querés eliminar "${prod.nombre} (${prod.color})"?`)) {
-            await deleteDoc(doc(db, "productos", productoId));
-            li.remove();
-            alert(`Producto eliminado: ${prod.nombre} (${prod.color})`);
-          }
-        };
-        li.appendChild(btnEliminar);
+  if (conBoton) {
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "Eliminar";
+    btnEliminar.style.marginRight = "10px";
+    btnEliminar.onclick = async () => {
+      if (confirm(`¿Seguro que querés eliminar "${prod.nombre} (${prod.color})"?`)) {
+        await deleteDoc(doc(db, "productos", productoId));
+        li.remove();
+        alert(`Producto eliminado: ${prod.nombre} (${prod.color})`);
       }
+    };
+    li.appendChild(btnEliminar);
+  }
 
-      // 🔹 acá reemplazás el createTextNode por tu bloque con innerHTML
-  li.innerHTML += `
+  // 🔹 Usamos insertAdjacentHTML para no borrar el botón
+  li.insertAdjacentHTML("beforeend", `
     <h4>${prod.nombre} (${prod.color || ""})</h4>
     <p>Precio: $${prod.precio}</p>
     <p class="${prod.stock === 0 ? 'stock-out' : prod.stock <= 2 ? 'stock-low' : 'stock-ok'}">
@@ -245,11 +245,10 @@
     </p>
     <p>Categoría: ${prod.categoria}</p>
     <p>ID: ${productoId}</p>
-  `;
+  `);
 
   return li;
 }
-
 // 🔹 Refrescar listado desde Firestore
 async function refrescarLista() {
   document.getElementById("listaStock").innerHTML = "";
