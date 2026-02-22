@@ -25,13 +25,17 @@ cuando pongo producto se borran datos
 que saque el valor del stock cpn el pago en bruto pra tner el neto
 el contador de clientes no cuenta clientes sino productos
 cuadro ventas dia dia 
-hay numeros duplicados en stock y no actualiza stock al subir txt
-verificar si desde ventas cerradas se hace el descuento de stock general
+corregiro que al numero de telefono le pudo mandar letras
+al cerrar venta aunque no tenga stock me la cierra igual
 poder eliminar usuarios
 poder subir lista de proveedores
 cuando quieras pedir algo que no hay que te mande un cartel x falta de stock
 agregar buscador de productos en cleintes
+y si cierra unca compra y estaba en 0 cuenta negativamente
+el boton de eliminar de listado general no anda
+a pesar de que estoy subiendo el whatsapp no se esta sumando
 
+SE DESCAJETA SI TIENE STOCK NEGATIVO
 
 const firebaseConfig = {
 
