@@ -267,7 +267,8 @@ for (const p of clienteData.productos) {
           nombre: clienteData.nombre,
           telefono: clienteData.telefono,
           nemonico: clienteData.nemonico,
-          fecha: clienteData.fecha || new Date().toISOString(), // 👈 fallback automático
+          fecha: clienteData.fecha,
+          fechaCierre: new Date().toISOString(), // 👈 fecha automática al cerrar venta
           productos: clienteData.productos,
           total: totalFinal,
           pago: pagoSelect.value,
@@ -498,8 +499,10 @@ async function mostrarVentasCerradas() {
     const data = docSnap.data();
 
     const li = document.createElement("li");
-    li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${data.total}`;
-    const productosList = document.createElement("ul");
+li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} 
+- Fecha cliente: ${new Date(data.fechaCliente).toLocaleDateString()} 
+- Fecha cierre: ${new Date(data.fechaCierre).toLocaleDateString()} 
+| Código: ${data.etiqueta} | Total: $${data.total}`;    const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
       item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
