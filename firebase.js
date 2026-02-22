@@ -524,7 +524,7 @@ for (const prod of clienteData.productos || []) {
     continue;
   }
 
-  const productoRef = doc(db, "productos", prod.id);
+  const productoRef = doc(db, "productos", p.id);
   const productoSnap = await getDoc(productoRef);
 
   if (!productoSnap.exists()) {
