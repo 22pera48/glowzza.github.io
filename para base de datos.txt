@@ -16,7 +16,7 @@ problema que no se elimina en tiempo real
 codigo unico para un cliente
 hacer codigo mas potable para escribir
 codigo unico para hacer codigos de barras
-cuando elimino de stock no se elmina de inmediato en cliente
+
 agregar marca de agua de las fotos
 agregar en las fotos una imagen con glowzza
 ver sistema para coordinar envios
@@ -26,7 +26,7 @@ que saque el valor del stock cpn el pago en bruto pra tner el neto
 el contador de clientes no cuenta clientes sino productos
 cuadro ventas dia dia 
 corregiro que al numero de telefono le pudo mandar letras
-al cerrar venta aunque no tenga stock me la cierra igual
+
 poder eliminar usuarios
 poder subir lista de proveedores
 
