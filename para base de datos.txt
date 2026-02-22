@@ -29,13 +29,13 @@ corregiro que al numero de telefono le pudo mandar letras
 al cerrar venta aunque no tenga stock me la cierra igual
 poder eliminar usuarios
 poder subir lista de proveedores
-cuando quieras pedir algo que no hay que te mande un cartel x falta de stock
-agregar buscador de productos en cleintes
-y si cierra unca compra y estaba en 0 cuenta negativamente
-el boton de eliminar de listado general no anda
-a pesar de que estoy subiendo el whatsapp no se esta sumando
 
-SE DESCAJETA SI TIENE STOCK NEGATIVO
+agregar buscador de productos en cleintes
+
+el boton de eliminar de listado general no anda
+
+
+
 
 const firebaseConfig = {
 
