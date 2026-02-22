@@ -246,11 +246,14 @@ for (const p of clienteData.productos) {
 
     if (stockActual < p.cantidad) {
       // 🚫 No hay stock suficiente, mostrar error y cortar
+      alert(`No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`);
+
       const msg = document.getElementById("statusMsg");
       if (msg) {
         msg.style.color = "red";
         msg.innerText = `No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`;
       }
+
       return; // corta el cierre de venta completo
     }
 
@@ -259,8 +262,7 @@ for (const p of clienteData.productos) {
       stock: increment(-p.cantidad)
     });
   }
-}
-        // 🔹 Guardar venta cerrada con teléfono y nemónico
+}        // 🔹 Guardar venta cerrada con teléfono y nemónico
         await addDoc(collection(db, "ventasCerradas"), {
           nombre: clienteData.nombre,
           telefono: clienteData.telefono,
