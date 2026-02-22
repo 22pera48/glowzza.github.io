@@ -267,7 +267,7 @@ for (const p of clienteData.productos) {
           nombre: clienteData.nombre,
           telefono: clienteData.telefono,
           nemonico: clienteData.nemonico,
-          fecha: clienteData.fecha,
+          fecha: clienteData.fecha || new Date().toISOString(), // 👈 fallback automático
           productos: clienteData.productos,
           total: totalFinal,
           pago: pagoSelect.value,
