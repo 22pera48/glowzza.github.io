@@ -88,7 +88,8 @@
       enlace.click();
     }
 
-    async function descargarClientes() {
+    // 🔹 Exponer todas las funciones en window
+    window.descargarClientes = async function() {
       const snapshot = await getDocs(collection(db, "clientes"));
       let texto = "=== CLIENTES ===\n";
       snapshot.forEach(doc => {
@@ -98,7 +99,7 @@
       descargarTXT("clientes.txt", texto);
     }
 
-    async function descargarVentas() {
+    window.descargarVentas = async function() {
       const snapshot = await getDocs(collection(db, "ventasCerradas"));
       let texto = "=== VENTAS CERRADAS ===\n";
       snapshot.forEach(doc => {
@@ -108,7 +109,7 @@
       descargarTXT("ventas_cerradas.txt", texto);
     }
 
-    async function descargarBalance() {
+    window.descargarBalance = async function() {
       const snapshot = await getDocs(collection(db, "ventasCerradas"));
       let totalIngresos = 0;
       snapshot.forEach(doc => {
@@ -118,7 +119,7 @@
       descargarTXT("balance.txt", texto);
     }
 
-    async function descargarStock() {
+    window.descargarStock = async function() {
       const snapshot = await getDocs(collection(db, "productos"));
       let texto = "=== STOCK ===\n";
       snapshot.forEach(doc => {
@@ -128,7 +129,7 @@
       descargarTXT("stock.txt", texto);
     }
 
-    async function descargarTodo() {
+    window.descargarTodo = async function() {
       const ahora = new Date();
       const fechaHora = ahora.toISOString().replace(/[:.]/g, "-");
       const nombreArchivo = `full_download_${fechaHora}.txt`;
