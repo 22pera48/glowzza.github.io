@@ -1,0 +1,138 @@
+<script type="module">
+  import { getFirestore, setDoc, doc, deleteDoc, updateDoc, getDocs, collection } 
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { initializeApp } 
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+  const firebaseConfig = { /* tu config */ };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 🔹 Procesar TXT para cargar nuevos productos
+  async function procesarArchivo() {
+    const fileInput = document.getElementById("proveedoresFile");
+    if (!fileInput.files.length) return alert("Selecciona un archivo primero");
+    const file = fileInput.files[0];
+    const text = await file.text();
+    const lineas = text.split("\n").map(l => l.trim());
+
+    let proveedor = null;
+
+    for (const linea of lineas) {
+      if (linea.startsWith("===")) {
+        const match = linea.match(/Proveedor:\s*(.+)\s*===/);
+        if (match) proveedor = match[1];
+        continue;
+      }
+
+      if (!linea || !proveedor) continue;
+
+      const partes = linea.split("|").map(s => s.trim());
+      const nombreProducto = partes[0];
+      let precio = 0, stock = 0;
+
+      partes.forEach(p => {
+        if (p.startsWith("Precio")) precio = Number(p.replace("Precio:", "").trim());
+        if (p.startsWith("Stock")) stock = Number(p.replace("Stock:", "").trim());
+      });
+
+      const id = proveedor + "_" + nombreProducto;
+      await setDoc(doc(db, "productosProveedor", id), {
+        proveedor,
+        nombreProducto,
+        precio,
+        stock
+      });
+    }
+
+    alert("Productos cargados correctamente");
+    cargarDesdeFirestore(); // refresca acordeón
+  }
+
+  // 🔹 Cargar acordeón directamente desde Firestore
+  async function cargarDesdeFirestore() {
+    const snapshot = await getDocs(collection(db, "productosProveedor"));
+    const productosPorProveedor = {};
+
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (!productosPorProveedor[data.proveedor]) productosPorProveedor[data.proveedor] = [];
+      productosPorProveedor[data.proveedor].push({ id: docSnap.id, ...data });
+    });
+
+    mostrarAcordeon(productosPorProveedor);
+  }
+
+  function mostrarAcordeon(productosPorProveedor) {
+    const acordeonDiv = document.getElementById("acordeon");
+    acordeonDiv.innerHTML = "";
+
+    let totalProveedores = 0;
+    let totalProductos = 0;
+
+    for (const prov in productosPorProveedor) {
+      const total = productosPorProveedor[prov].length;
+      totalProveedores++;
+      totalProductos += total;
+
+      const productosHTML = productosPorProveedor[prov].map(p => `
+        <div class="producto">
+          <div>
+            <strong>${p.nombreProducto}</strong> - Precio: $${p.precio} - Stock: ${p.stock}
+          </div>
+          <div class="acciones">
+            <button class="editar" onclick="editarProducto('${p.id}')">Editar</button>
+            <button class="eliminar" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+          </div>
+        </div>
+      `).join("");
+
+      acordeonDiv.innerHTML += `
+        <div class="proveedor">
+          <h3 onclick="toggleProductos(this)">${prov} (Total productos: ${total})</h3>
+          <div class="productos">${productosHTML}</div>
+        </div>
+      `;
+    }
+
+    // 🔹 Resumen general
+    acordeonDiv.innerHTML += `
+      <div style="margin-top:20px; padding:10px; background:#e8f5e9; border:1px solid #4CAF50; border-radius:8px;">
+        <strong>Resumen General:</strong><br>
+        Total Proveedores: ${totalProveedores}<br>
+        Total Productos: ${totalProductos}
+      </div>
+    `;
+  }
+
+  window.toggleProductos = function(element) {
+    const productosDiv = element.nextElementSibling;
+    productosDiv.style.display = productosDiv.style.display === "block" ? "none" : "block";
+  }
+
+  window.eliminarProducto = async function(id) {
+    if (confirm("¿Seguro que quieres eliminar este producto?")) {
+      await deleteDoc(doc(db, "productosProveedor", id));
+      alert("Producto eliminado correctamente");
+      cargarDesdeFirestore();
+    }
+  }
+
+  window.editarProducto = async function(id) {
+    const nuevoPrecio = prompt("Nuevo precio:");
+    const nuevoStock = prompt("Nuevo stock:");
+    if (nuevoPrecio !== null && nuevoStock !== null) {
+      await updateDoc(doc(db, "productosProveedor", id), {
+        precio: Number(nuevoPrecio),
+        stock: Number(nuevoStock)
+      });
+      alert("Producto actualizado correctamente");
+      cargarDesdeFirestore();
+    }
+  }
+
+  window.subirProveedores = procesarArchivo;
+
+  // 🔹 Al abrir la página, carga lo que ya está en Firestore
+  cargarDesdeFirestore();
+</script>
