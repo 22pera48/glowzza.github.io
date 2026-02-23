@@ -126,12 +126,18 @@
   <h1>Solicitudes</h1>
 
   <!-- Formulario para nueva solicitud -->
-  <form id="solicitudForm">
-    <label for="pedido">Pedido:</label>
-    <textarea id="pedido" placeholder="Ej: Averiguar precio estatua de Ganesha..." required></textarea>
-    <button type="submit" class="boton">Registrar Solicitud</button>
-  </form>
+<form id="solicitudForm">
+  <label for="cliente">Nombre del Cliente:</label>
+  <input type="text" id="cliente" required>
 
+  <label for="telefono">Teléfono:</label>
+  <input type="text" id="telefono" required>
+
+  <label for="pedido">Pedido:</label>
+  <textarea id="pedido" placeholder="Ej: Averiguar precio estatua de Ganesha..." required></textarea>
+
+  <button type="submit" class="boton">Registrar Solicitud</button>
+</form>
   <!-- Lista de solicitudes -->
   <div class="lista" id="listaSolicitudes">
     <h2>Solicitudes Registradas</h2>
@@ -163,19 +169,27 @@ const firebaseConfig = {
     const resumenDiv = document.getElementById("resumen");
 
     // Registrar nueva solicitud
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const pedido = document.getElementById("pedido").value.trim();
-      if (!pedido) return alert("El pedido no puede estar vacío");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const cliente = document.getElementById("cliente").value.trim();
+  const telefono = document.getElementById("telefono").value.trim();
+  const pedido = document.getElementById("pedido").value.trim();
 
-      const id = "solicitud_" + Date.now();
-      await setDoc(doc(db, "solicitudes", id), { pedido, estado: "pendiente" });
+  if (!cliente || !telefono || !pedido) return alert("Todos los campos son obligatorios");
 
-      alert("Solicitud registrada correctamente");
-      form.reset();
-      cargarSolicitudes();
-    });
+  const id = "solicitud_" + Date.now();
+  await setDoc(doc(db, "solicitudes", id), {
+    cliente,
+    telefono,
+    pedido,
+    estado: "pendiente",
+    fecha: new Date().toLocaleString() // 🔹 guarda fecha y hora
+  });
 
+  alert("Solicitud registrada correctamente");
+  form.reset();
+  cargarSolicitudes();
+});
     // Cargar solicitudes
     async function cargarSolicitudes() {
       solicitudesDiv.innerHTML = "";
@@ -188,18 +202,19 @@ const firebaseConfig = {
         if (data.estado === "pendiente") pendientes++;
         if (data.estado === "resuelta") resueltas++;
 
-        solicitudesDiv.innerHTML += `
-          <div class="solicitud">
-            <div>
-              <strong>${data.pedido}</strong><br>
-              Estado: ${data.estado}
-            </div>
-            <div class="acciones">
-              <button class="resolver" onclick="resolverSolicitud('${docSnap.id}')">Resolver</button>
-              <button class="eliminar" onclick="eliminarSolicitud('${docSnap.id}')">Eliminar</button>
-            </div>
-          </div>
-        `;
+solicitudesDiv.innerHTML += `
+  <div class="solicitud">
+    <div>
+      <strong>${data.pedido}</strong><br>
+      Cliente: ${data.cliente} - Tel: ${data.telefono}<br>
+      Estado: ${data.estado} | Fecha: ${data.fecha}
+    </div>
+    <div class="acciones">
+      <button class="resolver" onclick="resolverSolicitud('${docSnap.id}')">Resolver</button>
+      <button class="eliminar" onclick="eliminarSolicitud('${docSnap.id}')">Eliminar</button>
+    </div>
+  </div>
+`;
       });
 
       resumenDiv.innerHTML = `
