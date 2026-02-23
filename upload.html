@@ -28,6 +28,11 @@
       background-color: #fff;
     }
 
+    .upload-section.dragover {
+      background-color: #e3f2fd;
+      border-color: #1976D2;
+    }
+
     input[type="file"] {
       margin: 10px 0;
     }
@@ -88,8 +93,9 @@
 <body>
   <h1>Upload de Datos</h1>
 
-  <div class="upload-section">
-    <h2>Subir Full Download</h2>
+  <div class="upload-section" id="dropZone">
+    <h2>Arrastrá tu Full Download aquí</h2>
+    <p>O seleccioná manualmente:</p>
     <input type="file" id="fullFile" accept=".txt">
     <button class="boton-subir" onclick="subirFull()">Subir</button>
   </div>
@@ -104,22 +110,19 @@
     import { initializeApp } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
-  authDomain: "glowzzainventario.firebaseapp.com",
-  projectId: "glowzzainventario",
-  storageBucket: "glowzzainventario.appspot.com",   // 🔹 corregido
-  messagingSenderId: "159721581844",
-  appId: "1:159721581844:web:f62cdb303258dc847b6601",
-  measurementId: "G-0FR3Q6P3L2"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+      authDomain: "glowzzainventario.firebaseapp.com",
+      projectId: "glowzzainventario",
+      storageBucket: "glowzzainventario.appspot.com",
+      messagingSenderId: "159721581844",
+      appId: "1:159721581844:web:f62cdb303258dc847b6601",
+      measurementId: "G-0FR3Q6P3L2"
+    };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function procesarFullArchivo() {
-      const fileInput = document.getElementById("fullFile");
-      if (!fileInput.files.length) return alert("Selecciona un archivo primero");
-      const file = fileInput.files[0];
+    async function procesarFullArchivo(file) {
       const text = await file.text();
       const lineas = text.split("\n").map(l => l.trim());
 
@@ -140,19 +143,22 @@ const firebaseConfig = {
 
         if (sector === "clientes") {
           const [nombre, telefono, fecha] = linea.split("|").map(s => s.trim());
-          await setDoc(doc(db, "clientes", nombre), { nombre, telefono, fecha });
+          const id = "cliente_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+          await setDoc(doc(db, "clientes", id), { nombre, telefono, fecha });
           contadores.clientes++;
         }
 
         if (sector === "ventasCerradas") {
           const [nombre, total, fechaCierre] = linea.split("|").map(s => s.trim());
-          await setDoc(doc(db, "ventasCerradas", nombre + "_" + fechaCierre), { nombre, total: Number(total), fechaCierre });
+          const id = "venta_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+          await setDoc(doc(db, "ventasCerradas", id), { nombre, total: Number(total), fechaCierre });
           contadores.ventasCerradas++;
         }
 
         if (sector === "balance") {
           const [concepto, valor] = linea.split("|").map(s => s.trim());
-          await setDoc(doc(db, "balance", concepto), { concepto, valor: Number(valor) });
+          const id = "balance_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+          await setDoc(doc(db, "balance", id), { concepto, valor: Number(valor) });
           contadores.balance++;
         }
 
@@ -160,13 +166,14 @@ const firebaseConfig = {
           const partes = linea.split("|").map(s => s.trim());
           if (partes.length >= 5) {
             const [orden, nombre, color, stock, precio] = partes;
-            await setDoc(doc(db, "productos", orden), { orden, nombre, color, stock: Number(stock), precio: Number(precio) });
+            const id = "producto_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+            await setDoc(doc(db, "productos", id), { orden, nombre, color, stock: Number(stock), precio: Number(precio) });
             contadores.productos++;
           }
         }
       }
 
-      // Mostrar resumen en pantalla
+      // Mostrar resumen
       const resumenDiv = document.getElementById("resumen");
       resumenDiv.style.display = "block";
       resumenDiv.innerHTML = `
@@ -178,7 +185,32 @@ const firebaseConfig = {
       `;
     }
 
-    window.subirFull = procesarFullArchivo;
+    // 🔹 Subida con botón
+    window.subirFull = () => {
+      const fileInput = document.getElementById("fullFile");
+      if (!fileInput.files.length) return alert("Selecciona un archivo primero");
+      procesarFullArchivo(fileInput.files[0]);
+    };
+
+    // 🔹 Arrastrar y soltar
+    const dropZone = document.getElementById("dropZone");
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === "text/plain") {
+        procesarFullArchivo(file);
+      } else {
+        alert("Solo se aceptan archivos .txt");
+      }
+    });
   </script>
 </body>
 </html>
