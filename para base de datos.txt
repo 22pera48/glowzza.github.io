@@ -1,7 +1,7 @@
 ver si historial consume mucha lectura o ver  plan pago de firebase
 poder hacer backup
 que la parte de produto de clientes tambien actue como buscador
-
+sector para poner solicitudes de clientes
 contraseña para eliminar elementos
 colocar en la lista de clientes totales
 colocar totale sen la lista de stock
