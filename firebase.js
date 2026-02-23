@@ -267,7 +267,8 @@ for (const p of clienteData.productos) {
           nombre: clienteData.nombre,
           telefono: clienteData.telefono,
           nemonico: clienteData.nemonico,
-          fecha: clienteData.fecha,
+fecha: clienteData.fecha,              // fecha original del cliente
+  fechaCierre: new Date().toISOString(), // 👈 fecha automática al cerrar
          productos: clienteData.productos,
           total: totalFinal,
           pago: pagoSelect.value,
@@ -509,7 +510,8 @@ const fechaCierre = data.fechaCierre
 li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} 
 - Fecha cliente: ${fechaCliente} 
 - Fecha cierre: ${fechaCierre} 
-| Código: ${data.etiqueta} | Total: $${data.total}`;    const productosList = document.createElement("ul");
+| Código: ${data.etiqueta} | Total: $${data.total}`;    
+const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
       item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
