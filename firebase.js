@@ -123,8 +123,20 @@ if (clienteForm) {
   clienteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 const nombre = document.getElementById("nombre").value;
-const fechaInput = document.getElementById("fecha").value; // ej. "2026-02-22"
-const fechaISO = fechaInput ? new Date(fechaInput).toISOString() : null;
+const fechaInput = document.getElementById("fecha").value; 
+let fechaISO = null;
+
+if (fechaInput) {
+  if (fechaInput.includes("/")) {
+    // formato dd/mm/yyyy
+    const [dia, mes, anio] = fechaInput.split("/");
+    fechaISO = new Date(`${anio}-${mes}-${dia}`).toISOString();
+  } else {
+    // formato yyyy-mm-dd (el que devuelve <input type="date"> en la mayoría de navegadores)
+    fechaISO = new Date(fechaInput).toISOString();
+  }
+}
+
 const telefono = document.getElementById("telefono").value; 
 const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 const nemonico = document.getElementById("nemonico").value;
@@ -133,7 +145,7 @@ await addDoc(collection(db, "clientes"), {
   nombre,
   telefono, 
   nemonico,
-  fecha: fechaISO, // 👈 ahora siempre en ISO
+  fecha: fechaISO, // 👈 ahora siempre en ISO válido
   ubicacion: "deposito",
   pago: "no",
   productos: [],
