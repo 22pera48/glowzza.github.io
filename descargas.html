@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glowzza - Descargas</title>
+  <style>
+    .boton-descarga {
+      width: 280px;
+      height: 80px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      margin: 10px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-descarga:hover {
+      background-color: #1976D2;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Descargas de Datos</h1>
+
+  <button onclick="descargarClientes()" class="boton-descarga">Descargar Clientes</button>
+  <button onclick="descargarVentas()" class="boton-descarga">Descargar Ventas Cerradas</button>
+  <button onclick="descargarBalance()" class="boton-descarga">Descargar Balance</button>
+  <button onclick="descargarStock()" class="boton-descarga">Descargar Stock</button>
+  <!-- 🔹 Nuevo botón Full Download -->
+  <button onclick="descargarTodo()" class="boton-descarga">Full Download</button>
+
+  <script type="module">
+    import { getFirestore, getDocs, collection } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+    const firebaseConfig = { /* tu config */ };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    function descargarTXT(nombreArchivo, contenido) {
+      const blob = new Blob([contenido], { type: "text/plain" });
+      const enlace = document.createElement("a");
+      enlace.href = URL.createObjectURL(blob);
+      enlace.download = nombreArchivo;
+      enlace.click();
+    }
+
+    async function descargarClientes() {
+      const snapshot = await getDocs(collection(db, "clientes"));
+      let texto = "=== CLIENTES ===\n";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        texto += `${data.nombre} | Tel: ${data.telefono} | Fecha: ${data.fecha}\n`;
+      });
+      descargarTXT("clientes.txt", texto);
+    }
+
+    async function descargarVentas() {
+      const snapshot = await getDocs(collection(db, "ventasCerradas"));
+      let texto = "=== VENTAS CERRADAS ===\n";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        texto += `${data.nombre} | Total: $${data.total} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
+      });
+      descargarTXT("ventas_cerradas.txt", texto);
+    }
+
+    async function descargarBalance() {
+      const snapshot = await getDocs(collection(db, "ventasCerradas"));
+      let totalIngresos = 0;
+      snapshot.forEach(doc => {
+        totalIngresos += doc.data().total || 0;
+      });
+      let texto = `=== BALANCE ===\nTotal Ingresos: $${totalIngresos}\n`;
+      descargarTXT("balance.txt", texto);
+    }
+
+    async function descargarStock() {
+      const snapshot = await getDocs(collection(db, "productos"));
+      let texto = "=== STOCK ===\n";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        texto += `[${data.orden}] ${data.nombre} (${data.color || ""}) | Stock: ${data.stock} | Precio: $${data.precio}\n`;
+      });
+      descargarTXT("stock.txt", texto);
+    }
+
+    // 🔹 Full Download en un solo TXT con fecha/hora en nombre y contenido
+    async function descargarTodo() {
+      const ahora = new Date();
+      const fechaHora = ahora.toISOString().replace(/[:.]/g, "-");
+      const nombreArchivo = `full_download_${fechaHora}.txt`;
+
+      let texto = `=== FULL DOWNLOAD ===\nGenerado el: ${ahora.toLocaleString()}\n\n`;
+
+      // Clientes
+      const clientesSnap = await getDocs(collection(db, "clientes"));
+      texto += "=== CLIENTES ===\n";
+      clientesSnap.forEach(doc => {
+        const data = doc.data();
+        texto += `${data.nombre} | Tel: ${data.telefono} | Fecha: ${data.fecha}\n`;
+      });
+      texto += "\n";
+
+      // Ventas Cerradas
+      const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
+      texto += "=== VENTAS CERRADAS ===\n";
+      ventasSnap.forEach(doc => {
+        const data = doc.data();
+        texto += `${data.nombre} | Total: $${data.total} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
+      });
+      texto += "\n";
+
+      // Balance
+      let totalIngresos = 0;
+      ventasSnap.forEach(doc => {
+        totalIngresos += doc.data().total || 0;
+      });
+      texto += `=== BALANCE ===\nTotal Ingresos: $${totalIngresos}\n\n`;
+
+      // Stock
+      const stockSnap = await getDocs(collection(db, "productos"));
+      texto += "=== STOCK ===\n";
+      stockSnap.forEach(doc => {
+        const data = doc.data();
+        texto += `[${data.orden}] ${data.nombre} (${data.color || ""}) | Stock: ${data.stock} | Precio: $${data.precio}\n`;
+      });
+
+      descargarTXT(nombreArchivo, texto);
+    }
+  </script>
+</body>
+</html>
