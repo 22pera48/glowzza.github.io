@@ -1,7 +1,7 @@
 ver si historial consume mucha lectura o ver  plan pago de firebase
 
 que la parte de produto de clientes tambien actue como buscador
-cuando elimino de stock no se elmina de inmediato en cliente
+
 contraseña para eliminar elementos
 colocar en la lista de clientes totales
 colocar totale sen la lista de stock
@@ -12,7 +12,7 @@ corregir alertas
 poder descargar registro de ventas y cleitnes
 que el stock haga la lista de pedidos solo
 agregar funcion de calñculo de ingresos y egresos
-problema que no se elimina en tiempo real
+
 codigo unico para un cliente
 hacer codigo mas potable para escribir
 codigo unico para hacer codigos de barras
@@ -32,7 +32,7 @@ poder subir lista de proveedores
 
 agregar buscador de productos en cleintes
 
-el boton de eliminar de listado general no anda
+
 
 
 
