@@ -4,6 +4,28 @@
   <meta charset="UTF-8">
   <title>Glowzza - Panel Principal</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f0f0, #d9fdd3);
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 40px;
+      font-size: 36px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .menu-principal {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      justify-items: center;
+    }
+
     .boton-grande {
       width: 280px;
       height: 160px;
@@ -14,7 +36,7 @@
       background-color: #4CAF50;
       color: white;
       border: none;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
       transition: transform 0.2s, background-color 0.2s;
     }
     .boton-grande:hover {
@@ -34,6 +56,7 @@
       border: none;
       box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
       transition: transform 0.2s, background-color 0.2s;
+      margin-top: 40px;
     }
     .boton-volver:hover {
       background-color: #555;
@@ -56,16 +79,17 @@
     <button onclick="location.href='proveedores.html'" class="boton-grande">
       Registro de Proveedores
     </button>
-    <!-- 🔹 Nuevo botón Descargas -->
     <button onclick="location.href='descargas.html'" class="boton-grande">
-      Descargas
+      Download
+    </button>
+    <!-- 🔹 Nuevo botón Upload -->
+    <button onclick="location.href='upload.html'" class="boton-grande">
+      Upload
     </button>
   </div>
 
-  <div style="margin-top:40px;">
-    <button onclick="location.href='https://www.glowzza.com.ar'" class="boton-volver">
-      Volver a Glowzza
-    </button>
-  </div>
+  <button onclick="location.href='https://www.glowzza.com.ar'" class="boton-volver">
+    Volver a Glowzza
+  </button>
 </body>
 </html>
