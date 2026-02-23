@@ -122,23 +122,23 @@ const clienteForm = document.getElementById("clienteForm");
 if (clienteForm) {
   clienteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nombre = document.getElementById("nombre").value;
-    const fecha = document.getElementById("fecha").value;
-    const telefono = document.getElementById("telefono").value; 
-    const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-    const nemonico = document.getElementById("nemonico").value;
+const nombre = document.getElementById("nombre").value;
+const fechaInput = document.getElementById("fecha").value; // ej. "2026-02-22"
+const fechaISO = fechaInput ? new Date(fechaInput).toISOString() : null;
+const telefono = document.getElementById("telefono").value; 
+const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+const nemonico = document.getElementById("nemonico").value;
 
-    await addDoc(collection(db, "clientes"), {
-      nombre,
-      telefono, 
-      nemonico,
-      fecha,
-      ubicacion: "deposito",
-      pago: "no",
-      productos: [],
-      etiqueta: etiquetaUnica
-    });
-
+await addDoc(collection(db, "clientes"), {
+  nombre,
+  telefono, 
+  nemonico,
+  fecha: fechaISO, // 👈 ahora siempre en ISO
+  ubicacion: "deposito",
+  pago: "no",
+  productos: [],
+  etiqueta: etiquetaUnica
+});
     const msg = document.getElementById("statusMsg");
     if (msg) {
       msg.style.color = "green";
