@@ -35,7 +35,7 @@ agregar buscador de productos en cleintes
 categoria de proveedroes
 ubicacion gps
 funcion subir pedidos para comprar
-
+automatizar subida a glowzza
 
 
 
