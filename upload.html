@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glowzza - Upload</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f0f0, #d9fdd3);
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 32px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .upload-section {
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px dashed #2196F3;
+      border-radius: 12px;
+      width: 400px;
+      background-color: #fff;
+    }
+
+    input[type="file"] {
+      margin: 10px 0;
+    }
+
+    .boton-subir {
+      width: 200px;
+      height: 50px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 10px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-subir:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    .boton-volver {
+      width: 280px;
+      height: 60px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #777;
+      color: white;
+      border: none;
+      margin-top: 30px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-volver:hover {
+      background-color: #555;
+      transform: scale(1.05);
+    }
+
+    .resumen {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f5e9;
+      border: 1px solid #4CAF50;
+      border-radius: 8px;
+      width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upload de Datos</h1>
+
+  <div class="upload-section">
+    <h2>Subir Full Download</h2>
+    <input type="file" id="fullFile" accept=".txt">
+    <button class="boton-subir" onclick="subirFull()">Subir</button>
+  </div>
+
+  <div id="resumen" class="resumen" style="display:none;"></div>
+
+  <button onclick="location.href='menu.html'" class="boton-volver">Volver al Menú Principal</button>
+
+  <script type="module">
+    import { getFirestore, setDoc, doc } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+    const firebaseConfig = { /* tu config */ };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function procesarFullArchivo() {
+      const fileInput = document.getElementById("fullFile");
+      if (!fileInput.files.length) return alert("Selecciona un archivo primero");
+      const file = fileInput.files[0];
+      const text = await file.text();
+      const lineas = text.split("\n").map(l => l.trim());
+
+      let sector = null;
+      let contadores = { clientes:0, ventasCerradas:0, balance:0, productos:0 };
+
+      for (const linea of lineas) {
+        if (linea.startsWith("===")) {
+          if (linea.includes("CLIENTES")) sector = "clientes";
+          else if (linea.includes("VENTAS CERRADAS")) sector = "ventasCerradas";
+          else if (linea.includes("BALANCE")) sector = "balance";
+          else if (linea.includes("STOCK")) sector = "productos";
+          else sector = null;
+          continue;
+        }
+
+        if (!linea || !sector) continue;
+
+        if (sector === "clientes") {
+          const [nombre, telefono, fecha] = linea.split("|").map(s => s.trim());
+          await setDoc(doc(db, "clientes", nombre), { nombre, telefono, fecha });
+          contadores.clientes++;
+        }
+
+        if (sector === "ventasCerradas") {
+          const [nombre, total, fechaCierre] = linea.split("|").map(s => s.trim());
+          await setDoc(doc(db, "ventasCerradas", nombre + "_" + fechaCierre), { nombre, total: Number(total), fechaCierre });
+          contadores.ventasCerradas++;
+        }
+
+        if (sector === "balance") {
+          const [concepto, valor] = linea.split("|").map(s => s.trim());
+          await setDoc(doc(db, "balance", concepto), { concepto, valor: Number(valor) });
+          contadores.balance++;
+        }
+
+        if (sector === "productos") {
+          const partes = linea.split("|").map(s => s.trim());
+          if (partes.length >= 5) {
+            const [orden, nombre, color, stock, precio] = partes;
+            await setDoc(doc(db, "productos", orden), { orden, nombre, color, stock: Number(stock), precio: Number(precio) });
+            contadores.productos++;
+          }
+        }
+      }
+
+      // Mostrar resumen en pantalla
+      const resumenDiv = document.getElementById("resumen");
+      resumenDiv.style.display = "block";
+      resumenDiv.innerHTML = `
+        <h3>Resumen de carga:</h3>
+        <p>Clientes cargados: ${contadores.clientes}</p>
+        <p>Ventas cerradas cargadas: ${contadores.ventasCerradas}</p>
+        <p>Balance cargado: ${contadores.balance}</p>
+        <p>Productos cargados: ${contadores.productos}</p>
+      `;
+    }
+
+    window.subirFull = procesarFullArchivo;
+  </script>
+</body>
+</html>
