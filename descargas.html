@@ -66,7 +66,7 @@
   <button onclick="descargarBalance()" class="boton-descarga">Descargar Balance</button>
   <button onclick="descargarStock()" class="boton-descarga">Descargar Stock</button>
   <button onclick="descargarTodo()" class="boton-descarga">Full Download</button>
-
+<button onclick="descargarProveedores()" class="boton-descarga">Descargar Proveedores</button>
   <!-- 🔹 Botón para volver al menú principal -->
   <button onclick="location.href='menu.html'" class="boton-volver">Volver al Menú Principal</button>
 
@@ -107,6 +107,15 @@ const firebaseConfig = {
       });
       descargarTXT("clientes.txt", texto);
     }
+    window.descargarProveedores = async function() {
+  const snapshot = await getDocs(collection(db, "proveedores"));
+  let texto = "=== PROVEEDORES ===\n";
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    texto += `${data.nombre} | Tel: ${data.telefono} | Costo: $${data.costo} | Fecha: ${data.fecha}\n`;
+  });
+  descargarTXT("proveedores.txt", texto);
+}
 
     window.descargarVentas = async function() {
       const snapshot = await getDocs(collection(db, "ventasCerradas"));
@@ -160,6 +169,14 @@ const firebaseConfig = {
         texto += `${data.nombre} | Total: $${data.total} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
       });
       texto += "\n";
+
+      const proveedoresSnap = await getDocs(collection(db, "proveedores"));
+texto += "=== PROVEEDORES ===\n";
+proveedoresSnap.forEach(doc => {
+  const data = doc.data();
+  texto += `${data.nombre} | Tel: ${data.telefono} | Costo: $${data.costo} | Fecha: ${data.fecha}\n`;
+});
+texto += "\n";
 
       let totalIngresos = 0;
       ventasSnap.forEach(doc => {
