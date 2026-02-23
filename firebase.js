@@ -268,7 +268,7 @@ for (const p of clienteData.productos) {
           telefono: clienteData.telefono,
           nemonico: clienteData.nemonico,
           fecha: clienteData.fecha,
-          productos: clienteData.productos,
+         productos: clienteData.productos,
           total: totalFinal,
           pago: pagoSelect.value,
           ubicacion: ubicacionSelect.value,
@@ -498,8 +498,18 @@ async function mostrarVentasCerradas() {
     const data = docSnap.data();
 
     const li = document.createElement("li");
-    li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${data.total}`;
-    const productosList = document.createElement("ul");
+const fechaCliente = data.fecha 
+  ? new Date(data.fecha).toLocaleDateString() 
+  : "Sin fecha";
+
+const fechaCierre = data.fechaCierre 
+  ? new Date(data.fechaCierre).toLocaleDateString() 
+  : "Sin fecha";
+
+li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} 
+- Fecha cliente: ${fechaCliente} 
+- Fecha cierre: ${fechaCierre} 
+| Código: ${data.etiqueta} | Total: $${data.total}`;    const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
       item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
@@ -527,9 +537,11 @@ async function terminarCompra(clienteId) {
   console.log("Cliente completo:", clienteData);
   console.log("Productos del cliente:", clienteData.productos);
 
-  // Guardar venta cerrada (siempre nuevo doc)
-  await addDoc(collection(db, "ventasCerradas"), clienteData);
-
+// Guardar venta cerrada con fecha de cierre
+await addDoc(collection(db, "ventasCerradas"), {
+  ...clienteData,                     // todos los datos originales
+  fechaCierre: new Date().toISOString() // 👈 fecha del momento de cierre
+});
   // 🔹 Restar stock general
 for (const prod of clienteData.productos || []) {
   console.log("Procesando producto:", prod);
