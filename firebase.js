@@ -511,9 +511,16 @@ async function mostrarVentasCerradas() {
     const data = docSnap.data();
 
     const li = document.createElement("li");
+    const fechaCliente = data.fecha 
+  ? new Date(data.fecha).toLocaleDateString() 
+  : "Sin fecha";
+
+const fechaCierre = data.fechaCierre 
+  ? new Date(data.fechaCierre).toLocaleDateString() 
+  : "Sin fecha";
 li.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} 
-- Fecha cliente: ${new Date(data.fechaCliente).toLocaleDateString()} 
-- Fecha cierre: ${new Date(data.fechaCierre).toLocaleDateString()} 
+- Fecha cliente: ${fechaCliente} 
+- Fecha cierre: ${fechaCierre} 
 | Código: ${data.etiqueta} | Total: $${data.total}`;    const productosList = document.createElement("ul");
     (data.productos || []).forEach(p => {
       const item = document.createElement("li");
