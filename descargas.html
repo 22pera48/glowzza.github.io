@@ -85,7 +85,9 @@ const firebaseConfig = {
   appId: "1:159721581844:web:f62cdb303258dc847b6601",
   measurementId: "G-0FR3Q6P3L2"
 };
-    const db = getFirestore(app);
+      // 🔹 Inicializar Firebase (esto faltaba)
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
     function descargarTXT(nombreArchivo, contenido) {
       const blob = new Blob([contenido], { type: "text/plain" });
