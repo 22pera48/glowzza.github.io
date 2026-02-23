@@ -1,7 +1,7 @@
 ver si historial consume mucha lectura o ver  plan pago de firebase
-poder hacer backup
+
 que la parte de produto de clientes tambien actue como buscador
-sector para poner solicitudes de clientes
+cuando elimino de stock no se elmina de inmediato en cliente
 contraseña para eliminar elementos
 colocar en la lista de clientes totales
 colocar totale sen la lista de stock
@@ -12,27 +12,24 @@ corregir alertas
 poder descargar registro de ventas y cleitnes
 que el stock haga la lista de pedidos solo
 agregar funcion de calñculo de ingresos y egresos
-seccion de carga 
+problema que no se elimina en tiempo real
 codigo unico para un cliente
 hacer codigo mas potable para escribir
 codigo unico para hacer codigos de barras
-
+cuando elimino de stock no se elmina de inmediato en cliente
 agregar marca de agua de las fotos
 agregar en las fotos una imagen con glowzza
 ver sistema para coordinar envios
 cuando pongo producto se borran datos 
- 
+
 que saque el valor del stock cpn el pago en bruto pra tner el neto
 el contador de clientes no cuenta clientes sino productos
 cuadro ventas dia dia 
-corregiro que al numero de telefono le pudo mandar letras
-
+hay numeros duplicados en stock y no actualiza stock al subir txt
+verificar si desde ventas cerradas se hace el descuento de stock general
 poder eliminar usuarios
 poder subir lista de proveedores
-
-agregar buscador de productos en cleintes
-
-
+pass para eliminar algo
 
 
 
