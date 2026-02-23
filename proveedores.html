@@ -1,138 +1,428 @@
-<script type="module">
-  import { getFirestore, setDoc, doc, deleteDoc, updateDoc, getDocs, collection } 
-    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  import { initializeApp } 
-    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glowzza - Proveedores</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f0f0, #d9fdd3);
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
 
-  const firebaseConfig = { /* tu config */ };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 32px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
 
-  // 🔹 Procesar TXT para cargar nuevos productos
-  async function procesarArchivo() {
-    const fileInput = document.getElementById("proveedoresFile");
-    if (!fileInput.files.length) return alert("Selecciona un archivo primero");
-    const file = fileInput.files[0];
-    const text = await file.text();
-    const lineas = text.split("\n").map(l => l.trim());
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+      width: 400px;
+      margin: auto;
+      text-align: left;
+    }
 
-    let proveedor = null;
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
 
-    for (const linea of lineas) {
-      if (linea.startsWith("===")) {
-        const match = linea.match(/Proveedor:\s*(.+)\s*===/);
-        if (match) proveedor = match[1];
-        continue;
-      }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
 
-      if (!linea || !proveedor) continue;
+    .boton {
+      width: 100%;
+      height: 50px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
 
-      const partes = linea.split("|").map(s => s.trim());
-      const nombreProducto = partes[0];
-      let precio = 0, stock = 0;
+    .boton-volver {
+      width: 280px;
+      height: 60px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #777;
+      color: white;
+      border: none;
+      margin-top: 30px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton-volver:hover {
+      background-color: #555;
+      transform: scale(1.05);
+    }
 
-      partes.forEach(p => {
-        if (p.startsWith("Precio")) precio = Number(p.replace("Precio:", "").trim());
-        if (p.startsWith("Stock")) stock = Number(p.replace("Stock:", "").trim());
-      });
+    .lista {
+      margin-top: 40px;
+      width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+    }
 
-      const id = proveedor + "_" + nombreProducto;
-      await setDoc(doc(db, "productosProveedor", id), {
-        proveedor,
-        nombreProducto,
-        precio,
-        stock
+    .proveedor {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .proveedor:last-child {
+      border-bottom: none;
+    }
+
+    .boton-eliminar {
+      background-color: #e53935;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+    .boton-eliminar:hover {
+      background-color: #c62828;
+      transform: scale(1.05);
+    }
+
+    .buscador {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .buscador input {
+      width: 300px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .upload-section {
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px dashed #2196F3;
+      border-radius: 12px;
+      width: 400px;
+      background-color: #fff;
+    }
+
+    .acordeon {
+      margin-top: 30px;
+      width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .proveedor-block {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .proveedor-block h3 {
+      margin: 0;
+      padding: 10px;
+      background: #2196F3;
+      color: white;
+      cursor: pointer;
+    }
+
+    .productos {
+      display: none;
+      padding: 10px;
+    }
+
+    .producto {
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .producto:last-child {
+      border-bottom: none;
+    }
+
+    .acciones button {
+      margin-left: 5px;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .eliminar {
+      background-color: #e53935;
+      color: white;
+    }
+    .eliminar:hover {
+      background-color: #c62828;
+    }
+    .editar {
+      background-color: #ff9800;
+      color: white;
+    }
+    .editar:hover {
+      background-color: #f57c00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gestión de Proveedores</h1>
+
+  <!-- Formulario de registro -->
+  <form id="proveedorForm">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" required>
+
+    <label for="direccion">Dirección:</label>
+    <input type="text" id="direccion" required>
+
+    <label for="telefono">Teléfono:</label>
+    <input type="text" id="telefono" required>
+
+    <label for="pagina">Página Web:</label>
+    <input type="url" id="pagina">
+
+    <button type="submit" class="boton">Registrar Proveedor</button>
+  </form>
+
+  <!-- Lista de proveedores -->
+  <div class="lista" id="listaProveedores">
+    <h2>Proveedores Registrados</h2>
+    <div class="buscador">
+      <input type="text" id="buscador" placeholder="Buscar por nombre...">
+    </div>
+    <div id="proveedores"></div>
+  </div>
+
+  <!-- Upload TXT de productos -->
+  <div class="upload-section">
+    <h2>Subir TXT de Productos por Proveedor</h2>
+    <input type="file" id="proveedoresFile" accept=".txt">
+    <button class="boton" onclick="subirProveedores()">Subir</button>
+  </div>
+
+  <!-- Acordeón de productos -->
+  <div id="acordeon" class="acordeon"></div>
+
+  <button onclick="location.href='menu.html'" class="boton-volver">Volver al Menú Principal</button>
+    <script type="module">
+    import { getFirestore, setDoc, doc, getDocs, collection, deleteDoc, updateDoc } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+    const firebaseConfig = { /* tu config */ };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("proveedorForm");
+    const proveedoresDiv = document.getElementById("proveedores");
+    const buscadorInput = document.getElementById("buscador");
+
+    // Registrar proveedor
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value.trim();
+      const direccion = document.getElementById("direccion").value.trim();
+      const telefono = document.getElementById("telefono").value.trim();
+      const pagina = document.getElementById("pagina").value.trim();
+      if (!nombre) return alert("El nombre es obligatorio");
+
+      await setDoc(doc(db, "proveedores", nombre), { nombre, direccion, telefono, pagina });
+      alert("Proveedor registrado correctamente");
+      form.reset();
+      cargarProveedores();
+    });
+
+    // Cargar lista de proveedores
+    async function cargarProveedores(filtro = "") {
+      proveedoresDiv.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "proveedores"));
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        if (data.nombre.toLowerCase().includes(filtro.toLowerCase())) {
+          proveedoresDiv.innerHTML += `
+            <div class="proveedor">
+              <div>
+                <strong>${data.nombre}</strong><br>
+                Dirección: ${data.direccion}<br>
+                Teléfono: ${data.telefono}<br>
+                Página: <a href="${data.pagina}" target="_blank">${data.pagina}</a>
+              </div>
+              <button class="boton-eliminar" onclick="eliminarProveedor('${docSnap.id}')">Eliminar</button>
+            </div>
+          `;
+        }
       });
     }
 
-    alert("Productos cargados correctamente");
-    cargarDesdeFirestore(); // refresca acordeón
-  }
+    window.eliminarProveedor = async function(id) {
+      if (confirm("¿Seguro que quieres eliminar este proveedor?")) {
+        await deleteDoc(doc(db, "proveedores", id));
+        alert("Proveedor eliminado correctamente");
+        cargarProveedores(buscadorInput.value);
+      }
+    }
 
-  // 🔹 Cargar acordeón directamente desde Firestore
-  async function cargarDesdeFirestore() {
-    const snapshot = await getDocs(collection(db, "productosProveedor"));
-    const productosPorProveedor = {};
-
-    snapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      if (!productosPorProveedor[data.proveedor]) productosPorProveedor[data.proveedor] = [];
-      productosPorProveedor[data.proveedor].push({ id: docSnap.id, ...data });
+    buscadorInput.addEventListener("input", () => {
+      cargarProveedores(buscadorInput.value);
     });
 
-    mostrarAcordeon(productosPorProveedor);
-  }
+    // Procesar TXT de productos
+    async function procesarArchivo() {
+      const fileInput = document.getElementById("proveedoresFile");
+      if (!fileInput.files.length) return alert("Selecciona un archivo primero");
+      const file = fileInput.files[0];
+      const text = await file.text();
+      const lineas = text.split("\n").map(l => l.trim());
 
-  function mostrarAcordeon(productosPorProveedor) {
-    const acordeonDiv = document.getElementById("acordeon");
-    acordeonDiv.innerHTML = "";
+      let proveedor = null;
+      for (const linea of lineas) {
+        if (linea.startsWith("===")) {
+          const match = linea.match(/Proveedor:\s*(.+)\s*===/);
+          if (match) proveedor = match[1];
+          continue;
+        }
+        if (!linea || !proveedor) continue;
 
-    let totalProveedores = 0;
-    let totalProductos = 0;
+        const partes = linea.split("|").map(s => s.trim());
+        const nombreProducto = partes[0];
+        let precio = 0, stock = 0;
+        partes.forEach(p => {
+          if (p.startsWith("Precio")) precio = Number(p.replace("Precio:", "").trim());
+          if (p.startsWith("Stock")) stock = Number(p.replace("Stock:", "").trim());
+        });
 
-    for (const prov in productosPorProveedor) {
-      const total = productosPorProveedor[prov].length;
-      totalProveedores++;
-      totalProductos += total;
+        const id = proveedor + "_" + nombreProducto;
+        await setDoc(doc(db, "productosProveedor", id), { proveedor, nombreProducto, precio, stock });
+      }
+      alert("Productos cargados correctamente");
+      cargarDesdeFirestore();
+    }
 
-      const productosHTML = productosPorProveedor[prov].map(p => `
-        <div class="producto">
-          <div>
-            <strong>${p.nombreProducto}</strong> - Precio: $${p.precio} - Stock: ${p.stock}
+    window.subirProveedores = procesarArchivo;
+
+    // Cargar acordeón desde Firestore
+    async function cargarDesdeFirestore() {
+      const snapshot = await getDocs(collection(db, "productosProveedor"));
+      const productosPorProveedor = {};
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        if (!productosPorProveedor[data.proveedor]) productosPorProveedor[data.proveedor] = [];
+        productosPorProveedor[data.proveedor].push({ id: docSnap.id, ...data });
+      });
+      mostrarAcordeon(productosPorProveedor);
+    }
+
+    function mostrarAcordeon(productosPorProveedor) {
+      const acordeonDiv = document.getElementById("acordeon");
+      acordeonDiv.innerHTML = "";
+      let totalProveedores = 0;
+      let totalProductos = 0;
+
+      for (const prov in productosPorProveedor) {
+        const total = productosPorProveedor[prov].length;
+        totalProveedores++;
+        totalProductos += total;
+
+        const productosHTML = productosPorProveedor[prov].map(p => `
+          <div class="producto">
+            <div>
+              <strong>${p.nombreProducto}</strong> - Precio: $${p.precio} - Stock: ${p.stock}
+            </div>
+            <div class="acciones">
+              <button class="editar" onclick="editarProducto('${p.id}')">Editar</button>
+              <button class="eliminar" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+            </div>
           </div>
-          <div class="acciones">
-            <button class="editar" onclick="editarProducto('${p.id}')">Editar</button>
-            <button class="eliminar" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+        `).join("");
+
+        acordeonDiv.innerHTML += `
+          <div class="proveedor-block">
+            <h3 onclick="toggleProductos(this)">${prov} (Total productos: ${total})</h3>
+            <div class="productos">${productosHTML}</div>
           </div>
-        </div>
-      `).join("");
+        `;
+      }
 
       acordeonDiv.innerHTML += `
-        <div class="proveedor">
-          <h3 onclick="toggleProductos(this)">${prov} (Total productos: ${total})</h3>
-          <div class="productos">${productosHTML}</div>
+        <div style="margin-top:20px; padding:10px; background:#e8f5e9; border:1px solid #4CAF50; border-radius:8px;">
+          <strong>Resumen General:</strong><br>
+          Total Proveedores: ${totalProveedores}<br>
+          Total Productos: ${totalProductos}
         </div>
       `;
     }
 
-    // 🔹 Resumen general
-    acordeonDiv.innerHTML += `
-      <div style="margin-top:20px; padding:10px; background:#e8f5e9; border:1px solid #4CAF50; border-radius:8px;">
-        <strong>Resumen General:</strong><br>
-        Total Proveedores: ${totalProveedores}<br>
-        Total Productos: ${totalProductos}
-      </div>
-    `;
-  }
-
-  window.toggleProductos = function(element) {
-    const productosDiv = element.nextElementSibling;
-    productosDiv.style.display = productosDiv.style.display === "block" ? "none" : "block";
-  }
-
-  window.eliminarProducto = async function(id) {
-    if (confirm("¿Seguro que quieres eliminar este producto?")) {
-      await deleteDoc(doc(db, "productosProveedor", id));
-      alert("Producto eliminado correctamente");
-      cargarDesdeFirestore();
+    window.toggleProductos = function(element) {
+      const productosDiv = element.nextElementSibling;
+      productosDiv.style.display = productosDiv.style.display === "block" ? "none" : "block";
     }
-  }
 
-  window.editarProducto = async function(id) {
-    const nuevoPrecio = prompt("Nuevo precio:");
-    const nuevoStock = prompt("Nuevo stock:");
-    if (nuevoPrecio !== null && nuevoStock !== null) {
-      await updateDoc(doc(db, "productosProveedor", id), {
-        precio: Number(nuevoPrecio),
-        stock: Number(nuevoStock)
-      });
-      alert("Producto actualizado correctamente");
-      cargarDesdeFirestore();
+    window.eliminarProducto = async function(id) {
+      if (confirm("¿Seguro que quieres eliminar este producto?")) {
+        await deleteDoc(doc(db, "productosProveedor", id));
+        alert("Producto eliminado correctamente");
+        cargarDesdeFirestore();
+      }
     }
-  }
 
-  window.subirProveedores = procesarArchivo;
+    window.editarProducto = async function(id) {
+      const nuevoPrecio = prompt("Nuevo precio:");
+      const nuevoStock = prompt("Nuevo stock:");
+      if (nuevoPrecio !== null && nuevoStock !== null) {
+        await updateDoc(doc(db, "productosProveedor", id), {
+          precio: Number(nuevoPrecio),
+          stock: Number(nuevoStock)
+        });
+        alert("Producto actualizado correctamente");
+        cargarDesdeFirestore();
+      }
+    }
 
-  // 🔹 Al abrir la página, carga lo que ya está en Firestore
-  cargarDesdeFirestore();
-</script>
+    // Inicializar listas al cargar
+    cargarProveedores();
+    cargarDesdeFirestore();
+  </script>
+</body>
+</html>
