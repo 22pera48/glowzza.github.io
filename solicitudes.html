@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glowzza - Solicitudes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f0f0, #d9fdd3);
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 32px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+      width: 400px;
+      margin: auto;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+
+    .boton {
+      width: 100%;
+      height: 50px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .boton:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    .lista {
+      margin-top: 40px;
+      width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .solicitud {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .solicitud:last-child {
+      border-bottom: none;
+    }
+
+    .acciones button {
+      margin-left: 5px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .eliminar {
+      background-color: #e53935;
+      color: white;
+    }
+    .eliminar:hover {
+      background-color: #c62828;
+    }
+    .resolver {
+      background-color: #2196F3;
+      color: white;
+    }
+    .resolver:hover {
+      background-color: #1976D2;
+    }
+
+    .resumen {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #e8f5e9;
+      border: 1px solid #4CAF50;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Solicitudes</h1>
+
+  <!-- Formulario para nueva solicitud -->
+  <form id="solicitudForm">
+    <label for="pedido">Pedido:</label>
+    <textarea id="pedido" placeholder="Ej: Averiguar precio estatua de Ganesha..." required></textarea>
+    <button type="submit" class="boton">Registrar Solicitud</button>
+  </form>
+
+  <!-- Lista de solicitudes -->
+  <div class="lista" id="listaSolicitudes">
+    <h2>Solicitudes Registradas</h2>
+    <div id="resumen" class="resumen"></div>
+    <div id="solicitudes"></div>
+  </div>
+
+  <button onclick="location.href='menu.html'" class="boton">Volver al Menú Principal</button>
+
+  <script type="module">
+    import { getFirestore, setDoc, doc, getDocs, collection, deleteDoc, updateDoc } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+    const firebaseConfig = { /* tu config */ };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("solicitudForm");
+    const solicitudesDiv = document.getElementById("solicitudes");
+    const resumenDiv = document.getElementById("resumen");
+
+    // Registrar nueva solicitud
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pedido = document.getElementById("pedido").value.trim();
+      if (!pedido) return alert("El pedido no puede estar vacío");
+
+      const id = "solicitud_" + Date.now();
+      await setDoc(doc(db, "solicitudes", id), { pedido, estado: "pendiente" });
+
+      alert("Solicitud registrada correctamente");
+      form.reset();
+      cargarSolicitudes();
+    });
+
+    // Cargar solicitudes
+    async function cargarSolicitudes() {
+      solicitudesDiv.innerHTML = "";
+      let pendientes = 0;
+      let resueltas = 0;
+
+      const snapshot = await getDocs(collection(db, "solicitudes"));
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        if (data.estado === "pendiente") pendientes++;
+        if (data.estado === "resuelta") resueltas++;
+
+        solicitudesDiv.innerHTML += `
+          <div class="solicitud">
+            <div>
+              <strong>${data.pedido}</strong><br>
+              Estado: ${data.estado}
+            </div>
+            <div class="acciones">
+              <button class="resolver" onclick="resolverSolicitud('${docSnap.id}')">Resolver</button>
+              <button class="eliminar" onclick="eliminarSolicitud('${docSnap.id}')">Eliminar</button>
+            </div>
+          </div>
+        `;
+      });
+
+      resumenDiv.innerHTML = `
+        <strong>Resumen:</strong><br>
+        Pendientes: ${pendientes}<br>
+        Resueltas: ${resueltas}
+      `;
+    }
+
+    // Resolver solicitud
+    window.resolverSolicitud = async function(id) {
+      await updateDoc(doc(db, "solicitudes", id), { estado: "resuelta" });
+      alert("Solicitud marcada como resuelta");
+      cargarSolicitudes();
+    }
+
+    // Eliminar solicitud
+    window.eliminarSolicitud = async function(id) {
+      if (confirm("¿Seguro que quieres eliminar esta solicitud?")) {
+        await deleteDoc(doc(db, "solicitudes", id));
+        alert("Solicitud eliminada correctamente");
+        cargarSolicitudes();
+      }
+    }
+
+    // Inicializar lista
+    cargarSolicitudes();
+  </script>
+</body>
+</html>
