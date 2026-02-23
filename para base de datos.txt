@@ -12,7 +12,7 @@ corregir alertas
 poder descargar registro de ventas y cleitnes
 que el stock haga la lista de pedidos solo
 agregar funcion de calñculo de ingresos y egresos
-
+seccion de carga 
 codigo unico para un cliente
 hacer codigo mas potable para escribir
 codigo unico para hacer codigos de barras
