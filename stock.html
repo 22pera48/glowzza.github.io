@@ -13,6 +13,20 @@
     margin-top: 25px;
     color: #007bff;
   }
+  #dropZoneWhatsapp {
+  border: 2px dashed #2196F3;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  color: #333;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  margin: 20px 0;
+}
+#dropZoneWhatsapp.dragover {
+  background-color: #e3f2fd;
+  border-color: #1976d2;
+}
 
   button {
     background: #007bff;
@@ -534,14 +548,20 @@ document.getElementById("buscadorEspecial").addEventListener("input", async (e) 
   }
 
   const dropZone = document.getElementById("dropZoneWhatsapp");
-  dropZone.addEventListener("dragover", e => e.preventDefault());
-  dropZone.addEventListener("drop", async e => {
-    e.preventDefault();
-    archivoTxt = e.dataTransfer.files[0];
-    if (!archivoTxt) return alert("No se detectó archivo");
-    alert("Archivo cargado correctamente. Ahora elegí la acción.");
-  });
-
+dropZone.addEventListener("dragover", e => {
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("dragover");
+});
+dropZone.addEventListener("drop", async e => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  archivoTxt = e.dataTransfer.files[0];
+  if (!archivoTxt) return alert("No se detectó archivo");
+  alert("Archivo cargado correctamente. Ahora elegí la acción.");
+});
   async function leerProductosDesdeTxt(file) {
     const text = await file.text();
     return text.split("\n").map(linea => {
