@@ -393,7 +393,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
 
-async function subirProductos(productos, modo = "actualizar") {
+window.subirProductos = async function(productos, modo = "actualizar") {
+
   // limpiar listas antes de volver a llenarlas
   document.getElementById("listaStock").innerHTML = "";
   document.getElementById("listaAgotados").innerHTML = "";
@@ -456,7 +457,6 @@ async function subirProductos(productos, modo = "actualizar") {
           claveUnica: prod.claveUnica
         });
         productoId = docRef.id;
-
         await addDoc(collection(db, "historial"), {
           productoId,
           claveUnica: prod.claveUnica,
@@ -464,7 +464,6 @@ async function subirProductos(productos, modo = "actualizar") {
           fechaCambio: new Date().toISOString()
         });
       }
-
       const liGeneral = crearItem(prod, productoId, true);
       document.getElementById("listaStock").appendChild(liGeneral);
 
@@ -484,7 +483,6 @@ async function subirProductos(productos, modo = "actualizar") {
 }
  // 🔹 Pop-up y drop zone
   let archivoTxt = null;
-
   window.abrirPopup = () => document.getElementById("popupUpload").style.display = "block";
   window.cerrarPopup = () => document.getElementById("popupUpload").style.display = "none";
 
@@ -506,21 +504,16 @@ async function subirProductos(productos, modo = "actualizar") {
       return { orden, nombre, color, stock, precio, claveUnica: orden + "-" + color };
     }).filter(p => p.orden);
   }
-
   document.getElementById("btnActualizar").addEventListener("click", async () => {
     if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
     const productos = await leerProductosDesdeTxt(archivoTxt);
     subirProductos(productos, "actualizar");
   });
-
   document.getElementById("btnSubir").addEventListener("click", async () => {
     if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
     const productos = await leerProductosDesdeTxt(archivoTxt);
     subirProductos(productos, "subir");
   });
-
-
-
 document.getElementById("buscador").addEventListener("input", async (e) => {
   const palabra = e.target.value.toLowerCase();
   const resultados = document.getElementById("resultadosBusqueda");
