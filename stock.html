@@ -210,6 +210,54 @@ const firebaseConfig = {
   appId: "1:159721581844:web:f62cdb303258dc847b6601",
   measurementId: "G-0FR3Q6P3L2"
 };
+let productosParseados = [];
+
+const dropZone = document.getElementById("dropZone");
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropZone.style.backgroundColor = "#f0f0f0";
+});
+dropZone.addEventListener("dragleave", () => {
+  dropZone.style.backgroundColor = "";
+});
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.style.backgroundColor = "";
+
+  const file = e.dataTransfer.files[0];
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const lines = ev.target.result.split("\n");
+    productosParseados = [];
+
+    let contador = 1;
+    lines.forEach(line => {
+      line = line.replace(/^\d{1,2}\/\d{1,2}\/\d{4},\s*\d{1,2}:\d{2}\s*-\s*/, "");
+      const idx = line.indexOf(":");
+      if (idx !== -1) line = line.substring(idx + 1).trim();
+      line = line.replace(/<Se editó.*?>/i, "").trim();
+
+      const parts = line.split(",");
+      if (parts.length >= 6) {
+        productosParseados.push({
+          orden: contador,
+          nombre: parts[0].trim(),
+          color: parts[1].trim(),
+          precio: Number(parts[2]),
+          stock: Number(parts[3]),
+          fecha: parts[4].trim(),
+          categoria: parts[5].trim(),
+          claveUnica: `${parts[0].trim()}|${parts[1].trim()}|${parts[5].trim()}`
+        });
+        contador++;
+      }
+    });
+
+    // Mostrar botones de acción
+    document.getElementById("acciones").style.display = "block";
+  };
+  reader.readAsText(file);
+});
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
