@@ -147,8 +147,17 @@
 <button onclick="document.getElementById('listaStock').scrollIntoView()">Listado General</button>
   <h2>Control de Stock</h2>
   <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
-  <button onclick="document.getElementById('archivoWhatsapp').click()">Subir WhatsApp</button>
-  <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
+<!-- Botón para abrir el pop-up -->
+<button onclick="abrirPopup()" class="boton-subir">Subir WhatsApp</button>
+
+<!-- Pop-up -->
+<div id="popupUpload" style="display:none;">
+  <h2>Subir WhatsApp</h2>
+  <div id="dropZoneWhatsapp">Arrastrá tu TXT aquí</div>
+  <button id="btnActualizar">Actualizar STOCK</button>
+  <button id="btnSubir">Subir STOCK</button>
+  <button onclick="cerrarPopup()">Cerrar</button>
+</div>  <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
 
   <input type="file" id="archivoExcel" style="display:none" accept=".csv">
   <input type="file" id="archivoWhatsapp" style="display:none" accept=".txt">
@@ -514,3 +523,43 @@ document.getElementById("buscadorEspecial").addEventListener("input", async (e) 
   }
 });
 </script>
+<script>
+  let archivoTxt = null;
+
+  function abrirPopup() {
+    document.getElementById("popupUpload").style.display = "block";
+  }
+  function cerrarPopup() {
+    document.getElementById("popupUpload").style.display = "none";
+  }
+
+  const dropZone = document.getElementById("dropZoneWhatsapp");
+  dropZone.addEventListener("dragover", e => e.preventDefault());
+  dropZone.addEventListener("drop", async e => {
+    e.preventDefault();
+    archivoTxt = e.dataTransfer.files[0];
+    if (!archivoTxt) return alert("No se detectó archivo");
+    alert("Archivo cargado correctamente. Ahora elegí la acción.");
+  });
+
+  async function leerProductosDesdeTxt(file) {
+    const text = await file.text();
+    return text.split("\n").map(linea => {
+      const [orden, nombre, color, stock, precio] = linea.split("|").map(s => s.trim());
+      return { orden, nombre, color, stock, precio, claveUnica: orden + "-" + color };
+    }).filter(p => p.orden);
+  }
+
+  document.getElementById("btnActualizar").addEventListener("click", async () => {
+    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
+    const productos = await leerProductosDesdeTxt(archivoTxt);
+    subirProductos(productos, "actualizar");
+  });
+
+  document.getElementById("btnSubir").addEventListener("click", async () => {
+    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
+    const productos = await leerProductosDesdeTxt(archivoTxt);
+    subirProductos(productos, "subir");
+  });
+</script>
+
