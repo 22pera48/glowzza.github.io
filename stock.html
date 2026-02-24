@@ -482,6 +482,45 @@ async function subirProductos(productos, modo = "actualizar") {
   await refrescarLista();
   alert("Carga de productos finalizada");
 }
+ // 🔹 Pop-up y drop zone
+  let archivoTxt = null;
+
+  window.abrirPopup = () => document.getElementById("popupUpload").style.display = "block";
+  window.cerrarPopup = () => document.getElementById("popupUpload").style.display = "none";
+
+  const dropZone = document.getElementById("dropZoneWhatsapp");
+  dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("dragover"); });
+  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+  dropZone.addEventListener("drop", async e => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    archivoTxt = e.dataTransfer.files[0];
+    if (!archivoTxt) return alert("No se detectó archivo");
+    alert("Archivo cargado correctamente. Ahora elegí la acción.");
+  });
+
+  async function leerProductosDesdeTxt(file) {
+    const text = await file.text();
+    return text.split("\n").map(linea => {
+      const [orden, nombre, color, stock, precio] = linea.split("|").map(s => s.trim());
+      return { orden, nombre, color, stock, precio, claveUnica: orden + "-" + color };
+    }).filter(p => p.orden);
+  }
+
+  document.getElementById("btnActualizar").addEventListener("click", async () => {
+    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
+    const productos = await leerProductosDesdeTxt(archivoTxt);
+    subirProductos(productos, "actualizar");
+  });
+
+  document.getElementById("btnSubir").addEventListener("click", async () => {
+    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
+    const productos = await leerProductosDesdeTxt(archivoTxt);
+    subirProductos(productos, "subir");
+  });
+
+
+
 document.getElementById("buscador").addEventListener("input", async (e) => {
   const palabra = e.target.value.toLowerCase();
   const resultados = document.getElementById("resultadosBusqueda");
@@ -537,49 +576,3 @@ document.getElementById("buscadorEspecial").addEventListener("input", async (e) 
   }
 });
 </script>
-<script>
-  let archivoTxt = null;
-
-  function abrirPopup() {
-    document.getElementById("popupUpload").style.display = "block";
-  }
-  function cerrarPopup() {
-    document.getElementById("popupUpload").style.display = "none";
-  }
-
-  const dropZone = document.getElementById("dropZoneWhatsapp");
-dropZone.addEventListener("dragover", e => {
-  e.preventDefault();
-  dropZone.classList.add("dragover");
-});
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("dragover");
-});
-dropZone.addEventListener("drop", async e => {
-  e.preventDefault();
-  dropZone.classList.remove("dragover");
-  archivoTxt = e.dataTransfer.files[0];
-  if (!archivoTxt) return alert("No se detectó archivo");
-  alert("Archivo cargado correctamente. Ahora elegí la acción.");
-});
-  async function leerProductosDesdeTxt(file) {
-    const text = await file.text();
-    return text.split("\n").map(linea => {
-      const [orden, nombre, color, stock, precio] = linea.split("|").map(s => s.trim());
-      return { orden, nombre, color, stock, precio, claveUnica: orden + "-" + color };
-    }).filter(p => p.orden);
-  }
-
-  document.getElementById("btnActualizar").addEventListener("click", async () => {
-    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
-    const productos = await leerProductosDesdeTxt(archivoTxt);
-    subirProductos(productos, "actualizar");
-  });
-
-  document.getElementById("btnSubir").addEventListener("click", async () => {
-    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
-    const productos = await leerProductosDesdeTxt(archivoTxt);
-    subirProductos(productos, "subir");
-  });
-</script>
-
