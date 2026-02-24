@@ -121,15 +121,24 @@ const clienteForm = document.getElementById("clienteForm");
 if (clienteForm) {
   clienteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nombre = document.getElementById("nombre").value;
+
+    const nombre = document.getElementById("nombre").value.trim();
     const fecha = document.getElementById("fecha").value;
-    const telefono = document.getElementById("telefono").value; 
+    const telefono = document.getElementById("telefono").value.trim();
+    const nemonico = document.getElementById("nemonico").value.trim();
+
+    // 🔹 Validar teléfono (solo números, entre 8 y 15 dígitos)
+    const regex = /^[0-9]{8,15}$/;
+    if (!regex.test(telefono)) {
+      alert("El número de teléfono debe tener entre 8 y 15 dígitos y solo números.");
+      return; // corta el registro si no cumple
+    }
+
     const etiquetaUnica = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-    const nemonico = document.getElementById("nemonico").value;
 
     await addDoc(collection(db, "clientes"), {
       nombre,
-      telefono, 
+      telefono,
       nemonico,
       fecha,
       ubicacion: "deposito",
@@ -146,7 +155,6 @@ if (clienteForm) {
     mostrarClientes();
   });
 }
-
 // 🔹 Eliminar producto del cliente (no toca stock global)
 async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   const clienteRef = doc(db, "clientes", clienteId);
