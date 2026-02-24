@@ -370,7 +370,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
 
-async function subirProductos(productos) {
+async function subirProductos(productos, modo = "actualizar") {
   // limpiar listas antes de volver a llenarlas
   document.getElementById("listaStock").innerHTML = "";
   document.getElementById("listaAgotados").innerHTML = "";
@@ -389,22 +389,39 @@ async function subirProductos(productos) {
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
 
-        // 🔹 ahora sí se acumula stock
-        await updateDoc(doc(db, "productos", productoId), {
-          stock: increment(Number(prod.stock)),
-          precio: Number(prod.precio),
-          fecha: prod.fecha || new Date().toISOString(),
-          categoria: prod.categoria || ""
-        });
+        if (modo === "actualizar") {
+          // 🔹 acumula stock
+          await updateDoc(doc(db, "productos", productoId), {
+            stock: increment(Number(prod.stock)),
+            precio: Number(prod.precio),
+            fecha: prod.fecha || new Date().toISOString(),
+            categoria: prod.categoria || ""
+          });
 
-        await addDoc(collection(db, "historial"), {
-          productoId,
-          claveUnica: prod.claveUnica,
-          cambio: `Stock +${prod.stock}, Precio: $${prod.precio}`,
-          fechaCambio: new Date().toISOString()
-        });
+          await addDoc(collection(db, "historial"), {
+            productoId,
+            claveUnica: prod.claveUnica,
+            cambio: `Stock +${prod.stock}, Precio: $${prod.precio}`,
+            fechaCambio: new Date().toISOString()
+          });
+        } else if (modo === "subir") {
+          // 🔹 pisa stock
+          await updateDoc(doc(db, "productos", productoId), {
+            stock: Number(prod.stock),
+            precio: Number(prod.precio),
+            fecha: prod.fecha || new Date().toISOString(),
+            categoria: prod.categoria || ""
+          });
 
+          await addDoc(collection(db, "historial"), {
+            productoId,
+            claveUnica: prod.claveUnica,
+            cambio: `Stock reemplazado → ${prod.stock}, Precio: $${prod.precio}`,
+            fechaCambio: new Date().toISOString()
+          });
+        }
       } else {
+        // 🔹 si no existe, lo crea igual en ambos modos
         const docRef = await addDoc(collection(db, "productos"), {
           orden: prod.orden,
           nombre: prod.nombre,
@@ -439,7 +456,6 @@ async function subirProductos(productos) {
       console.error("Error al subir producto:", err);
     }
   }
-  // 🔹 refrescar la lista desde Firestore
   await refrescarLista();
   alert("Carga de productos finalizada");
 }
