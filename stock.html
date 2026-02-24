@@ -13,20 +13,6 @@
     margin-top: 25px;
     color: #007bff;
   }
-  #dropZoneWhatsapp {
-  border: 2px dashed #2196F3;
-  border-radius: 12px;
-  padding: 30px;
-  text-align: center;
-  color: #333;
-  background-color: #f9f9f9;
-  cursor: pointer;
-  margin: 20px 0;
-}
-#dropZoneWhatsapp.dragover {
-  background-color: #e3f2fd;
-  border-color: #1976d2;
-}
 
   button {
     background: #007bff;
@@ -161,17 +147,8 @@
 <button onclick="document.getElementById('listaStock').scrollIntoView()">Listado General</button>
   <h2>Control de Stock</h2>
   <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
-<!-- Botón para abrir el pop-up -->
-<button onclick="abrirPopup()" class="boton-subir">Subir WhatsApp</button>
-
-<!-- Pop-up -->
-<div id="popupUpload" style="display:none;">
-  <h2>Subir WhatsApp</h2>
-  <div id="dropZoneWhatsapp">Arrastrá tu TXT aquí</div>
-  <button id="btnActualizar">Actualizar STOCK</button>
-  <button id="btnSubir">Subir STOCK</button>
-  <button onclick="cerrarPopup()">Cerrar</button>
-</div>  <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
+  <button onclick="document.getElementById('archivoWhatsapp').click()">Subir WhatsApp</button>
+  <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
 
   <input type="file" id="archivoExcel" style="display:none" accept=".csv">
   <input type="file" id="archivoWhatsapp" style="display:none" accept=".txt">
@@ -393,8 +370,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
 
-window.subirProductos = async function(productos, modo = "actualizar") {
-
+async function subirProductos(productos) {
   // limpiar listas antes de volver a llenarlas
   document.getElementById("listaStock").innerHTML = "";
   document.getElementById("listaAgotados").innerHTML = "";
@@ -413,39 +389,22 @@ window.subirProductos = async function(productos, modo = "actualizar") {
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
 
-        if (modo === "actualizar") {
-          // 🔹 acumula stock
-          await updateDoc(doc(db, "productos", productoId), {
-            stock: increment(Number(prod.stock)),
-            precio: Number(prod.precio),
-            fecha: prod.fecha || new Date().toISOString(),
-            categoria: prod.categoria || ""
-          });
+        // 🔹 ahora sí se acumula stock
+        await updateDoc(doc(db, "productos", productoId), {
+          stock: increment(Number(prod.stock)),
+          precio: Number(prod.precio),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || ""
+        });
 
-          await addDoc(collection(db, "historial"), {
-            productoId,
-            claveUnica: prod.claveUnica,
-            cambio: `Stock +${prod.stock}, Precio: $${prod.precio}`,
-            fechaCambio: new Date().toISOString()
-          });
-        } else if (modo === "subir") {
-          // 🔹 pisa stock
-          await updateDoc(doc(db, "productos", productoId), {
-            stock: Number(prod.stock),
-            precio: Number(prod.precio),
-            fecha: prod.fecha || new Date().toISOString(),
-            categoria: prod.categoria || ""
-          });
+        await addDoc(collection(db, "historial"), {
+          productoId,
+          claveUnica: prod.claveUnica,
+          cambio: `Stock +${prod.stock}, Precio: $${prod.precio}`,
+          fechaCambio: new Date().toISOString()
+        });
 
-          await addDoc(collection(db, "historial"), {
-            productoId,
-            claveUnica: prod.claveUnica,
-            cambio: `Stock reemplazado → ${prod.stock}, Precio: $${prod.precio}`,
-            fechaCambio: new Date().toISOString()
-          });
-        }
       } else {
-        // 🔹 si no existe, lo crea igual en ambos modos
         const docRef = await addDoc(collection(db, "productos"), {
           orden: prod.orden,
           nombre: prod.nombre,
@@ -457,6 +416,7 @@ window.subirProductos = async function(productos, modo = "actualizar") {
           claveUnica: prod.claveUnica
         });
         productoId = docRef.id;
+
         await addDoc(collection(db, "historial"), {
           productoId,
           claveUnica: prod.claveUnica,
@@ -464,6 +424,7 @@ window.subirProductos = async function(productos, modo = "actualizar") {
           fechaCambio: new Date().toISOString()
         });
       }
+
       const liGeneral = crearItem(prod, productoId, true);
       document.getElementById("listaStock").appendChild(liGeneral);
 
@@ -478,42 +439,10 @@ window.subirProductos = async function(productos, modo = "actualizar") {
       console.error("Error al subir producto:", err);
     }
   }
+  // 🔹 refrescar la lista desde Firestore
   await refrescarLista();
   alert("Carga de productos finalizada");
 }
- // 🔹 Pop-up y drop zone
-  let archivoTxt = null;
-  window.abrirPopup = () => document.getElementById("popupUpload").style.display = "block";
-  window.cerrarPopup = () => document.getElementById("popupUpload").style.display = "none";
-
-  const dropZone = document.getElementById("dropZoneWhatsapp");
-  dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("dragover"); });
-  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-  dropZone.addEventListener("drop", async e => {
-    e.preventDefault();
-    dropZone.classList.remove("dragover");
-    archivoTxt = e.dataTransfer.files[0];
-    if (!archivoTxt) return alert("No se detectó archivo");
-    alert("Archivo cargado correctamente. Ahora elegí la acción.");
-  });
-
-  async function leerProductosDesdeTxt(file) {
-    const text = await file.text();
-    return text.split("\n").map(linea => {
-      const [orden, nombre, color, stock, precio] = linea.split("|").map(s => s.trim());
-      return { orden, nombre, color, stock, precio, claveUnica: orden + "-" + color };
-    }).filter(p => p.orden);
-  }
-  document.getElementById("btnActualizar").addEventListener("click", async () => {
-    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
-    const productos = await leerProductosDesdeTxt(archivoTxt);
-    subirProductos(productos, "actualizar");
-  });
-  document.getElementById("btnSubir").addEventListener("click", async () => {
-    if (!archivoTxt) return alert("Primero arrastrá un archivo TXT");
-    const productos = await leerProductosDesdeTxt(archivoTxt);
-    subirProductos(productos, "subir");
-  });
 document.getElementById("buscador").addEventListener("input", async (e) => {
   const palabra = e.target.value.toLowerCase();
   const resultados = document.getElementById("resultadosBusqueda");
