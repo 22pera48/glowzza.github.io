@@ -147,8 +147,14 @@
 <button onclick="document.getElementById('listaStock').scrollIntoView()">Listado General</button>
   <h2>Control de Stock</h2>
   <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
-  <button onclick="document.getElementById('archivoWhatsapp').click()">Subir WhatsApp</button>
-  <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
+<div id="dropZone" style="border:2px dashed #aaa; padding:20px; text-align:center;">
+  Arrastrá y soltá tu archivo TXT aquí
+</div>
+
+<div id="acciones" style="margin-top:15px; display:none;">
+  <button id="btnActualizar">Actualizar stock</button>
+  <button id="btnSubir">Subir stock</button>
+</div>  <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
 
   <input type="file" id="archivoExcel" style="display:none" accept=".csv">
   <input type="file" id="archivoWhatsapp" style="display:none" accept=".txt">
