@@ -36,12 +36,16 @@ categoria de proveedroes
 ubicacion gps
 funcion subir pedidos para comprar
 automatizar subida a glowzza
-
-
-
+agregar forma de editar nombres es stock
+en errores que despligue menu de errores 
+subir correccion sin duplicaion osea sin incrementar solo correccion erores
 const firebaseConfig = {
+boton eliminar firebase productos.....
+sistema deplantilla 
+subi stock y creo dos  con "1"
+al cambiar el stock lo que se creo como cliente quedoi con los numero antiguos no se actualizo
 
-  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+ apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
 
   authDomain: "glowzzainventario.firebaseapp.com",
 
