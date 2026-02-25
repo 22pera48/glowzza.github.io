@@ -550,6 +550,8 @@ async function actualizarStock(productos) {
   }
   await refrescarLista();
   alert("Stock actualizado");
+  productosParseados = [];
+document.getElementById("acciones").style.display = "none";
 }
 
 // 🔹 Subir stock (pisar todo)
@@ -608,6 +610,8 @@ async function subirStock(productos) {
   }
   await refrescarLista();
   alert("Productos re-subidos (pisados)");
+  productosParseados = [];
+document.getElementById("acciones").style.display = "none";
 }
 document.getElementById("btnActualizar").onclick = () => actualizarStock(productosParseados);
 document.getElementById("btnSubir").onclick = () => subirStock(productosParseados);
