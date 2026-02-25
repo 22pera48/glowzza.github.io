@@ -318,16 +318,15 @@ function crearItem(prod, productoId, conBoton = true) {
   }
 
   // 🔹 Usamos insertAdjacentHTML para no borrar el botón
-  li.insertAdjacentHTML("beforeend", `
-    <h4>${prod.nombre} (${prod.color || ""})</h4>
-    <p>Precio: $${prod.precio}</p>
-    <p class="${prod.stock === 0 ? 'stock-out' : prod.stock <= 2 ? 'stock-low' : 'stock-ok'}">
-      Stock: ${prod.stock} unidades
-    </p>
-    <p>Categoría: ${prod.categoria}</p>
-    <p>ID: ${productoId}</p>
-  `);
-
+li.insertAdjacentHTML("beforeend", `
+  <h4>[${prod.orden}] ${prod.nombre} (${prod.color || ""})</h4>
+  <p>Precio: $${prod.precio}</p>
+  <p class="${prod.stock === 0 ? 'stock-out' : prod.stock <= 2 ? 'stock-low' : 'stock-ok'}">
+    Stock: ${prod.stock} unidades
+  </p>
+  <p>Categoría: ${prod.categoria}</p>
+  <p>ID: ${productoId}</p>
+`);
   return li;
 }
 // 🔹 Refrescar listado desde Firestore
