@@ -44,6 +44,38 @@ boton eliminar firebase productos.....
 sistema deplantilla 
 subi stock y creo dos  con "1"
 al cambiar el stock lo que se creo como cliente quedoi con los numero antiguos no se actualizo
+ver si historial consume mucha lectura o ver  plan pago de firebase
+
+que la parte de produto de clientes tambien actue como buscador
+cuando elimino de stock no se elmina de inmediato en cliente
+contraseña para eliminar elementos
+colocar en la lista de clientes totales
+colocar totale sen la lista de stock
+agregar totales de productos
+sector donde calculo ganancia bruto neto y estipule porcentaje de compra para stock
+hacer scraper
+corregir alertas
+poder descargar registro de ventas y cleitnes
+que el stock haga la lista de pedidos solo
+agregar funcion de calñculo de ingresos y egresos
+problema que no se elimina en tiempo real
+codigo unico para un cliente
+hacer codigo mas potable para escribir
+codigo unico para hacer codigos de barras
+cuando elimino de stock no se elmina de inmediato en cliente
+agregar marca de agua de las fotos
+agregar en las fotos una imagen con glowzza
+ver sistema para coordinar envios
+cuando pongo producto se borran datos 
+despues de subir no actualiza solo la pagina tenes que recargarla para que vuelva a tomar otro txt
+que saque el valor del stock cpn el pago en bruto pra tner el neto
+el contador de clientes no cuenta clientes sino productos
+cuadro ventas dia dia 
+hay numeros duplicados en stock y no actualiza stock al subir txt
+
+poder eliminar usuarios
+poder subir lista de proveedores
+pass para eliminar algo
 
  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
 
