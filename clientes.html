@@ -209,5 +209,16 @@ async function buscarParaEliminar() {
     const observerVentas = new MutationObserver(actualizarContadores);
     observerVentas.observe(listaVentas, { childList: true });
   </script>
+  <!-- Modal de credenciales -->
+<div id="modalCredenciales" style="display:none; position:fixed; top:0; left:0; 
+     width:100%; height:100%; background:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
+  <div style="background:#fff; padding:20px; border-radius:10px; display:inline-block;">
+    <h3>Confirmar eliminación</h3>
+    <input type="text" id="usuarioCheck" placeholder="Usuario"><br><br>
+    <input type="password" id="passwordCheck" placeholder="Contraseña"><br><br>
+    <button id="btnConfirmarEliminar">Confirmar</button>
+    <button onclick="document.getElementById('modalCredenciales').style.display='none'">Cancelar</button>
+  </div>
+</div>
 </body>
 </html>
