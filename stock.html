@@ -1,26 +1,36 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f8f9fa;
-    margin: 20px;
-    color: #333;
-  }
-  #btnActualizar {
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+  margin: 20px;
+  color: #333;
+}
+
+h2, h3 {
+  margin-top: 25px;
+  color: #007bff;
+}
+
+button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+button:hover {
+  background: #0056b3;
+}
+
+/* Botones especiales */
+#btnActualizar {
   background: #28a745;
 }
 #btnActualizar:hover {
   background: #1e7e34;
-}
-ul li h4 {
-  margin: 0 0 8px;
-  font-size: 1.2em;
-  color: #007bff;
-}
-ul li p {
-  margin: 4px 0;
 }
 
 #btnSubir {
@@ -31,7 +41,9 @@ ul li p {
   background: #e0a800;
   color: #fff;
 }
-  #dropZone {
+
+/* Drop zone */
+#dropZone {
   border: 2px dashed #007bff;
   border-radius: 10px;
   padding: 30px;
@@ -40,12 +52,13 @@ ul li p {
   background: #fdfdfd;
   transition: background-color 0.3s, border-color 0.3s;
 }
-
 #dropZone.dragover {
   background-color: #e6f0ff;
   border-color: #0056b3;
   color: #0056b3;
 }
+
+/* Encabezado y navegación */
 header {
   background: #007bff;
   color: #fff;
@@ -56,14 +69,12 @@ header {
   border-radius: 8px;
   margin-bottom: 20px;
 }
-
 nav {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 10px;
 }
-
 nav button {
   background: #fff;
   color: #007bff;
@@ -73,136 +84,53 @@ nav button {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 nav button:hover {
   background: #007bff;
   color: #fff;
 }
-  h2, h3 {
-    margin-top: 25px;
-    color: #007bff;
-  }
 
-  button {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 14px;
-    margin: 5px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  button:hover {
-    background: #0056b3;
-  }
+/* Listados en tarjetas */
+ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+ul li {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 12px;
+  width: 280px;
+  transition: transform 0.2s ease;
+}
+ul li:hover {
+  transform: translateY(-3px);
+}
+ul li h4 {
+  margin: 0 0 8px;
+  font-size: 1.2em;
+  color: #007bff;
+}
+ul li p {
+  margin: 4px 0;
+}
 
-  input[type="text"] {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    width: 300px;
-    margin-bottom: 10px;
-  }
+/* Estados de stock */
+.stock-ok { color: #28a745; font-weight: bold; }
+.stock-low { color: #ffc107; font-weight: bold; }
+.stock-out { color: #dc3545; font-weight: bold; }
 
-  /* Listados en tarjetas */
-  ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-
-  ul li {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    padding: 12px;
-    width: 280px;
-    transition: transform 0.2s ease;
-  }
-  ul li:hover {
-    transform: translateY(-3px);
-  }
-
-  /* Estados de stock */
-  .stock-ok { color: #28a745; font-weight: bold; }
-  .stock-low { color: #ffc107; font-weight: bold; }
-  .stock-out { color: #dc3545; font-weight: bold; }
-
-  /* Badge contador */
-  #contadorProductos, #contadorErrores {
-    background: #007bff;
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-  }
-</style>
-  <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f8f9fa;
-    margin: 20px;
-    color: #333;
-  }
-
-  h2, h3 {
-    margin-top: 25px;
-    color: #007bff;
-  }
-
-  button {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 14px;
-    margin: 5px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  button:hover {
-    background: #0056b3;
-  }
-
-  /* Listados en tarjetas */
-  ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-
-  ul li {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    padding: 12px;
-    width: 280px;
-    transition: transform 0.2s ease;
-  }
-  ul li:hover {
-    transform: translateY(-3px);
-  }
-
-  /* Estados de stock */
-  .stock-ok { color: #28a745; font-weight: bold; }
-  .stock-low { color: #ffc107; font-weight: bold; }
-  .stock-out { color: #dc3545; font-weight: bold; }
-
-  /* Badge contador */
-  #contadorProductos, #contadorErrores {
-    background: #007bff;
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-  }
+/* Badge contador */
+#contadorProductos, #contadorErrores {
+  background: #007bff;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+}
 </style>
   <meta charset="UTF-8">
   <title>Control de Stock General</title>
