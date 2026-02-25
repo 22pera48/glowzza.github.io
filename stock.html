@@ -456,12 +456,10 @@ async function subirProductos(productos) {
   document.getElementById("listaAgotados").innerHTML = "";
   document.getElementById("listaPorAgotarse").innerHTML = "";
 
-  for (const prod of productos) {
+  // 🔹 ejecutar todas las operaciones en paralelo
+  const operaciones = productos.map(async (prod) => {
     try {
-      const q = query(
-        collection(db, "productos"),
-        where("claveUnica", "==", prod.claveUnica)
-      );
+      const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
       const snap = await getDocs(q);
 
       let productoId;
@@ -469,7 +467,6 @@ async function subirProductos(productos) {
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
 
-        // 🔹 ahora sí se acumula stock
         await updateDoc(doc(db, "productos", productoId), {
           stock: increment(Number(prod.stock)),
           precio: Number(prod.precio),
@@ -485,18 +482,18 @@ async function subirProductos(productos) {
         });
 
       } else {
-const nuevoOrden = await obtenerNuevoOrden(db);
-
-const docRef = await addDoc(collection(db, "productos"), {
-  orden: nuevoOrden,   // 🔹 ahora se asigna el orden libre
-  nombre: prod.nombre,
-  color: prod.color,
-  precio: Number(prod.precio),
-  stock: Number(prod.stock),
-  fecha: prod.fecha || new Date().toISOString(),
-  categoria: prod.categoria || "",
-  claveUnica: prod.claveUnica
-});        productoId = docRef.id;
+        const nuevoOrden = await obtenerNuevoOrden(db);
+        const docRef = await addDoc(collection(db, "productos"), {
+          orden: nuevoOrden,
+          nombre: prod.nombre,
+          color: prod.color,
+          precio: Number(prod.precio),
+          stock: Number(prod.stock),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || "",
+          claveUnica: prod.claveUnica
+        });
+        productoId = docRef.id;
 
         await addDoc(collection(db, "historial"), {
           productoId,
@@ -506,6 +503,7 @@ const docRef = await addDoc(collection(db, "productos"), {
         });
       }
 
+      // pintar en DOM mientras tanto
       const liGeneral = crearItem(prod, productoId, true);
       document.getElementById("listaStock").appendChild(liGeneral);
 
@@ -519,8 +517,12 @@ const docRef = await addDoc(collection(db, "productos"), {
     } catch (err) {
       console.error("Error al subir producto:", err);
     }
-  }
-  // 🔹 refrescar la lista desde Firestore
+  });
+
+  // 🔹 esperar a que todas las operaciones terminen
+  await Promise.all(operaciones);
+
+  // recién ahora refrescar
   await refrescarLista();
   alert("Carga de productos finalizada");
 }
