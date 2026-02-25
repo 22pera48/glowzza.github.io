@@ -144,8 +144,29 @@
     <button class="boton-admin" onclick="location.href='seguridad.html'">
       Seguridad
     </button>
+    
   </div>
+<button onclick="mostrarCredenciales()" class="boton-admin">
+  🔑 Configurar Credenciales
+</button>
 
+<!-- Formulario oculto -->
+<div id="contenedorCredenciales" style="display:none;">
+  <h2 class="titulo-form">Configurar credenciales de administrador</h2>
+  <form id="formCredenciales" class="form-credenciales">
+    <div class="campo">
+      <label for="usuarioAdmin">👤 Usuario</label>
+      <input type="text" id="usuarioAdmin" placeholder="Ej: adminGlowzza" required>
+    </div>
+
+    <div class="campo">
+      <label for="passwordAdmin">🔒 Contraseña</label>
+      <input type="password" id="passwordAdmin" placeholder="********" required>
+    </div>
+
+    <button type="submit" class="btn-guardar">Guardar credenciales</button>
+  </form>
+</div>
   <!-- 🔹 Formulario de carga de productos -->
   <h2 class="titulo-form">Subir nuevo producto</h2>
   <form id="formProducto" class="form-producto">
@@ -216,6 +237,11 @@
       alert("Producto cargado correctamente");
       document.getElementById("formProducto").reset();
     });
+    function mostrarCredenciales() {
+  const contenedor = document.getElementById("contenedorCredenciales");
+  contenedor.style.display = contenedor.style.display === "none" ? "block" : "none";
+}
   </script>
+  
 </body>
 </html>
