@@ -67,18 +67,11 @@
   </form>
 
   <!-- Pestañas -->
-<div class="tabs">
-  <button onclick="mostrarTab('clientes')">Clientes</button>
-  <button onclick="mostrarTab('ventas')">Ventas Cerradas</button>
-  <button onclick="mostrarTab('eliminar')">Eliminar Cliente/Venta</button>
-</div>
-<div id="eliminar" class="tab-content" style="display:none;">
-  <h3>Eliminar Cliente o Venta</h3>
-  <input type="text" id="buscadorEliminar" placeholder="Buscar por nombre o código">
-  <button onclick="buscarParaEliminar()">Buscar</button>
-  
-  <div id="resultadoEliminar"></div>
-</div>
+  <div class="tabs">
+    <button class="active" onclick="mostrarTab('clientes')">Clientes</button>
+    <button onclick="mostrarTab('ventas')">Ventas Cerradas</button>
+  </div>
+
   <!-- Contenido de pestañas -->
   <div id="tabClientes" class="tab-content">
     <h2>Lista de Clientes</h2>
@@ -97,82 +90,17 @@
   <!-- Script de Firebase -->
   <script type="module" src="firebase.js"></script>
   <script>
-function mostrarTab(tab) {
-  // Mostrar/ocultar secciones
-  document.getElementById("tabClientes").style.display = (tab === "clientes") ? "block" : "none";
-  document.getElementById("tabVentas").style.display = (tab === "ventas") ? "block" : "none";
-  document.getElementById("tabEliminar").style.display = (tab === "eliminar") ? "block" : "none";
+    function mostrarTab(tab) {
+      document.getElementById("tabClientes").style.display = (tab === "clientes") ? "block" : "none";
+      document.getElementById("tabVentas").style.display = (tab === "ventas") ? "block" : "none";
 
-  // Actualizar estado de los botones
-  const buttons = document.querySelectorAll(".tabs button");
-  buttons.forEach(btn => btn.classList.remove("active"));
-
-  if (tab === "clientes") buttons[0].classList.add("active");
-  else if (tab === "ventas") buttons[1].classList.add("active");
-  else if (tab === "eliminar") buttons[2].classList.add("active");
-}
-async function buscarParaEliminar() {
-  const termino = document.getElementById("buscadorEliminar").value.toLowerCase();
-  const resultadoDiv = document.getElementById("resultadoEliminar");
-  resultadoDiv.innerHTML = "";
-
-  const clientesSnap = await getDocs(collection(db, "clientes"));
-  clientesSnap.forEach(docSnap => {
-    const data = docSnap.data();
-    if (data.nombre.toLowerCase().includes(termino) || (data.codigo?.toLowerCase().includes(termino))) {
-      resultadoDiv.innerHTML += `
-        <div>
-          Cliente: ${data.nombre} - Tel: ${data.telefono}
-          <button onclick="pedirCredenciales('${docSnap.id}', 'clientes')">Eliminar</button>
-        </div>`;
+      const buttons = document.querySelectorAll(".tabs button");
+      buttons.forEach(btn => btn.classList.remove("active"));
+      if (tab === "clientes") buttons[0].classList.add("active");
+      else buttons[1].classList.add("active");
     }
-  });
 
-  const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
-  ventasSnap.forEach(docSnap => {
-    const data = docSnap.data();
-    if (data.codigo?.toLowerCase().includes(termino)) {
-      resultadoDiv.innerHTML += `
-        <div>
-          Venta ${data.codigo} - Total: $${data.total}
-          <button onclick="pedirCredenciales('${docSnap.id}', 'ventasCerradas')">Eliminar</button>
-        </div>`;
-    }
-  });
-}
-// Funciones de credenciales y eliminación
-  let itemAEliminar = null;
-  let coleccionAEliminar = null;
-
-  window.pedirCredenciales = function(id, coleccion) {
-    itemAEliminar = id;
-    coleccionAEliminar = coleccion;
-    document.getElementById("modalCredenciales").style.display = "block";
-  };
-
-  document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
-    const usuario = document.getElementById("usuarioCheck").value;
-    const password = document.getElementById("passwordCheck").value;
-
-    const credSnap = await getDocs(collection(db, "adminCredenciales"));
-    let valido = false;
-    credSnap.forEach(docSnap => {
-      const data = docSnap.data();
-      if (data.usuario === usuario && data.password === password) {
-        valido = true;
-      }
-    });
-
-    if (valido) {
-      await deleteDoc(doc(db, coleccionAEliminar, itemAEliminar));
-      alert("Eliminado correctamente");
-      document.getElementById("modalCredenciales").style.display = "none";
-      location.reload();
-    } else {
-      alert("Usuario o contraseña incorrectos");
-    }
-  });
-// Buscador de clientes
+    // Buscador de clientes
     const buscadorClientes = document.getElementById("buscadorClientes");
     const listaClientes = document.getElementById("listaClientes");
     buscadorClientes.addEventListener("input", () => {
@@ -209,16 +137,5 @@ async function buscarParaEliminar() {
     const observerVentas = new MutationObserver(actualizarContadores);
     observerVentas.observe(listaVentas, { childList: true });
   </script>
-  <!-- Modal de credenciales -->
-<div id="modalCredenciales" style="display:none; position:fixed; top:0; left:0; 
-     width:100%; height:100%; background:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
-  <div style="background:#fff; padding:20px; border-radius:10px; display:inline-block;">
-    <h3>Confirmar eliminación</h3>
-    <input type="text" id="usuarioCheck" placeholder="Usuario"><br><br>
-    <input type="password" id="passwordCheck" placeholder="Contraseña"><br><br>
-    <button id="btnConfirmarEliminar">Confirmar</button>
-    <button onclick="document.getElementById('modalCredenciales').style.display='none'">Cancelar</button>
-  </div>
-</div>
 </body>
 </html>
