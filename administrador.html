@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #f0f0f0, #ffd9d9); /* 🔹 tono rojizo */
+      background: linear-gradient(135deg, #f0f0f0, #ffd9d9); /* tono rojizo */
       text-align: center;
       margin: 0;
       padding: 40px;
@@ -24,6 +24,7 @@
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
       justify-items: center;
+      margin-bottom: 40px;
     }
 
     .boton-admin {
@@ -62,6 +63,69 @@
       background-color: #555;
       transform: scale(1.05);
     }
+
+    /* 🔹 Estilos del formulario */
+    .titulo-form {
+      color: #b71c1c;
+      font-size: 28px;
+      margin: 40px 0 20px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .form-producto {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .campo {
+      margin-bottom: 20px;
+    }
+
+    .campo label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .campo input,
+    .campo textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .campo input:focus,
+    .campo textarea:focus {
+      border-color: #e53935;
+      outline: none;
+      box-shadow: 0 0 5px rgba(229,57,53,0.5);
+    }
+
+    .btn-guardar {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #e53935;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .btn-guardar:hover {
+      background-color: #c62828;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -82,8 +146,76 @@
     </button>
   </div>
 
+  <!-- 🔹 Formulario de carga de productos -->
+  <h2 class="titulo-form">Subir nuevo producto</h2>
+  <form id="formProducto" class="form-producto">
+    <div class="campo">
+      <label for="imagen">📷 Imagen del producto</label>
+      <input type="file" id="imagen" accept="image/*" required>
+    </div>
+
+    <div class="campo">
+      <label for="nombre">📝 Nombre</label>
+      <input type="text" id="nombre" placeholder="Ej: Shampoo Glowzza" required>
+    </div>
+
+    <div class="campo">
+      <label for="precio">💲 Precio</label>
+      <input type="number" id="precio" placeholder="Ej: 2500" required>
+    </div>
+
+    <div class="campo">
+      <label for="categoria">📂 Categoría</label>
+      <input type="text" id="categoria" placeholder="Ej: Cuidado personal" required>
+    </div>
+
+    <div class="campo">
+      <label for="descripcion">🖊️ Descripción</label>
+      <textarea id="descripcion" placeholder="Ej: Shampoo nutritivo con keratina"></textarea>
+    </div>
+
+    <button type="submit" class="btn-guardar">Guardar producto</button>
+  </form>
+
   <button onclick="location.href='menu.html'" class="boton-volver">
     Volver al Panel Principal
   </button>
+
+  <!-- 🔹 Lógica JS (ejemplo con Firebase) -->
+  <script type="module">
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+    import { getFirestore, collection, addDoc } from "firebase/firestore";
+
+    const db = getFirestore();
+    const storage = getStorage();
+
+    document.getElementById("formProducto").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const archivo = document.getElementById("imagen").files[0];
+      const nombre = document.getElementById("nombre").value;
+      const precio = Number(document.getElementById("precio").value);
+      const categoria = document.getElementById("categoria").value;
+      const descripcion = document.getElementById("descripcion").value;
+
+      // Subir imagen a Storage
+      const storageRef = ref(storage, `productos/${archivo.name}`);
+      await uploadBytes(storageRef, archivo);
+      const imagenUrl = await getDownloadURL(storageRef);
+
+      // Guardar datos en Firestore
+      await addDoc(collection(db, "productos"), {
+        nombre,
+        precio,
+        categoria,
+        descripcion,
+        imagenUrl,
+        fecha: new Date().toISOString()
+      });
+
+      alert("Producto cargado correctamente");
+      document.getElementById("formProducto").reset();
+    });
+  </script>
 </body>
 </html>
