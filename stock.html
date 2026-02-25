@@ -497,6 +497,119 @@ async function subirProductos(productos) {
   await refrescarLista();
   alert("Carga de productos finalizada");
 }
+// 🔹 Actualizar stock (suma cantidades)
+async function actualizarStock(productos) {
+  for (const prod of productos) {
+    try {
+      const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
+      const snap = await getDocs(q);
+
+      let productoId;
+      if (!snap.empty) {
+        const docSnap = snap.docs[0];
+        productoId = docSnap.id;
+
+        await updateDoc(doc(db, "productos", productoId), {
+          stock: increment(Number(prod.stock)),
+          precio: Number(prod.precio),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || ""
+        });
+
+        await addDoc(collection(db, "historial"), {
+          productoId,
+          claveUnica: prod.claveUnica,
+          cambio: `Stock +${prod.stock}, Precio: $${prod.precio}`,
+          fechaCambio: new Date().toISOString()
+        });
+
+      } else {
+        const docRef = await addDoc(collection(db, "productos"), {
+          orden: prod.orden,
+          nombre: prod.nombre,
+          color: prod.color,
+          precio: Number(prod.precio),
+          stock: Number(prod.stock),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || "",
+          claveUnica: prod.claveUnica
+        });
+        productoId = docRef.id;
+
+        await addDoc(collection(db, "historial"), {
+          productoId,
+          claveUnica: prod.claveUnica,
+          cambio: `Creado → Stock: ${prod.stock}, Precio: $${prod.precio}`,
+          fechaCambio: new Date().toISOString()
+        });
+      }
+    } catch (err) {
+      console.error("Error al actualizar producto:", err);
+    }
+  }
+  await refrescarLista();
+  alert("Stock actualizado");
+}
+
+// 🔹 Subir stock (pisar todo)
+async function subirStock(productos) {
+  for (const prod of productos) {
+    try {
+      const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
+      const snap = await getDocs(q);
+
+      let productoId;
+      if (!snap.empty) {
+        const docSnap = snap.docs[0];
+        productoId = docSnap.id;
+
+        await updateDoc(doc(db, "productos", productoId), {
+          orden: prod.orden,
+          nombre: prod.nombre,
+          color: prod.color,
+          precio: Number(prod.precio),
+          stock: Number(prod.stock),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || "",
+          claveUnica: prod.claveUnica
+        });
+
+        await addDoc(collection(db, "historial"), {
+          productoId,
+          claveUnica: prod.claveUnica,
+          cambio: `Reemplazado → Stock: ${prod.stock}, Precio: $${prod.precio}`,
+          fechaCambio: new Date().toISOString()
+        });
+
+      } else {
+        const docRef = await addDoc(collection(db, "productos"), {
+          orden: prod.orden,
+          nombre: prod.nombre,
+          color: prod.color,
+          precio: Number(prod.precio),
+          stock: Number(prod.stock),
+          fecha: prod.fecha || new Date().toISOString(),
+          categoria: prod.categoria || "",
+          claveUnica: prod.claveUnica
+        });
+        productoId = docRef.id;
+
+        await addDoc(collection(db, "historial"), {
+          productoId,
+          claveUnica: prod.claveUnica,
+          cambio: `Creado → Stock: ${prod.stock}, Precio: $${prod.precio}`,
+          fechaCambio: new Date().toISOString()
+        });
+      }
+    } catch (err) {
+      console.error("Error al subir producto:", err);
+    }
+  }
+  await refrescarLista();
+  alert("Productos re-subidos (pisados)");
+}
+document.getElementById("btnActualizar").onclick = () => actualizarStock(productosParseados);
+document.getElementById("btnSubir").onclick = () => subirStock(productosParseados);
 document.getElementById("buscador").addEventListener("input", async (e) => {
   const palabra = e.target.value.toLowerCase();
   const resultados = document.getElementById("resultadosBusqueda");
