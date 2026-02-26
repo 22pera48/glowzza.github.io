@@ -220,31 +220,34 @@ if (btnEliminar) {
 }
 const btnEliminarVenta = document.getElementById("btnEliminarVenta");
 if (btnEliminarVenta) {
-  btnEliminarVenta.addEventListener("click", () => {
-    const ventaId = document.getElementById("ventaIdEliminar").value.trim();
-    if (!ventaId) {
-      alert("Ingresá un ID de venta válido");
+  btnEliminarVenta.addEventListener("click", async () => {
+    const ventaCodigo = document.getElementById("ventaIdEliminar").value.trim();
+    if (!ventaCodigo) {
+      alert("Ingresá un código de venta válido");
       return;
     }
-    // Guardamos el ID y la colección a eliminar
-    itemAEliminar = ventaId;
+
+    // Buscar el documento cuyo campo "codigo" coincida
+    const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
+    let ventaEncontrada = null;
+    ventasSnap.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.codigo === ventaCodigo) {
+        ventaEncontrada = docSnap.id;
+      }
+    });
+
+    if (!ventaEncontrada) {
+      alert("No se encontró ninguna venta con ese código");
+      return;
+    }
+
+    // Guardamos el ID real y abrimos el modal de credenciales
+    itemAEliminar = ventaEncontrada;
     coleccionAEliminar = "ventasCerradas";
-    // Abrimos el modal de credenciales
     document.getElementById("modalCredenciales").style.display = "block";
   });
 }
-// Buscador de clientes
-document.getElementById("buscadorClientes").addEventListener("input", () => {
-  const termino = document.getElementById("buscadorClientes").value.toLowerCase();
-  const lista = document.getElementById("listaClientes");
-  const items = lista.getElementsByTagName("li");
-
-  for (let i = 0; i < items.length; i++) {
-    const texto = items[i].textContent.toLowerCase();
-    items[i].style.display = texto.includes(termino) ? "" : "none";
-  }
-});
-
 // Buscador de ventas cerradas
 document.getElementById("buscadorVentas").addEventListener("input", () => {
   const termino = document.getElementById("buscadorVentas").value.toLowerCase();
