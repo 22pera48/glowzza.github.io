@@ -89,6 +89,9 @@
     <h4>Eliminar Cliente por ID</h4>
     <input type="text" id="clienteIdEliminar" placeholder="ID del cliente">
     <button id="btnEliminarCliente" class="btn-danger">Eliminar Cliente</button>
+    <h4>Eliminar Venta Cerrada por ID</h4>
+<input type="text" id="ventaIdEliminar" placeholder="ID de la venta cerrada">
+<button id="btnEliminarVenta" class="btn-danger">Eliminar Venta</button>
   </div>
 
   <!-- Contenido de pestañas -->
@@ -211,6 +214,21 @@ if (btnEliminar) {
     // Guardamos el ID y la colección a eliminar
     itemAEliminar = clienteId;
     coleccionAEliminar = "clientes";
+    // Abrimos el modal de credenciales
+    document.getElementById("modalCredenciales").style.display = "block";
+  });
+}
+const btnEliminarVenta = document.getElementById("btnEliminarVenta");
+if (btnEliminarVenta) {
+  btnEliminarVenta.addEventListener("click", () => {
+    const ventaId = document.getElementById("ventaIdEliminar").value.trim();
+    if (!ventaId) {
+      alert("Ingresá un ID de venta válido");
+      return;
+    }
+    // Guardamos el ID y la colección a eliminar
+    itemAEliminar = ventaId;
+    coleccionAEliminar = "ventasCerradas";
     // Abrimos el modal de credenciales
     document.getElementById("modalCredenciales").style.display = "block";
   });
