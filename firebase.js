@@ -455,6 +455,12 @@ productosList.style.marginTop = "5px";
 });
 li.appendChild(productosList);
 
+// Toggle menú de productos
+addButton.addEventListener("click", () => {
+  const visible = productosSelect.style.display === "none";
+  productosSelect.style.display = visible ? "inline-block" : "none";
+  cantidadInput.style.display = visible ? "inline-block" : "none";
+});
 
 // Guardar producto nuevo en cliente (no toca stock global)
 productosSelect.addEventListener("change", async () => {
