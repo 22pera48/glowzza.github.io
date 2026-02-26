@@ -9,9 +9,7 @@
       margin: 20px;
       background: #f4f6f8;
     }
-    h2 {
-      margin-top: 0;
-    }
+    h2 { margin-top: 0; }
     .tabs {
       display: flex;
       gap: 10px;
@@ -84,14 +82,10 @@
   <!-- Pestaña Eliminar -->
   <div id="eliminar" class="tab-content" style="display:none;">
     <h3>Eliminar Cliente o Venta</h3>
-    <!-- Buscar -->
     <input type="text" id="buscadorEliminar" placeholder="Buscar por nombre o código">
     <button onclick="buscarParaEliminar()">Buscar</button>
     <div id="resultadoEliminar"></div>
-
     <hr>
-
-    <!-- Eliminar directo por ID -->
     <h4>Eliminar Cliente por ID</h4>
     <input type="text" id="clienteIdEliminar" placeholder="ID del cliente">
     <button id="btnEliminarCliente" class="btn-danger">Eliminar Cliente</button>
@@ -112,9 +106,22 @@
     <ul id="listaVentasCerradas"></ul>
   </div>
 
-  <!-- Script de Firebase -->
-  <script type="module" src="firebase.js"></script>
-  <script>
+  <!-- Modal de credenciales -->
+  <div id="modalCredenciales" style="display:none; position:fixed; top:0; left:0;
+       width:100%; height:100%; background:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
+    <div style="background:#fff; padding:20px; border-radius:10px; display:inline-block;">
+      <h3>Confirmar eliminación</h3>
+      <input type="text" id="usuarioCheck" placeholder="Usuario"><br><br>
+      <input type="password" id="passwordCheck" placeholder="Contraseña"><br><br>
+      <button id="btnConfirmarEliminar">Confirmar</button>
+      <button onclick="document.getElementById('modalCredenciales').style.display='none'">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Bloque único de imports y lógica -->
+  <script type="module">
+    import { db, getDocs, collection, deleteDoc, doc } from "./firebase.js";
+
     function mostrarTab(tab) {
       document.getElementById("tabClientes").style.display = (tab === "clientes") ? "block" : "none";
       document.getElementById("tabVentas").style.display = (tab === "ventas") ? "block" : "none";
@@ -166,108 +173,53 @@
       document.getElementById("modalCredenciales").style.display = "block";
     };
 
-    document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
-      const usuario = document.getElementById("usuarioCheck").value;
-      const password = document.getElementById("passwordCheck").value;
-
-      const credSnap = await getDocs(collection(db, "adminCredenciales"));
-      let valido = false;
-      credSnap.forEach(docSnap => {
-        const data = docSnap.data();
-        if (data.usuario === usuario && data.password === password) {
-          valido = true;
-        }
-      });
-
-      if (valido) {
-        await deleteDoc(doc(db, coleccionAEliminar, itemAEliminar));
-        alert("Eliminado correctamente");
-        document.getElementById("modalCredenciales").style.display = "none";
-        location.reload();
-      } else {
-        alert("Usuario o contraseña incorrectos");
-      }
-    });
-
-    // Nuevo botón de eliminar directo por ID
-    // Buscador de clientes
-    const buscadorClientes = document.getElementById("buscadorClientes");
-    const listaClientes = document.getElementById("listaClientes");
-    buscadorClientes.addEventListener("input", () => {
-      const filtro = buscadorClientes.value.toLowerCase();
-      const clientes = listaClientes.querySelectorAll("li");
-      clientes.forEach(cliente => {
-        const texto = cliente.textContent.toLowerCase();
-        cliente.style.display = texto.includes(filtro) ? "" : "none";
-      });
-    });
-
-    // Buscador de ventas cerradas
-    const buscadorVentas = document.getElementById("buscadorVentas");
-    const listaVentas = document.getElementById("listaVentasCerradas");
-    buscadorVentas.addEventListener("input", () => {
-      const filtro = buscadorVentas.value.toLowerCase();
-      const ventas = listaVentas.querySelectorAll("li");
-      ventas.forEach(venta => {
-        const texto = venta.textContent.toLowerCase();
-        venta.style.display = texto.includes(filtro) ? "" : "none";
-      });
-    });
-
-    // Contadores dinámicos
-    function actualizarContadores() {
-      document.getElementById("contadorClientes").textContent = listaClientes.querySelectorAll("li").length;
-      document.getElementById("contadorVentas").textContent = listaVentas.querySelectorAll("li").length;
-    }
-
-    // Observadores para actualizar automáticamente
-    const observerClientes = new MutationObserver(actualizarContadores);
-    observerClientes.observe(listaClientes, { childList: true });
-
-    const observerVentas = new MutationObserver(actualizarContadores);
-    observerVentas.observe(listaVentas, { childList: true });
     document.addEventListener("DOMContentLoaded", () => {
-  // Botón de eliminar directo por ID
-  const btnEliminar = document.getElementById("btnEliminarCliente");
-  if (btnEliminar) {
-    btnEliminar.addEventListener("click", async () => {
-      const clienteId = document.getElementById("clienteIdEliminar").value.trim();
-      if (!clienteId) {
-        alert("Ingresá un ID de cliente válido");
-        return;
+      const btnConfirmar = document.getElementById("btnConfirmarEliminar");
+      if (btnConfirmar) {
+        btnConfirmar.addEventListener("click", async () => {
+          const usuario = document.getElementById("usuarioCheck").value;
+          const password = document.getElementById("passwordCheck").value;
+
+          const credSnap = await getDocs(collection(db, "adminCredenciales"));
+          let valido = false;
+          credSnap.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data.usuario === usuario && data.password === password) {
+              valido = true;
+            }
+          });
+
+          if (valido) {
+            await deleteDoc(doc(db, coleccionAEliminar, itemAEliminar));
+            alert("Eliminado correctamente");
+            document.getElementById("modalCredenciales").style.display = "none";
+            location.reload();
+          } else {
+            alert("Usuario o contraseña incorrectos");
+          }
+        });
       }
-      try {
-        await deleteDoc(doc(db, "clientes", clienteId));
-        alert("Cliente eliminado correctamente");
-        document.getElementById("clienteIdEliminar").value = "";
-        location.reload();
-      } catch (error) {
-        console.error("Error al eliminar cliente:", error);
-        alert("No se pudo eliminar el cliente");
+
+      const btnEliminar = document.getElementById("btnEliminarCliente");
+      if (btnEliminar) {
+        btnEliminar.addEventListener("click", async () => {
+          const clienteId = document.getElementById("clienteIdEliminar").value.trim();
+          if (!clienteId) {
+            alert("Ingresá un ID de cliente válido");
+            return;
+          }
+          try {
+            await deleteDoc(doc(db, "clientes", clienteId));
+            alert("Cliente eliminado correctamente");
+            document.getElementById("clienteIdEliminar").value = "";
+            location.reload();
+          } catch (error) {
+            console.error("Error al eliminar cliente:", error);
+            alert("No se pudo eliminar el cliente");
+          }
+        });
       }
     });
-  }
-});
   </script>
-
-  <!-- Modal de credenciales -->
-  <div id="modalCredenciales" style="display:none; position:fixed; top:0; left:0;  
-       width:100%; height:100%; background:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
-    <div style="background:#fff; padding:20px; border-radius:10px; display:inline-block;">
-      <h3>Confirmar eliminación</h3>
-      <input type="text" id="usuarioCheck" placeholder="Usuario"><br><br>
-      <input type="password" id="passwordCheck" placeholder="Contraseña"><br><br>
-      <button id="btnConfirmarEliminar">Confirmar</button>
-      <button onclick="document.getElementById('modalCredenciales').style.display='none'">Cancelar</button>
-    </div>
-  </div>
-  <!-- ⬇️ Bloque de imports y lógica -->
-  <script type="module">
-    import { db, getDocs, collection, deleteDoc, doc } from "./firebase.js";
-
-    // acá pegás toda tu lógica JS:
-    // mostrarTab, buscarParaEliminar, pedirCredenciales, listeners, etc.
-  </script>
-
 </body>
 </html>
