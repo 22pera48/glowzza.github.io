@@ -451,9 +451,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
 async function subirProductos(productos) {
-  const progressContainer = document.getElementById("progressContainer");
-progressContainer.style.display = "block";
-actualizarProgreso(0, productos.length);
   // limpiar listas antes de volver a llenarlas
   document.getElementById("listaStock").innerHTML = "";
   document.getElementById("listaAgotados").innerHTML = "";
@@ -519,12 +516,7 @@ actualizarProgreso(0, productos.length);
       }
     } catch (err) {
       console.error("Error al subir producto:", err);
-    }finally {
-      // ⚡ Paso 4: actualizar progreso en cada producto
-      procesados++;
-      actualizarProgreso(procesados, total);
     }
-
   });
 
   // 🔹 esperar a que todas las operaciones terminen
@@ -532,15 +524,10 @@ actualizarProgreso(0, productos.length);
 
   // recién ahora refrescar
   await refrescarLista();
-  progressContainer.style.display = "none";
-
   alert("Carga de productos finalizada");
 }
 // 🔹 Actualizar stock (suma cantidades)
 async function actualizarStock(productos) {
-  const progressContainer = document.getElementById("progressContainer");
-progressContainer.style.display = "block";
-actualizarProgreso(0, productos.length);
   for (const prod of productos) {
     try {
       const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
@@ -588,16 +575,9 @@ const docRef = await addDoc(collection(db, "productos"), {
       }
     } catch (err) {
       console.error("Error al actualizar producto:", err);
-    }finally {
-      // ⚡ Aquí después del catch: actualizar progreso
-      procesados++;
-      actualizarProgreso(procesados, total);
-}
-
+    }
   }
   await refrescarLista();
-  progressContainer.style.display = "none";
-
   alert("Stock actualizado");
   productosParseados = [];
 document.getElementById("acciones").style.display = "none";
@@ -605,9 +585,6 @@ document.getElementById("acciones").style.display = "none";
 
 // 🔹 Subir stock (pisar todo)
 async function subirStock(productos) {
-  const progressContainer = document.getElementById("progressContainer");
-progressContainer.style.display = "block";
-actualizarProgreso(0, productos.length);
   for (const prod of productos) {
     try {
       const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
@@ -659,16 +636,9 @@ const docRef = await addDoc(collection(db, "productos"), {
       }
     } catch (err) {
       console.error("Error al subir producto:", err);
-    }finally {
-      // ⚡ Aquí después del catch: actualizar progreso
-      procesados++;
-      actualizarProgreso(procesados, total);
     }
-
   }
   await refrescarLista();
-  progressContainer.style.display = "none";
-
   alert("Productos re-subidos (pisados)");
   productosParseados = [];
 document.getElementById("acciones").style.display = "none";
@@ -750,18 +720,6 @@ async function obtenerNuevoOrden(db) {
   }
   return nuevoOrden; // si no hay huecos, devuelve el siguiente consecutivo
 }
-function actualizarProgreso(actual, total) {
-  const porcentaje = Math.round((actual / total) * 100);
-  document.getElementById("progressBar").style.width = porcentaje + "%";
-  document.getElementById("progressText").textContent = porcentaje + "%";
-}
 </script>
-<!-- Barra de progreso -->
-<div id="progressContainer" style="display:none; margin-top:20px;">
-  <div style="background:#ddd; border-radius:8px; overflow:hidden; height:20px;">
-    <div id="progressBar" style="background:#007bff; width:0%; height:100%; transition:width 0.3s;"></div>
-  </div>
-  <p id="progressText" style="margin-top:5px; font-weight:bold; color:#007bff;">0%</p>
-</div>
 </body>
 </html>
