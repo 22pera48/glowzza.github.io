@@ -435,7 +435,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
 
           subirProductos(productos);
-
+document.getElementById("overlay").style.display = "block";
           const listaErrores = document.getElementById("listaErrores");
           const contadorErrores = document.getElementById("contadorErrores");
           contadorErrores.textContent = errores.length;
@@ -451,7 +451,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
 async function subirProductos(productos) {
-  document.getElementById("loader").style.display = "block"; // mostrar spinner
   // limpiar listas antes de volver a llenarlas
   document.getElementById("listaStock").innerHTML = "";
   document.getElementById("listaAgotados").innerHTML = "";
@@ -525,12 +524,12 @@ async function subirProductos(productos) {
 
   // recién ahora refrescar
   await refrescarLista();
-  document.getElementById("loader").style.display = "none"; // ocultar spinner
+  document.getElementById("overlay").style.display = "none";
   alert("Carga de productos finalizada");
 }
 // 🔹 Actualizar stock (suma cantidades)
 async function actualizarStock(productos) {
-  document.getElementById("loader").style.display = "block"; // mostrar spinner
+  document.getElementById("overlay").style.display = "block";
   for (const prod of productos) {
     try {
       const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
@@ -581,7 +580,7 @@ const docRef = await addDoc(collection(db, "productos"), {
     }
   }
   await refrescarLista();
-  document.getElementById("loader").style.display = "none"; // ocultar spinner
+  document.getElementById("overlay").style.display = "none";
   alert("Stock actualizado");
   productosParseados = [];
 document.getElementById("acciones").style.display = "none";
@@ -589,7 +588,7 @@ document.getElementById("acciones").style.display = "none";
 
 // 🔹 Subir stock (pisar todo)
 async function subirStock(productos) {
-  document.getElementById("loader").style.display = "block"; // mostrar spinner
+  document.getElementById("overlay").style.display = "block";
   for (const prod of productos) {
     try {
       const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
@@ -644,7 +643,7 @@ const docRef = await addDoc(collection(db, "productos"), {
     }
   }
   await refrescarLista();
-  document.getElementById("loader").style.display = "none"; // ocultar spinner
+  document.getElementById("overlay").style.display = "none";
   alert("Productos re-subidos (pisados)");
   productosParseados = [];
 document.getElementById("acciones").style.display = "none";
@@ -727,26 +726,18 @@ async function obtenerNuevoOrden(db) {
   return nuevoOrden; // si no hay huecos, devuelve el siguiente consecutivo
 }
 </script>
-
-<!-- Spinner de carga -->
-<div id="loader" style="display:none; text-align:center; margin-top:20px;">
-  <div class="spinner" style="
-    border: 4px solid #ddd;
-    border-top: 4px solid #007bff;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-    margin: auto;">
-  </div>
-  <p>Cargando...</p>
+<!-- Overlay de carga -->
+<div id="overlay" style="
+  display:none;
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.5);
+  color:white;
+  font-size:24px;
+  text-align:center;
+  padding-top:20%;
+  z-index:9999;">
+  Procesando productos...
 </div>
-
-<style>
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>
 </body>
 </html>
