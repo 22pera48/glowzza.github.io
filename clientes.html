@@ -200,25 +200,21 @@
         });
       }
 
-      const btnEliminar = document.getElementById("btnEliminarCliente");
-      if (btnEliminar) {
-        btnEliminar.addEventListener("click", async () => {
-          const clienteId = document.getElementById("clienteIdEliminar").value.trim();
-          if (!clienteId) {
-            alert("Ingresá un ID de cliente válido");
-            return;
-          }
-          try {
-            await deleteDoc(doc(db, "clientes", clienteId));
-            alert("Cliente eliminado correctamente");
-            document.getElementById("clienteIdEliminar").value = "";
-            location.reload();
-          } catch (error) {
-            console.error("Error al eliminar cliente:", error);
-            alert("No se pudo eliminar el cliente");
-          }
-        });
-      }
+const btnEliminar = document.getElementById("btnEliminarCliente");
+if (btnEliminar) {
+  btnEliminar.addEventListener("click", () => {
+    const clienteId = document.getElementById("clienteIdEliminar").value.trim();
+    if (!clienteId) {
+      alert("Ingresá un ID de cliente válido");
+      return;
+    }
+    // Guardamos el ID y la colección a eliminar
+    itemAEliminar = clienteId;
+    coleccionAEliminar = "clientes";
+    // Abrimos el modal de credenciales
+    document.getElementById("modalCredenciales").style.display = "block";
+  });
+}
     });
     
     // Exponer funciones al contexto global
