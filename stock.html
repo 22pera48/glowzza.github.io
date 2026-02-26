@@ -582,6 +582,8 @@ const docRef = await addDoc(collection(db, "productos"), {
   }
   await refrescarLista();
   document.getElementById("loader").style.display = "none"; // ocultar spinner
+  setTimeout(() => alert("Carga finalizada"), 500);
+
   alert("Stock actualizado");
   productosParseados = [];
 document.getElementById("acciones").style.display = "none";
@@ -645,6 +647,9 @@ const docRef = await addDoc(collection(db, "productos"), {
   }
   await refrescarLista();
   document.getElementById("loader").style.display = "none"; // ocultar spinner
+  setTimeout(() => alert("Carga finalizada"), 500);
+setTimeout(() => alert("Carga finalizada"), 500);
+
   alert("Productos re-subidos (pisados)");
   productosParseados = [];
 document.getElementById("acciones").style.display = "none";
