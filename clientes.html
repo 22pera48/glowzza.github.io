@@ -190,23 +190,6 @@
     });
 
     // Nuevo botón de eliminar directo por ID
-    document.getElementById("btnEliminarCliente").addEventListener("click", async () => {
-      const clienteId = document.getElementById("clienteIdEliminar").value.trim();
-      if (!clienteId) {
-        alert("Ingresá un ID de cliente válido");
-        return;
-      }
-      try {
-        await deleteDoc(doc(db, "clientes", clienteId));
-        alert("Cliente eliminado correctamente");
-        document.getElementById("clienteIdEliminar").value = "";
-        location.reload();
-      } catch (error) {
-        console.error("Error al eliminar cliente:", error);
-        alert("No se pudo eliminar el cliente");
-      }
-    });
-
     // Buscador de clientes
     const buscadorClientes = document.getElementById("buscadorClientes");
     const listaClientes = document.getElementById("listaClientes");
@@ -243,6 +226,28 @@
 
     const observerVentas = new MutationObserver(actualizarContadores);
     observerVentas.observe(listaVentas, { childList: true });
+    document.addEventListener("DOMContentLoaded", () => {
+  // Botón de eliminar directo por ID
+  const btnEliminar = document.getElementById("btnEliminarCliente");
+  if (btnEliminar) {
+    btnEliminar.addEventListener("click", async () => {
+      const clienteId = document.getElementById("clienteIdEliminar").value.trim();
+      if (!clienteId) {
+        alert("Ingresá un ID de cliente válido");
+        return;
+      }
+      try {
+        await deleteDoc(doc(db, "clientes", clienteId));
+        alert("Cliente eliminado correctamente");
+        document.getElementById("clienteIdEliminar").value = "";
+        location.reload();
+      } catch (error) {
+        console.error("Error al eliminar cliente:", error);
+        alert("No se pudo eliminar el cliente");
+      }
+    });
+  }
+});
   </script>
 
   <!-- Modal de credenciales -->
