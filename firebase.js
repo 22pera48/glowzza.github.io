@@ -376,55 +376,19 @@ addButton.textContent = "+";
 addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
 li.appendChild(addButton);
 
-// Input de búsqueda de productos
-const buscadorProductos = document.createElement("input");
-buscadorProductos.type = "text";
-buscadorProductos.placeholder = "Buscar producto...";
-buscadorProductos.style.display = "none"; // se muestra junto con el select
-buscadorProductos.style.marginTop = "10px";
-li.appendChild(buscadorProductos);
-
-// Select de productos
 const productosSelect = document.createElement("select");
 productosSelect.style.display = "none";
+let opciones = `<option value="">Seleccionar producto...</option>`;
+catalogoProductos.forEach(p => {
+  opciones += `<option value="${p.id}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;
+});
+productosSelect.innerHTML = opciones;
 li.appendChild(productosSelect);
 
-// Input de cantidad
 const cantidadInput = document.createElement("input");
 cantidadInput.type = "number";
 cantidadInput.min = 1;
 cantidadInput.value = 1;
-cantidadInput.style.display = "none";
-li.appendChild(cantidadInput);
-
-// Función para renderizar opciones filtradas
-function renderOpciones(filtro = "") {
-  let opciones = `<option value="">Seleccionar producto...</option>`;
-  catalogoProductos.forEach(p => {
-    const texto = `[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}`;
-    if (texto.toLowerCase().includes(filtro.toLowerCase())) {
-      opciones += `<option value="${p.id}">${texto}</option>`;
-    }
-  });
-  productosSelect.innerHTML = opciones;
-}
-
-// Inicializar opciones completas
-renderOpciones();
-
-// Mostrar/ocultar al presionar "+"
-addButton.addEventListener("click", () => {
-  const visible = productosSelect.style.display === "none";
-  productosSelect.style.display = visible ? "block" : "none";
-  buscadorProductos.style.display = visible ? "block" : "none";
-  cantidadInput.style.display = visible ? "block" : "none";
-});
-
-// Filtrar productos en tiempo real
-buscadorProductos.addEventListener("input", () => {
-  const termino = buscadorProductos.value.trim();
-  renderOpciones(termino);
-});
 // 🔹 Validación inmediata: evita que el usuario ponga 0 o negativos
 cantidadInput.addEventListener("input", () => {
   if (cantidadInput.value <= 0) {
