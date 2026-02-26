@@ -232,7 +232,7 @@ if (btnEliminarVenta) {
     let ventaEncontrada = null;
     ventasSnap.forEach(docSnap => {
       const data = docSnap.data();
-      if (data.codigo === ventaCodigo) {
+      if (data.etiqueta === ventaCodigo) {
         ventaEncontrada = docSnap.id;
       }
     });
