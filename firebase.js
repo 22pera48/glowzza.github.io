@@ -373,52 +373,16 @@ function renderCuotas() {
 // Botón "+" para agregar productos (no toca stock global)
 const addButton = document.createElement("button");
 addButton.textContent = "+";
-addButton.style.marginTop = "15px"; 
+addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
 li.appendChild(addButton);
 
-// Input de búsqueda
-const buscador = document.createElement("input");
-buscador.type = "text";
-buscador.id = "buscador";
-buscador.placeholder = "Buscar producto...";
-buscador.style.display = "none"; 
-li.appendChild(buscador);
-
-// Select de productos
 const productosSelect = document.createElement("select");
 productosSelect.style.display = "none";
-li.appendChild(productosSelect);
-
-// Función para renderizar opciones
-function renderOpciones(lista) {
-  productosSelect.innerHTML = `<option value="">Seleccionar producto...</option>`;
-  lista.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p.id;
-    opt.textContent = `[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}`;
-    productosSelect.appendChild(opt);
-  });
-}
-
-// Render inicial con todo el catálogo
-renderOpciones(catalogoProductos);
-
-// 🔹 Toggle único: muestra/oculta buscador, select y cantidad
-addButton.addEventListener("click", () => {
-  const visible = productosSelect.style.display === "none";
-  productosSelect.style.display = visible ? "inline-block" : "none";
-  cantidadInput.style.display = visible ? "inline-block" : "none";
-  buscador.style.display = visible ? "inline-block" : "none";
+let opciones = `<option value="">Seleccionar producto...</option>`;
+catalogoProductos.forEach(p => {
+  opciones += `<option value="${p.id}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;
 });
-
-// Filtrado dinámico
-buscador.addEventListener("input", () => {
-  const filtro = buscador.value.toLowerCase();
-  const filtrados = catalogoProductos.filter(p =>
-    p.nombre.toLowerCase().includes(filtro)
-  );
-  renderOpciones(filtrados);
-});
+productosSelect.innerHTML = opciones;
 li.appendChild(productosSelect);
 
 const cantidadInput = document.createElement("input");
@@ -454,6 +418,13 @@ productosList.style.marginTop = "5px";
   productosList.appendChild(item);
 });
 li.appendChild(productosList);
+
+// Toggle menú de productos
+addButton.addEventListener("click", () => {
+  const visible = productosSelect.style.display === "none";
+  productosSelect.style.display = visible ? "inline-block" : "none";
+  cantidadInput.style.display = visible ? "inline-block" : "none";
+});
 
 // Guardar producto nuevo en cliente (no toca stock global)
 productosSelect.addEventListener("change", async () => {
