@@ -208,58 +208,16 @@ headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.t
     });
     li.appendChild(ubicacionSelect);
 
-// 🔹 Select de pago con validación
-const pagoSelect = document.createElement("select");
-pagoSelect.innerHTML = `
-  <option value="Sin pagar">Sin pagar</option>
-  <option value="Pagado">Pagado</option>
-`;
-pagoSelect.value = data.pago || "Sin pagar";
-
-pagoSelect.addEventListener("change", () => {
-  if (pagoSelect.value === "Pagado") {
-    // Guardamos referencia del cliente y del select
-    itemAActualizar = docSnap.id;
-    selectAActualizar = pagoSelect;
-
-    // Abrimos modal de credenciales de caja
-    document.getElementById("modalCredencialesCaja").style.display = "block";
-  } else {
-    // Si vuelve a "Sin pagar", actualizamos directo
-    updateDoc(doc(db, "clientes", docSnap.id), { pago: "Sin pagar" });
-  }
-});
-
-li.appendChild(pagoSelect);
-
-// 🔹 Validación de credenciales de caja
-document.getElementById("btnConfirmarPago").addEventListener("click", async () => {
-  const usuario = document.getElementById("usuarioCajaCheck").value;
-  const password = document.getElementById("passwordCajaCheck").value;
-
-  const credSnap = await getDocs(collection(db, "cajaCredenciales"));
-  let valido = false;
-  credSnap.forEach(docSnap => {
-    const data = docSnap.data();
-    if (data.usuario === usuario && data.password === password) {
-      valido = true;
-    }
-  });
-
-  if (valido) {
-    await updateDoc(doc(db, "clientes", itemAActualizar), { 
-      pago: "Pagado", 
-      cajero: usuario, 
-      fechaPago: new Date().toISOString() // opcional: registrar fecha y hora
+    const pagoSelect = document.createElement("select");
+    pagoSelect.innerHTML = `
+      <option value="Sin pagar">Sin pagar</option>
+      <option value="Pagado">Pagado</option>
+    `;
+    pagoSelect.value = data.pago || "Sin pagar";
+    pagoSelect.addEventListener("change", async () => {
+      await updateDoc(doc(db, "clientes", docSnap.id), { pago: pagoSelect.value });
     });
-    alert("Pago confirmado correctamente");
-    document.getElementById("modalCredencialesCaja").style.display = "none";
-  } else {
-    alert("Usuario o contraseña incorrectos");
-    // Revertimos el select
-    if (selectAActualizar) selectAActualizar.value = "Sin pagar";
-  }
-});
+    li.appendChild(pagoSelect);
 
     // Botón Terminar compra
     const terminarButton = document.createElement("button");
