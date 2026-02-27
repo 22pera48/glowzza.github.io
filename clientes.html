@@ -124,6 +124,10 @@
   <!-- Bloque único de imports y lógica -->
   <script type="module">
     import { db, getDocs, collection, deleteDoc, doc } from "./firebase.js";
+// 🔹 Paso 1: Variables globales al inicio del script
+  let itemAActualizar = null;
+  let selectAActualizar = null;
+
 
     function mostrarTab(tab) {
       document.getElementById("tabClientes").style.display = (tab === "clientes") ? "block" : "none";
