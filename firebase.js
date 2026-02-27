@@ -373,7 +373,7 @@ function renderCuotas() {
 // Botón "+" para agregar productos (no toca stock global)
 const addButton = document.createElement("button");
 addButton.textContent = "+";
-addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
+addButton.style.marginTop = "15px"; 
 li.appendChild(addButton);
 
 // Input de búsqueda
@@ -381,7 +381,7 @@ const buscador = document.createElement("input");
 buscador.type = "text";
 buscador.id = "buscador";
 buscador.placeholder = "Buscar producto...";
-buscador.style.display = "none"; // 🔹 se muestra recién al apretar "+"
+buscador.style.display = "none"; 
 li.appendChild(buscador);
 
 // Select de productos
@@ -403,10 +403,12 @@ function renderOpciones(lista) {
 // Render inicial con todo el catálogo
 renderOpciones(catalogoProductos);
 
-// Mostrar buscador y select al apretar "+"
+// 🔹 Toggle único: muestra/oculta buscador, select y cantidad
 addButton.addEventListener("click", () => {
-  buscador.style.display = "block";
-  productosSelect.style.display = "block";
+  const visible = productosSelect.style.display === "none";
+  productosSelect.style.display = visible ? "inline-block" : "none";
+  cantidadInput.style.display = visible ? "inline-block" : "none";
+  buscador.style.display = visible ? "inline-block" : "none";
 });
 
 // Filtrado dinámico
@@ -417,7 +419,6 @@ buscador.addEventListener("input", () => {
   );
   renderOpciones(filtrados);
 });
-productosSelect.innerHTML = opciones;
 li.appendChild(productosSelect);
 
 const cantidadInput = document.createElement("input");
@@ -454,19 +455,6 @@ productosList.style.marginTop = "5px";
 });
 li.appendChild(productosList);
 
-// Toggle menú de productos
-addButton.addEventListener("click", () => {
-  const visible = productosSelect.style.display === "none";
-  
-  // Mostrar/ocultar el select
-  productosSelect.style.display = visible ? "inline-block" : "none";
-  
-  // Mostrar/ocultar el input de cantidad
-  cantidadInput.style.display = visible ? "inline-block" : "none";
-  
-  // 🔹 Mostrar/ocultar el buscador también
-  buscador.style.display = visible ? "inline-block" : "none";
-});
 // Guardar producto nuevo en cliente (no toca stock global)
 productosSelect.addEventListener("change", async () => {
   const productoId = productosSelect.value; // 🔹 ahora es el ID real
