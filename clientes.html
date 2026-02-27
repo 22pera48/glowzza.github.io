@@ -259,6 +259,17 @@ document.getElementById("buscadorVentas").addEventListener("input", () => {
     items[i].style.display = texto.includes(termino) ? "" : "none";
   }
 });
+// Buscador dinámico de clientes
+document.getElementById("buscadorClientes").addEventListener("input", () => {
+  const termino = document.getElementById("buscadorClientes").value.toLowerCase();
+  const lista = document.getElementById("listaClientes");
+  const items = lista.getElementsByTagName("li");
+
+  for (let i = 0; i < items.length; i++) {
+    const texto = items[i].textContent.toLowerCase();
+    items[i].style.display = texto.includes(termino) ? "" : "none";
+  }
+});
     });
     
     // Exponer funciones al contexto global
