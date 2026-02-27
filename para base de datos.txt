@@ -45,7 +45,7 @@ sistema deplantilla
 subi stock y creo dos  con "1"
 al cambiar el stock lo que se creo como cliente quedoi con los numero antiguos no se actualizo
 ver si historial consume mucha lectura o ver  plan pago de firebase
-
+poner datos de proveedores ejemplo compra minima y efecftivo datos impoortantes
 que la parte de produto de clientes tambien actue como buscador
 cuando elimino de stock no se elmina de inmediato en cliente
 contraseña para eliminar elementos
@@ -72,7 +72,7 @@ que saque el valor del stock cpn el pago en bruto pra tner el neto
 el contador de clientes no cuenta clientes sino productos
 cuadro ventas dia dia 
 hay numeros duplicados en stock y no actualiza stock al subir txt
-
+pass cambiar de depositoa pagado
 poder eliminar usuarios
 poder subir lista de proveedores
 pass para eliminar algo
