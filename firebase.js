@@ -168,6 +168,12 @@ async function eliminarProducto(clienteId, productoId, item, headerDiv) {
   headerDiv.textContent = `[${clienteSnap.data().nemonico || ""}] ${clienteSnap.data().nombre} - Tel: ${clienteSnap.data().telefono || "N/A"} - ${clienteSnap.data().fecha} | Código: ${clienteSnap.id} | Total: $${nuevoTotal}`;
 }
 
+
+
+
+
+
+
 // 🔹 Mostrar clientes
 async function mostrarClientes() {
   await cargarCatalogo();
@@ -180,21 +186,18 @@ async function mostrarClientes() {
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
 
-    let total = 0;
-    if (data.productos && data.productos.length > 0) {
-      data.productos.forEach(p => { total += p.precio * p.cantidad; });
-    }
-
     const li = document.createElement("li");
 
+    // Encabezado con totales
     const headerDiv = document.createElement("div");
     headerDiv.style.fontWeight = "bold";
-let totalCompra = (data.productos || []).reduce((acc, p) => acc + p.precio * p.cantidad, 0);
-let cuotas = data.cuotas || [null, null, null, null, null, null];
-let totalPagado = cuotas.reduce((acc, val) => acc + (val?.monto || 0), 0);
-let saldoPendiente = totalCompra - totalPagado;
+    let totalCompra = (data.productos || []).reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+    let cuotas = data.cuotas || [null, null, null, null, null, null];
+    let totalPagado = cuotas.reduce((acc, val) => acc + (val?.monto || 0), 0);
+    let saldoPendiente = totalCompra - totalPagado;
 
-headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${totalCompra} | Pagado: $${totalPagado} | Pendiente: $${saldoPendiente}`;    li.appendChild(headerDiv);
+    headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${totalCompra} | Pagado: $${totalPagado} | Pendiente: $${saldoPendiente}`;
+    li.appendChild(headerDiv);
 
     // Menús de ubicación y pago
     const ubicacionSelect = document.createElement("select");
@@ -240,40 +243,33 @@ headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.t
       if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
         let totalFinal = clienteData.productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
-// 🔹 Descontar stock global al cerrar la venta
-for (const p of clienteData.productos) {
-  const productoRef = doc(db, "productos", p.id);
-  const productoSnap = await getDoc(productoRef);
+        // 🔹 Descontar stock global
+        for (const p of clienteData.productos) {
+          const productoRef = doc(db, "productos", p.id);
+          const productoSnap = await getDoc(productoRef);
+          if (productoSnap.exists()) {
+            const stockActual = productoSnap.data().stock || 0;
+            if (stockActual < p.cantidad) {
+              alert(`No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`);
+              const msg = document.getElementById("statusMsg");
+              if (msg) {
+                msg.style.color = "red";
+                msg.innerText = `No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`;
+              }
+              return;
+            }
+            await updateDoc(productoRef, { stock: increment(-p.cantidad) });
+          }
+        }
 
-  if (productoSnap.exists()) {
-    const stockActual = productoSnap.data().stock || 0;
-
-    if (stockActual < p.cantidad) {
-      // 🚫 No hay stock suficiente, mostrar error y cortar
-      alert(`No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`);
-
-      const msg = document.getElementById("statusMsg");
-      if (msg) {
-        msg.style.color = "red";
-        msg.innerText = `No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`;
-      }
-
-      return; // corta el cierre de venta completo
-    }
-
-    // ✅ Si hay stock suficiente, descontar
-    await updateDoc(productoRef, {
-      stock: increment(-p.cantidad)
-    });
-  }
-}        // 🔹 Guardar venta cerrada con teléfono y nemónico
+        // Guardar venta cerrada
         await addDoc(collection(db, "ventasCerradas"), {
           nombre: clienteData.nombre,
           telefono: clienteData.telefono,
           nemonico: clienteData.nemonico,
-fecha: clienteData.fecha,              // fecha original del cliente
-  fechaCierre: new Date().toISOString(), // 👈 fecha automática al cerrar
-         productos: clienteData.productos,
+          fecha: clienteData.fecha,
+          fechaCierre: new Date().toISOString(),
+          productos: clienteData.productos,
           total: totalFinal,
           pago: pagoSelect.value,
           ubicacion: ubicacionSelect.value,
@@ -299,197 +295,239 @@ fecha: clienteData.fecha,              // fecha original del cliente
       }
     });
     li.appendChild(terminarButton);
+
+
+
+
+
+
+
+
+
+    // Botón cuotas
     const cuotaBtn = document.createElement("button");
-cuotaBtn.textContent = "Cuotas";
-cuotaBtn.style.marginLeft = "10px";
-li.appendChild(cuotaBtn);
+    cuotaBtn.textContent = "Cuotas";
+    cuotaBtn.style.marginLeft = "10px";
+    li.appendChild(cuotaBtn);
 
-const cuotasContainer = document.createElement("div");
-cuotasContainer.style.display = "none";
-cuotasContainer.style.marginTop = "10px";
-cuotasContainer.style.flexDirection = "column";
-li.appendChild(cuotasContainer);
+    const cuotasContainer = document.createElement("div");
+    cuotasContainer.style.display = "none";
+    cuotasContainer.style.marginTop = "10px";
+    cuotasContainer.style.flexDirection = "column";
+    li.appendChild(cuotasContainer);
 
-let cuotaSeleccionada = null;
-
-cuotaBtn.addEventListener("click", () => {
-  cuotasContainer.style.display = cuotasContainer.style.display === "none" ? "flex" : "none";
-  renderCuotas();
-});
-
-function renderCuotas() {
-  cuotasContainer.innerHTML = "";
-  cuotas.forEach((valor, i) => {
-    const div = document.createElement("div");
-    div.style.border = "1px solid #ccc";
-    div.style.background = valor ? "#d4edda" : "#fff";
-    div.style.padding = "10px";
-    div.style.margin = "5px 0";
-    div.style.width = "250px";
-    div.style.cursor = "pointer";
-    div.textContent = valor ? `${i+1}. $${valor.monto} – Fecha: ${new Date(valor.fecha).toLocaleDateString()}` : `${i+1}.`;
-
-    // 🔹 Botón eliminar
-    if (valor) {
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Eliminar";
-      deleteBtn.style.marginLeft = "10px";
-      deleteBtn.onclick = async () => {
-        cuotas[i] = null; // borra la cuota
-        await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
-        mostrarClientes(); // refresca lista
-      };
-      div.appendChild(deleteBtn);
-    }
-
-    div.onclick = () => cuotaSeleccionada = i;
-    cuotasContainer.appendChild(div);
-  });
-
-  const input = document.createElement("input");
-  input.type = "number";
-  input.placeholder = "Monto cuota";
-  input.style.marginTop = "10px";
-
-  const registrarBtn = document.createElement("button");
-  registrarBtn.textContent = "Registrar";
-  registrarBtn.style.marginLeft = "10px";
-
-  registrarBtn.onclick = async () => {
-    if (cuotaSeleccionada !== null && input.value) {
-      cuotas[cuotaSeleccionada] = {
-        monto: Number(input.value),
-        fecha: new Date().toISOString()
-      };
-      await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
-      mostrarClientes(); // refrescar lista
-    }
-  };
-
-  cuotasContainer.appendChild(input);
-  cuotasContainer.appendChild(registrarBtn);
-}
-
-// Botón "+" para agregar productos (no toca stock global)
-const addButton = document.createElement("button");
-addButton.textContent = "+";
-addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
-li.appendChild(addButton);
-
-const productosSelect = document.createElement("select");
-productosSelect.style.display = "none";
-let opciones = `<option value="">Seleccionar producto...</option>`;
-catalogoProductos.forEach(p => {
-  opciones += `<option value="${p.id}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;
-});
-productosSelect.innerHTML = opciones;
-li.appendChild(productosSelect);
-
-const cantidadInput = document.createElement("input");
-cantidadInput.type = "number";
-cantidadInput.min = 1;
-cantidadInput.value = 1;
-// 🔹 Validación inmediata: evita que el usuario ponga 0 o negativos
-cantidadInput.addEventListener("input", () => {
-  if (cantidadInput.value <= 0) {
-    cantidadInput.value = 1; // fuerza mínimo 1
-  }
-});
-cantidadInput.style.display = "none";
-li.appendChild(cantidadInput);
-
-const productosList = document.createElement("ul");
-productosList.style.marginTop = "5px";
-
-// Renderizar productos existentes con número de orden
-(data.productos || []).forEach((p) => {
-  const item = document.createElement("li");
-  item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
-  item.dataset.productoId = p.id;
-
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "Eliminar";
-  deleteButton.style.marginLeft = "10px";
-  deleteButton.addEventListener("click", () => {
-    eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
-  });
-
-  item.appendChild(deleteButton);
-  productosList.appendChild(item);
-});
-li.appendChild(productosList);
-
-// Toggle menú de productos
-addButton.addEventListener("click", () => {
-  const visible = productosSelect.style.display === "none";
-  productosSelect.style.display = visible ? "inline-block" : "none";
-  cantidadInput.style.display = visible ? "inline-block" : "none";
-});
-
-// Guardar producto nuevo en cliente (no toca stock global)
-productosSelect.addEventListener("change", async () => {
-  const productoId = productosSelect.value; // 🔹 ahora es el ID real
-  const cantidad = parseInt(cantidadInput.value, 10);
-  if (!productoId) return;
-  if (isNaN(cantidad) || cantidad <= 0) {
-    alert("La cantidad debe ser mayor a 0");
-    return;
-  }
-
-  // 🔹 Buscar producto por ID en el catálogo
-  const productoInfo = catalogoProductos.find(p => p.id === productoId);
-  if (!productoInfo) {
-    alert("Producto no encontrado en catálogo");
-    return;
-  }
-
-  const clienteRef = doc(db, "clientes", docSnap.id);
-  const clienteSnap = await getDoc(clienteRef);
-  let productosActuales = clienteSnap.data().productos || [];
-
-  // 🔹 Validación de duplicados por ID
-  const existente = productosActuales.find(p => p.id === productoId);
-  if (existente) {
-    alert(`El producto "${productoInfo.nombre}" ya estaba cargado.`);
-    return;
-  } else {
-    productosActuales.push({
-      id: productoInfo.id, // 🔹 ID real de Firestore
-      nombre: productoInfo.nombre,
-      color: productoInfo.color,
-      precio: productoInfo.precio,
-      cantidad,
-      orden: productoInfo.orden
+    let cuotaSeleccionada = null;
+    cuotaBtn.addEventListener("click", () => {
+      cuotasContainer.style.display = cuotasContainer.style.display === "none" ? "flex" : "none";
+      renderCuotas();
     });
-  }
 
-  await updateDoc(clienteRef, { productos: productosActuales });
+    function renderCuotas() {
+      cuotasContainer.innerHTML = "";
+      cuotas.forEach((valor, i) => {
+        const div = document.createElement("div");
+        div.style.border = "1px solid #ccc";
+        div.style.background = valor ? "#d4edda" : "#fff";
+        div.style.padding = "10px";
+        div.style.margin = "5px 0";
+        div.style.width = "250px";
+        div.style.cursor = "pointer";
+        div.textContent = valor ? `${i+1}. $${valor.monto} – Fecha: ${new Date(valor.fecha).toLocaleDateString()}` : `${i+1}.`;
 
-  // Render inmediato
-  const item = document.createElement("li");
-  item.textContent = `[${productoInfo.orden}] Producto: ${productoInfo.nombre} (${productoInfo.color}) (Cantidad: ${cantidad}) - $${productoInfo.precio}`;
-  item.dataset.productoId = productoInfo.id;
+        if (valor) {
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "Eliminar";
+          deleteBtn.style.marginLeft = "10px";
+          deleteBtn.onclick = async () => {
+            cuotas[i] = null;
+            await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
+            mostrarClientes();
+          };
+          div.appendChild(deleteBtn);
+        }
 
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "Eliminar";
-  deleteButton.style.marginLeft = "10px";
-  deleteButton.addEventListener("click", () => {
-    eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
+        div.onclick = () => cuotaSeleccionada = i;
+        cuotasContainer.appendChild(div);
+      });
+
+      const input = document.createElement("input");
+      input.type = "number";
+      input.placeholder = "Monto cuota";
+      input.style.marginTop = "10px";
+
+      const registrarBtn = document.createElement("button");
+      registrarBtn.textContent = "Registrar";
+      registrarBtn.style.marginLeft = "10px";
+
+      registrarBtn.onclick = async () => {
+        if (cuotaSeleccionada !== null && input.value) {
+          cuotas[cuotaSeleccionada] = {
+            monto: Number(input.value),
+            fecha: new Date().toISOString()
+          };
+          await updateDoc(doc(db, "clientes", docSnap.id), { cuotas });
+          mostrarClientes();
+        }
+      };
+
+      cuotasContainer.appendChild(input);
+      cuotasContainer.appendChild(registrarBtn);
+    }
+
+    // Botón "+" y buscador
+    const addButton = document.createElement("button");
+    addButton.textContent = "+";
+    addButton.style.marginTop = "15px";
+    li.appendChild(addButton);
+
+    const buscador = document.createElement("input");
+    buscador.type = "text";
+    buscador.placeholder = "Buscar producto...";
+    buscador.style.display = "none";
+    li.appendChild(buscador);
+
+    const productosSelect = document.createElement("select");
+    productosSelect.style.display = "none";
+    li.appendChild(productosSelect);
+
+    const cantidadInput = document.createElement("input");
+    cantidadInput.type = "number";
+    cantidadInput.min = 1;
+    cantidadInput.value = 1;
+    cantidadInput.style.display = "none";
+    li.appendChild(cantidadInput);
+
+    function renderOpciones(lista) {
+      productosSelect.innerHTML = `<option value="">Seleccionar producto...</option>`;
+      lista.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = `[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}`;
+        productosSelect.appendChild(opt);
+      });
+    }
+
+    // Inicializar con todo el catálogo
+    renderOpciones(catalogoProductos);
+
+    // Filtrar dinámicamente según lo que escribas en el buscador
+    buscador.addEventListener("input", () => {
+      const filtro = buscador.value.toLowerCase();
+      const filtrados = catalogoProductos.filter(p =>
+        p.nombre.toLowerCase().includes(filtro)
+      );
+      renderOpciones(filtrados);
+    });
+
+    // Toggle único del botón "+"
+    addButton.addEventListener("click", () => {
+      const visible = productosSelect.style.display === "none";
+      productosSelect.style.display = visible ? "inline-block" : "none";
+      cantidadInput.style.display = visible ? "inline-block" : "none";
+      buscador.style.display = visible ? "inline-block" : "none";
+    });
+
+
+
+
+
+    // Lista de productos ya cargados
+    const productosList = document.createElement("ul");
+    productosList.style.marginTop = "5px";
+
+    (data.productos || []).forEach((p) => {
+      const item = document.createElement("li");
+      item.textContent = `[${p.orden}] Producto: ${p.nombre} (${p.color || ""}) (Cantidad: ${p.cantidad}) - $${p.precio}`;
+      item.dataset.productoId = p.id;
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Eliminar";
+      deleteButton.style.marginLeft = "10px";
+      deleteButton.addEventListener("click", () => {
+        eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
+      });
+
+      item.appendChild(deleteButton);
+      productosList.appendChild(item);
+    });
+    li.appendChild(productosList);
+
+    // Evento al seleccionar producto nuevo
+    productosSelect.addEventListener("change", async () => {
+      const productoId = productosSelect.value;
+      const cantidad = parseInt(cantidadInput.value, 10);
+      if (!productoId) return;
+      if (isNaN(cantidad) || cantidad <= 0) {
+        alert("La cantidad debe ser mayor a 0");
+        return;
+      }
+
+      // 🔹 Buscar producto por ID en el catálogo
+      const productoInfo = catalogoProductos.find(p => p.id === productoId);
+      if (!productoInfo) {
+        alert("Producto no encontrado en catálogo");
+        return;
+      }
+
+      const clienteRef = doc(db, "clientes", docSnap.id);
+      const clienteSnap = await getDoc(clienteRef);
+      let productosActuales = clienteSnap.data().productos || [];
+
+      // 🔹 Validación de duplicados por ID
+      const existente = productosActuales.find(p => p.id === productoId);
+      if (existente) {
+        alert(`El producto "${productoInfo.nombre}" ya estaba cargado.`);
+        return;
+      } else {
+        productosActuales.push({
+          id: productoInfo.id,
+          nombre: productoInfo.nombre,
+          color: productoInfo.color,
+          precio: productoInfo.precio,
+          cantidad,
+          orden: productoInfo.orden
+        });
+      }
+
+      await updateDoc(clienteRef, { productos: productosActuales });
+
+      // Render inmediato
+      const item = document.createElement("li");
+      item.textContent = `[${productoInfo.orden}] Producto: ${productoInfo.nombre} (${productoInfo.color}) (Cantidad: ${cantidad}) - $${productoInfo.precio}`;
+      item.dataset.productoId = productoInfo.id;
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Eliminar";
+      deleteButton.style.marginLeft = "10px";
+      deleteButton.addEventListener("click", () => {
+        eliminarProducto(docSnap.id, item.dataset.productoId, item, headerDiv);
+      });
+
+      item.appendChild(deleteButton);
+      productosList.appendChild(item);
+
+      // Recalcular total
+      let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
+      headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${docSnap.id} | Total: $${nuevoTotal} | Pagado: ${totalPagado} | Pendiente: ${nuevoTotal - totalPagado}`;
+
+      productosSelect.style.display = "none";
+      cantidadInput.style.display = "none";
+      buscador.style.display = "none";
+    });
+
+    lista.appendChild(li);
   });
-
-  item.appendChild(deleteButton);
-  productosList.appendChild(item);
-
-  // Recalcular total
-  let nuevoTotal = productosActuales.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
-  headerDiv.textContent = `[${data.nemonico || ""}] ${data.nombre} - Tel: ${data.telefono || "N/A"} - ${data.fecha} | Código: ${data.etiqueta} | Total: $${nuevoTotal}`;
-
-  productosSelect.style.display = "none";
-  cantidadInput.style.display = "none";
-});
-lista.appendChild(li);
-});
 }
+
+
+
+
+
+
+
+
+
+
 // 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
   await cargarCatalogo();
