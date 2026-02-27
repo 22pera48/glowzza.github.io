@@ -3,11 +3,13 @@ poder hacer backup
 que la parte de produto de clientes tambien actue como buscador
 sector para poner solicitudes de clientes
 contraseña para eliminar elementos
+controlar suma de stock de precios
 colocar en la lista de clientes totales
 colocar totale sen la lista de stock
 agregar totales de productos
 sector donde calculo ganancia bruto neto y estipule porcentaje de compra para stock
 hacer scraper
+poder editar proveedores
 corregir alertas
 poder descargar registro de ventas y cleitnes
 que el stock haga la lista de pedidos solo
@@ -76,7 +78,10 @@ pass cambiar de depositoa pagado
 poder eliminar usuarios
 poder subir lista de proveedores
 pass para eliminar algo
+al apretar elminar no sale alert
 historial que separe creados de reemplazados o actualizados
+al poner en el buscador no carga los productos
+buscar la manera de seleccionar un cliente y que quede resaltado 
  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
 
   authDomain: "glowzzainventario.firebaseapp.com",
