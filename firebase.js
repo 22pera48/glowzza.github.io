@@ -376,11 +376,46 @@ addButton.textContent = "+";
 addButton.style.marginTop = "15px"; // 🔹 separa el botón del menú de cuotas
 li.appendChild(addButton);
 
+// Input de búsqueda
+const buscador = document.createElement("input");
+buscador.type = "text";
+buscador.id = "buscador";
+buscador.placeholder = "Buscar producto...";
+buscador.style.display = "none"; // 🔹 se muestra recién al apretar "+"
+li.appendChild(buscador);
+
+// Select de productos
 const productosSelect = document.createElement("select");
 productosSelect.style.display = "none";
-let opciones = `<option value="">Seleccionar producto...</option>`;
-catalogoProductos.forEach(p => {
-  opciones += `<option value="${p.id}">[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}</option>`;
+li.appendChild(productosSelect);
+
+// Función para renderizar opciones
+function renderOpciones(lista) {
+  productosSelect.innerHTML = `<option value="">Seleccionar producto...</option>`;
+  lista.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = `[${p.orden}] ${p.nombre} (${p.color || ""}) - $${p.precio}`;
+    productosSelect.appendChild(opt);
+  });
+}
+
+// Render inicial con todo el catálogo
+renderOpciones(catalogoProductos);
+
+// Mostrar buscador y select al apretar "+"
+addButton.addEventListener("click", () => {
+  buscador.style.display = "block";
+  productosSelect.style.display = "block";
+});
+
+// Filtrado dinámico
+buscador.addEventListener("input", () => {
+  const filtro = buscador.value.toLowerCase();
+  const filtrados = catalogoProductos.filter(p =>
+    p.nombre.toLowerCase().includes(filtro)
+  );
+  renderOpciones(filtrados);
 });
 productosSelect.innerHTML = opciones;
 li.appendChild(productosSelect);
