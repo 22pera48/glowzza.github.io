@@ -145,6 +145,13 @@ ul li p {
 <button onclick="document.getElementById('listaAgotados').scrollIntoView()">Agotados</button>
 <button onclick="document.getElementById('listaPorAgotarse').scrollIntoView()">Por Agotarse (≤2 unidades)</button>
 <button onclick="document.getElementById('listaStock').scrollIntoView()">Listado General</button>
+<button onclick="document.getElementById('listaCreados').scrollIntoView({behavior: 'smooth'})">
+  Ir a Productos Creados
+</button>
+
+<button onclick="document.getElementById('listaReemplazados').scrollIntoView({behavior: 'smooth'})">
+  Ir a Productos Reemplazados
+</button>
   <h2>Control de Stock</h2>
   <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
 <div id="dropZone" style="border:2px dashed #aaa; padding:20px; text-align:center;">
