@@ -12,12 +12,25 @@ const firebaseConfig = {
   appId: "1:159721581844:web:f62cdb303258dc847b6601",
   measurementId: "G-0FR3Q6P3L2"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 export { db, auth, addDoc, getDocs, collection, updateDoc, getDoc, deleteDoc, doc, query, where, increment };
-
 let catalogoProductos = [];
+// 🔹 Valida usuario y contraseña contra la colección "cajaCredenciales"
+async function validarCredencialesCaja(usuario, password) {
+  const snapshot = await getDocs(collection(db, "cajaCredenciales"));
+  let valido = false;
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    if (data.usuario === usuario && data.password === password) {
+      valido = true;
+    }
+  });
+  return valido;
+}
+
 
 // 🔹 Referencias a elementos del DOM
 const emailInput = document.getElementById("email");
@@ -174,6 +187,7 @@ async function eliminarProducto(clienteId, productoId, item, headerDiv) {
 
 
 
+
 // 🔹 Mostrar clientes
 async function mostrarClientes() {
   await cargarCatalogo();
@@ -217,9 +231,22 @@ async function mostrarClientes() {
       <option value="Pagado">Pagado</option>
     `;
     pagoSelect.value = data.pago || "Sin pagar";
-    pagoSelect.addEventListener("change", async () => {
-      await updateDoc(doc(db, "clientes", docSnap.id), { pago: pagoSelect.value });
-    });
+pagoSelect.addEventListener("change", async () => {
+  if (pagoSelect.value === "Pagado") {
+    const usuario = prompt("Usuario de caja:");
+    const password = prompt("Contraseña de caja:");
+
+    const autorizado = await validarCredencialesCaja(usuario, password);
+    if (autorizado) {
+      await updateDoc(doc(db, "clientes", docSnap.id), { pago: "Pagado" });
+    } else {
+      alert("Credenciales inválidas. No se puede marcar como Pagado.");
+      pagoSelect.value = "Sin pagar"; // vuelve al estado anterior
+    }
+  } else {
+    await updateDoc(doc(db, "clientes", docSnap.id), { pago: pagoSelect.value });
+  }
+});
     li.appendChild(pagoSelect);
 
     // Botón Terminar compra
