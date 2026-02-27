@@ -151,6 +151,26 @@
       <button type="submit" class="btn-guardar">Guardar credenciales</button>
     </form>
   </div>
+  <!-- Botón para mostrar credenciales de caja -->
+<button onclick="mostrarCredencialesCaja()" class="boton-admin">💼 Configurar Credenciales de Caja</button>
+
+<!-- Formulario oculto de credenciales de caja -->
+<div id="contenedorCredencialesCaja" style="display:none;">
+  <h2 class="titulo-form">Configurar credenciales de caja</h2>
+  <form id="formCredencialesCaja" class="form-credenciales">
+    <div class="campo">
+      <label for="usuarioCaja">👤 Usuario Caja</label>
+      <input type="text" id="usuarioCaja" placeholder="Ej: empleado1" required>
+    </div>
+
+    <div class="campo">
+      <label for="passwordCaja">🔒 Contraseña Caja</label>
+      <input type="password" id="passwordCaja" placeholder="********" required>
+    </div>
+
+    <button type="submit" class="btn-guardar">Guardar credenciales de caja</button>
+  </form>
+</div>
 
   <!-- Formulario de carga de productos -->
   <h2 class="titulo-form">Subir nuevo producto</h2>
@@ -253,6 +273,28 @@ const firebaseConfig = {
       const contenedor = document.getElementById("contenedorCredenciales");
       contenedor.style.display = contenedor.style.display === "none" ? "block" : "none";
     };
+    // Guardar credenciales de caja
+document.getElementById("formCredencialesCaja").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const usuario = document.getElementById("usuarioCaja").value;
+  const password = document.getElementById("passwordCaja").value;
+
+  await addDoc(collection(db, "cajaCredenciales"), {
+    usuario,
+    password
+  });
+
+  alert("Credenciales de caja guardadas correctamente");
+  document.getElementById("formCredencialesCaja").reset();
+});
+
+// Mostrar/ocultar formulario de credenciales de caja
+window.mostrarCredencialesCaja = function() {
+  const contenedor = document.getElementById("contenedorCredencialesCaja");
+  contenedor.style.display = contenedor.style.display === "none" ? "block" : "none";
+};
   </script>
+  
 </body>
 </html>
