@@ -457,10 +457,16 @@ li.appendChild(productosList);
 // Toggle menú de productos
 addButton.addEventListener("click", () => {
   const visible = productosSelect.style.display === "none";
+  
+  // Mostrar/ocultar el select
   productosSelect.style.display = visible ? "inline-block" : "none";
+  
+  // Mostrar/ocultar el input de cantidad
   cantidadInput.style.display = visible ? "inline-block" : "none";
+  
+  // 🔹 Mostrar/ocultar el buscador también
+  buscador.style.display = visible ? "inline-block" : "none";
 });
-
 // Guardar producto nuevo en cliente (no toca stock global)
 productosSelect.addEventListener("change", async () => {
   const productoId = productosSelect.value; // 🔹 ahora es el ID real
