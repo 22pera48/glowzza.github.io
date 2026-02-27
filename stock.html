@@ -455,8 +455,9 @@ async function subirProductos(productos) {
   document.getElementById("listaStock").innerHTML = "";
   document.getElementById("listaAgotados").innerHTML = "";
   document.getElementById("listaPorAgotarse").innerHTML = "";
+  document.getElementById("listaCreados").innerHTML = "";       // nueva lista
+  document.getElementById("listaReemplazados").innerHTML = "";  // nueva lista
 
-  // 🔹 ejecutar todas las operaciones en paralelo
   const operaciones = productos.map(async (prod) => {
     try {
       const q = query(collection(db, "productos"), where("claveUnica", "==", prod.claveUnica));
@@ -464,6 +465,7 @@ async function subirProductos(productos) {
 
       let productoId;
       if (!snap.empty) {
+        // 🔹 Caso reemplazado
         const docSnap = snap.docs[0];
         productoId = docSnap.id;
 
@@ -481,7 +483,12 @@ async function subirProductos(productos) {
           fechaCambio: new Date().toISOString()
         });
 
+        // pintar en lista de reemplazados
+        const liReemplazado = crearItem(prod, productoId, false);
+        document.getElementById("listaReemplazados").appendChild(liReemplazado);
+
       } else {
+        // 🔹 Caso creado
         const nuevoOrden = await obtenerNuevoOrden(db);
         const docRef = await addDoc(collection(db, "productos"), {
           orden: nuevoOrden,
@@ -501,9 +508,13 @@ async function subirProductos(productos) {
           cambio: `Creado → Stock: ${prod.stock}, Precio: $${prod.precio}`,
           fechaCambio: new Date().toISOString()
         });
+
+        // pintar en lista de creados
+        const liCreado = crearItem(prod, productoId, false);
+        document.getElementById("listaCreados").appendChild(liCreado);
       }
 
-      // pintar en DOM mientras tanto
+      // seguir pintando en las listas generales
       const liGeneral = crearItem(prod, productoId, true);
       document.getElementById("listaStock").appendChild(liGeneral);
 
