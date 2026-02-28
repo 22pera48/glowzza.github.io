@@ -172,7 +172,11 @@
   </form>
 </div>
 
-  <!-- Formulario de carga de productos -->
+<!-- Botón para mostrar formulario de producto -->
+<button onclick="mostrarFormularioProducto()" class="boton-admin">📦 Subir nuevo producto</button>
+
+<!-- Formulario oculto -->
+<div id="contenedorProducto" style="display:none;">
   <h2 class="titulo-form">Subir nuevo producto</h2>
   <form id="formProducto" class="form-producto">
     <div class="campo">
@@ -202,7 +206,7 @@
 
     <button type="submit" class="btn-guardar">Guardar producto</button>
   </form>
-
+</div>
   <button onclick="location.href='menu.html'" class="boton-volver">Volver al Panel Principal</button>
 
   <!-- Firebase y lógica -->
@@ -292,6 +296,11 @@ document.getElementById("formCredencialesCaja").addEventListener("submit", async
 // Mostrar/ocultar formulario de credenciales de caja
 window.mostrarCredencialesCaja = function() {
   const contenedor = document.getElementById("contenedorCredencialesCaja");
+  contenedor.style.display = contenedor.style.display === "none" ? "block" : "none";
+};
+// Mostrar/ocultar formulario de producto
+window.mostrarFormularioProducto = function() {
+  const contenedor = document.getElementById("contenedorProducto");
   contenedor.style.display = contenedor.style.display === "none" ? "block" : "none";
 };
   </script>
