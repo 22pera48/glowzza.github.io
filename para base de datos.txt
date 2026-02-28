@@ -86,7 +86,8 @@ falta el alert de pagado y despachado
 falta el alert de venta cerrada
 verificar la seccion de productos reemplazados de creados y demas
 ver carga masiva de stock y el historial
-
+ver que recuerde telefonos
+poner solicitudes en los imso clientes campos
  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
 
   authDomain: "glowzzainventario.firebaseapp.com",
