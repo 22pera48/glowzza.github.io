@@ -84,6 +84,8 @@ al poner en el buscador no carga los productos
 buscar la manera de seleccionar un cliente y que quede resaltado 
 falta el alert de pagado y despachado
 falta el alert de venta cerrada
+verificar la seccion de productos reemplazados de creados y demas
+ver carga masiva de stock y el historial
 
  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
 
