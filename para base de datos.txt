@@ -88,6 +88,8 @@ verificar la seccion de productos reemplazados de creados y demas
 ver carga masiva de stock y el historial
 ver que recuerde telefonos
 poner solicitudes en los imso clientes campos
+automatizar scraper con crome jobs
+
  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
 
   authDomain: "glowzzainventario.firebaseapp.com",
