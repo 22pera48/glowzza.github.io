@@ -1,3 +1,5 @@
+// scraper.js
+
 import fetch from "node-fetch";
 import * as cheerio from "cheerio";
 import { initializeApp } from "firebase/app";
@@ -16,14 +18,14 @@ const db = getFirestore(app);
 
 function limpiarPrecio(precioRaw) {
   if (!precioRaw) return null;
-  let limpio = precioRaw.replace(/[^\d,,-]/g, ""); // deja dígitos, coma y guión
-  limpio = limpio.replace(",", ".");               // coma decimal → punto
-  limpio = limpio.replace(/\.(?=\d{3})/g, "");     // elimina puntos de miles
+  let limpio = precioRaw.replace(/[^\d,,-]/g, "");
+  limpio = limpio.replace(",", ".");
+  limpio = limpio.replace(/\.(?=\d{3})/g, "");
   const valor = parseFloat(limpio);
   return isNaN(valor) ? null : valor;
 }
 
-async function scrapeProductos() {
+export async function scrapeProductos() {
   const res = await fetch("https://cye2616.mitiendanube.com/productos/");
   const html = await res.text();
   const $ = cheerio.load(html);
@@ -45,7 +47,7 @@ async function scrapeProductos() {
         await addDoc(collection(db, "productos_scraper"), {
           idProducto: urlProducto,
           nombre,
-          precio: precio ?? precioRaw, // guarda número si lo pudo limpiar
+          precio: precio ?? precioRaw,
           imagen: imagen || "N/A",
           fecha: new Date().toISOString(),
           origen: "scraper"
@@ -61,4 +63,7 @@ async function scrapeProductos() {
   console.log(`📁 Total productos procesados: ${count}`);
 }
 
-scrapeProductos();
+// Si querés que siga funcionando con "npm start", podés dejar esto:
+if (process.argv[1].includes("scraper.js")) {
+  scrapeProductos();
+}
