@@ -1,7 +1,13 @@
 import express from "express";
-import { scrapeProductos } from "./scraper.js"; // tu función de scraping
+import cors from "cors";
+import { scrapeProductos } from "./scraper.js";
 
 const app = express();
+
+// Habilitar CORS solo para tu dominio
+app.use(cors({
+  origin: "https://glowzza.com.ar"
+}));
 
 // Endpoint que dispara el scraper manualmente
 app.post("/ejecutar-scraper", async (req, res) => {

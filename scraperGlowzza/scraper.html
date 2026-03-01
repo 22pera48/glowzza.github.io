@@ -7,18 +7,24 @@
 <body>
   <h1>Control del Scraper</h1>
   <button onclick="ejecutarScraper()">Ejecutar scraper ahora</button>
+  <button onclick="volverMenu()">Volver al menú</button>
 
   <p id="resultado"></p>
 
   <script>
     async function ejecutarScraper() {
       try {
-const res = await fetch("http://localhost:3000/ejecutar-scraper", { method: "POST" });
+        const res = await fetch("http://localhost:3000/ejecutar-scraper", { method: "POST" });
         const texto = await res.text();
         document.getElementById("resultado").innerText = texto;
       } catch (err) {
         document.getElementById("resultado").innerText = "❌ Error al conectar con el servidor";
       }
+    }
+
+    function volverMenu() {
+      // Cambiá "index.html" por la ruta real de tu menú
+      window.location.href = "menu.html";
     }
   </script>
 </body>

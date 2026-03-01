@@ -1,5 +1,53 @@
 ver si historial consume mucha lectura o ver  plan pago de firebase
-
+poder hacer backup
+que la parte de produto de clientes tambien actue como buscador
+sector para poner solicitudes de clientes
+contraseña para eliminar elementos
+controlar suma de stock de precios
+colocar en la lista de clientes totales
+colocar totale sen la lista de stock
+agregar totales de productos
+sector donde calculo ganancia bruto neto y estipule porcentaje de compra para stock
+hacer scraper
+poder editar proveedores
+corregir alertas
+poder descargar registro de ventas y cleitnes
+que el stock haga la lista de pedidos solo
+agregar funcion de calñculo de ingresos y egresos
+seccion de carga 
+codigo unico para un cliente
+hacer codigo mas potable para escribir
+codigo unico para hacer codigos de barras
+upload anda mal no sube stock y clientes cerrado sin datos
+agregar marca de agua de las fotos
+agregar en las fotos una imagen con glowzza
+ver sistema para coordinar envios
+cuando pongo producto se borran datos 
+ el sector proveedore no anda el contador
+poner que se compra en cada proveedor
+que saque el valor del stock cpn el pago en bruto pra tner el neto
+el contador de clientes no cuenta clientes sino productos
+cuadro ventas dia dia 
+corregiro que al numero de telefono le pudo mandar letras
+poner localidad o distrito en provverdroror
+poder eliminar usuarios
+poder subir lista de proveedores
+sea flex con web insta etc
+agregar buscador de productos en cleintes
+categoria de proveedroes
+ubicacion gps
+funcion subir pedidos para comprar
+automatizar subida a glowzza
+agregar forma de editar nombres es stock
+en errores que despligue menu de errores 
+subir correccion sin duplicaion osea sin incrementar solo correccion erores
+const firebaseConfig = {
+boton eliminar firebase productos.....
+sistema deplantilla 
+subi stock y creo dos  con "1"
+al cambiar el stock lo que se creo como cliente quedoi con los numero antiguos no se actualizo
+ver si historial consume mucha lectura o ver  plan pago de firebase
+poner datos de proveedores ejemplo compra minima y efecftivo datos impoortantes
 que la parte de produto de clientes tambien actue como buscador
 cuando elimino de stock no se elmina de inmediato en cliente
 contraseña para eliminar elementos
@@ -26,17 +74,24 @@ que saque el valor del stock cpn el pago en bruto pra tner el neto
 el contador de clientes no cuenta clientes sino productos
 cuadro ventas dia dia 
 hay numeros duplicados en stock y no actualiza stock al subir txt
-
+pass cambiar de depositoa pagado
 poder eliminar usuarios
 poder subir lista de proveedores
 pass para eliminar algo
+al apretar elminar no sale alert
+historial que separe creados de reemplazados o actualizados
+al poner en el buscador no carga los productos
+buscar la manera de seleccionar un cliente y que quede resaltado 
+falta el alert de pagado y despachado
+falta el alert de venta cerrada
+verificar la seccion de productos reemplazados de creados y demas
+ver carga masiva de stock y el historial
+ver que recuerde telefonos
+poner solicitudes en los imso clientes campos
+automatizar scraper con crome jobs
+cors para aseptar solo mi dominio
 
-agregar pass para que puedan elinminar cliente mal cargado
-
-
-const firebaseConfig = {
-
-  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+ apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
 
   authDomain: "glowzzainventario.firebaseapp.com",
 
