@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Scraper Manual</title>
+</head>
+<body>
+  <h1>Control del Scraper</h1>
+  <button onclick="ejecutarScraper()">Ejecutar scraper ahora</button>
+
+  <p id="resultado"></p>
+
+  <script>
+    async function ejecutarScraper() {
+      try {
+const res = await fetch("http://localhost:3000/ejecutar-scraper", { method: "POST" });
+        const texto = await res.text();
+        document.getElementById("resultado").innerText = texto;
+      } catch (err) {
+        document.getElementById("resultado").innerText = "❌ Error al conectar con el servidor";
+      }
+    }
+  </script>
+</body>
+</html>
