@@ -15,7 +15,7 @@ cloudinary.config({
 
 // Habilitar CORS solo para tu dominio
 app.use(cors({
-  origin: "https://glowzza.com.ar"
+  origin: ["https://glowzza.com.ar", "http://localhost:3000"]
 }));
 
 // Función para subir imagen a Cloudinary
