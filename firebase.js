@@ -250,79 +250,83 @@ pagoSelect.addEventListener("change", async () => {
     li.appendChild(pagoSelect);
 
     // Botón Terminar compra
-    const terminarButton = document.createElement("button");
-    terminarButton.textContent = "Terminar compra";
-    terminarButton.style.marginLeft = "10px";
-    terminarButton.addEventListener("click", async () => {
-      const clienteRef = doc(db, "clientes", docSnap.id);
-      const clienteSnap = await getDoc(clienteRef);
-      const clienteData = clienteSnap.data();
+const terminarButton = document.createElement("button");
+terminarButton.textContent = "Terminar compra";
+terminarButton.style.marginLeft = "10px";
+terminarButton.addEventListener("click", async () => {
+  const clienteRef = doc(db, "clientes", docSnap.id);
+  const clienteSnap = await getDoc(clienteRef);
+  const clienteData = clienteSnap.data();
 
-      if (!clienteData.productos || clienteData.productos.length === 0) {
-        const msg = document.getElementById("statusMsg");
-        if (msg) {
-          msg.style.color = "red";
-          msg.innerText = "No se puede cerrar la compra: el cliente no tiene productos cargados.";
-        }
-        return;
-      }
+  if (!clienteData.productos || clienteData.productos.length === 0) {
+    const msg = document.getElementById("statusMsg");
+    if (msg) {
+      msg.style.color = "red";
+      msg.innerText = "No se puede cerrar la compra: el cliente no tiene productos cargados.";
+    }
+    return;
+  }
 
-      if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
-        let totalFinal = clienteData.productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+  if (pagoSelect.value === "Pagado" && ubicacionSelect.value === "despachado") {
+    let totalFinal = clienteData.productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
-        // 🔹 Descontar stock global
-        for (const p of clienteData.productos) {
-          const productoRef = doc(db, "productos", p.id);
-          const productoSnap = await getDoc(productoRef);
-          if (productoSnap.exists()) {
-            const stockActual = productoSnap.data().stock || 0;
-            if (stockActual < p.cantidad) {
-              alert(`No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`);
-              const msg = document.getElementById("statusMsg");
-              if (msg) {
-                msg.style.color = "red";
-                msg.innerText = `No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`;
-              }
-              return;
-            }
-            await updateDoc(productoRef, { stock: increment(-p.cantidad) });
+    // 🔹 Paso 1: validar stock de todos los productos
+    for (const p of clienteData.productos) {
+      const productoRef = doc(db, "productos", p.id);
+      const productoSnap = await getDoc(productoRef);
+      if (productoSnap.exists()) {
+        const stockActual = productoSnap.data().stock || 0;
+        if (stockActual < p.cantidad) {
+          alert(`No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`);
+          const msg = document.getElementById("statusMsg");
+          if (msg) {
+            msg.style.color = "red";
+            msg.innerText = `No hay stock suficiente para ${p.nombre}. Stock actual: ${stockActual}, cantidad pedida: ${p.cantidad}`;
           }
-        }
-
-        // Guardar venta cerrada
-        await addDoc(collection(db, "ventasCerradas"), {
-          nombre: clienteData.nombre,
-          telefono: clienteData.telefono,
-          nemonico: clienteData.nemonico,
-          fecha: clienteData.fecha,
-          fechaCierre: new Date().toISOString(),
-          productos: clienteData.productos,
-          total: totalFinal,
-          pago: pagoSelect.value,
-          ubicacion: ubicacionSelect.value,
-          etiqueta: clienteData.etiqueta
-        });
-
-        await deleteDoc(clienteRef);
-
-        const msg = document.getElementById("statusMsg");
-        if (msg) {
-          msg.style.color = "green";
-          msg.innerText = "Compra cerrada y movida a lista de ventas cerradas!";
-        }
-
-        mostrarClientes();
-        mostrarVentasCerradas();
-      } else {
-        const msg = document.getElementById("statusMsg");
-        if (msg) {
-          msg.style.color = "red";
-          msg.innerText = "Solo se puede cerrar la compra si está PAGADO y DESPACHADO.";
+          return; // 🚫 cortar aquí, sin descontar nada
         }
       }
-    });
-    li.appendChild(terminarButton);
+    }
 
+    // 🔹 Paso 2: descontar stock solo si todo está OK
+    for (const p of clienteData.productos) {
+      const productoRef = doc(db, "productos", p.id);
+      await updateDoc(productoRef, { stock: increment(-p.cantidad) });
+    }
+
+    // 🔹 Paso 3: guardar venta cerrada
+    await addDoc(collection(db, "ventasCerradas"), {
+      nombre: clienteData.nombre,
+      telefono: clienteData.telefono,
+      nemonico: clienteData.nemonico,
+      fecha: clienteData.fecha,
+      fechaCierre: new Date().toISOString(),
+      productos: clienteData.productos,
+      total: totalFinal,
+      pago: pagoSelect.value,
+      ubicacion: ubicacionSelect.value,
+      etiqueta: clienteData.etiqueta
+    });
+
+    await deleteDoc(clienteRef);
+
+    const msg = document.getElementById("statusMsg");
+    if (msg) {
+      msg.style.color = "green";
+      msg.innerText = "Compra cerrada y movida a lista de ventas cerradas!";
+    }
+
+    mostrarClientes();
+    mostrarVentasCerradas();
+  } else {
+    const msg = document.getElementById("statusMsg");
+    if (msg) {
+      msg.style.color = "red";
+      msg.innerText = "Solo se puede cerrar la compra si está PAGADO y DESPACHADO.";
+    }
+  }
+});
+li.appendChild(terminarButton);
 
 
 
