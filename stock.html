@@ -153,6 +153,57 @@ ul li p {
   Ir a Productos Reemplazados
 </button>
   <h2>Control de Stock</h2>
+<!-- Botón principal -->
+<button onclick="abrirModal()" 
+        style="background-color:#28a745; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
+  Subir stock
+</button>
+
+<!-- Modal -->
+<div id="modalStock" style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%);
+     background:#fff; padding:20px; border:1px solid #ccc; box-shadow:0 0 10px rgba(0,0,0,0.3); width:600px; display:flex; gap:20px;">
+
+  <!-- Formulario -->
+  <form id="formStock" style="flex:1;">
+    <h3>Cargar producto</h3>
+    <label>Nombre:</label>
+    <input type="text" id="nombre" required><br><br>
+
+    <label>Color/Sabor:</label>
+    <input type="text" id="color" required><br><br>
+
+    <label>Precio:</label>
+    <input type="number" id="precio" required><br><br>
+
+    <label>Cantidad:</label>
+    <input type="number" id="cantidad" required><br><br>
+
+    <label>Fecha:</label>
+    <input type="date" id="fecha" required><br><br>
+
+    <label>Categoría:</label>
+    <input type="text" id="categoria" required><br><br>
+
+    <label>SKU/ID (opcional):</label>
+    <input type="text" id="sku"><br><br>
+
+    <button type="submit" style="background-color:#007bff; color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">
+      Guardar
+    </button>
+    <button type="button" onclick="cerrarModal()" style="background-color:#dc3545; color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">
+      Cancelar
+    </button>
+  </form>
+
+  <!-- Panel de resultados dinámicos -->
+  <div id="resultadosBusqueda" style="flex:1; border-left:1px solid #ccc; padding-left:10px; overflow-y:auto; max-height:400px;">
+    <h4>Productos relacionados</h4>
+    <ul id="listaResultados"></ul>
+  </div>
+</div>
+
+
+
   <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
 <div id="dropZone" style="border:2px dashed #aaa; padding:20px; text-align:center;">
   Arrastrá y soltá tu archivo TXT aquí
@@ -789,5 +840,54 @@ setInterval(() => {
   100% { transform: rotate(360deg); }
 }
 </style>
+<script>
+function abrirModal() {
+  document.getElementById("modalStock").style.display = "flex";
+}
+
+function cerrarModal() {
+  document.getElementById("modalStock").style.display = "none";
+}
+
+// Simulación de catálogo (en tu caso usarías catalogoProductos cargado desde Firestore)
+const catalogoProductos = [
+  {nombre:"Coca Cola", color:"Negra", precio:500},
+  {nombre:"Pepsi", color:"Negra", precio:450},
+  {nombre:"Sprite", color:"Transparente", precio:400},
+  {nombre:"Fanta Naranja", color:"Naranja", precio:420}
+];
+
+// Buscar dinámicamente
+document.getElementById("nombre").addEventListener("input", function() {
+  const filtro = this.value.toLowerCase();
+  const resultados = catalogoProductos.filter(p => p.nombre.toLowerCase().includes(filtro));
+
+  const lista = document.getElementById("listaResultados");
+  lista.innerHTML = "";
+  resultados.forEach(p => {
+    const li = document.createElement("li");
+    li.textContent = `${p.nombre} - $${p.precio} (${p.color})`;
+    lista.appendChild(li);
+  });
+});
+
+// Guardar producto (ejemplo)
+document.getElementById("formStock").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const producto = {
+    nombre: document.getElementById("nombre").value.trim(),
+    color: document.getElementById("color").value.trim(),
+    precio: Number(document.getElementById("precio").value),
+    cantidad: Number(document.getElementById("cantidad").value),
+    fecha: document.getElementById("fecha").value,
+    categoria: document.getElementById("categoria").value.trim(),
+    sku: document.getElementById("sku").value.trim() || null
+  };
+  console.log("Producto cargado:", producto);
+  alert("Producto cargado correctamente ✅");
+  cerrarModal();
+});
+</script>
+
 </body>
 </html>
