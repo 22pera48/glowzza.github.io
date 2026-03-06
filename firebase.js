@@ -550,15 +550,6 @@ li.appendChild(terminarButton);
   });
 }
 
-
-
-
-
-
-
-
-
-
 // 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
   await cargarCatalogo();
@@ -658,6 +649,127 @@ for (const prod of clienteData.productos || []) {
 
 // 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
 document.addEventListener("DOMContentLoaded", () => {
+  // 🔹 Crear botón "Subir stock" y modal dinámico
+document.addEventListener("DOMContentLoaded", () => {
+  // Botón
+  const subirBtn = document.createElement("button");
+  subirBtn.textContent = "Subir stock";
+  subirBtn.style.backgroundColor = "#28a745";
+  subirBtn.style.color = "white";
+  subirBtn.style.padding = "10px 20px";
+  subirBtn.style.border = "none";
+  subirBtn.style.borderRadius = "5px";
+  subirBtn.style.cursor = "pointer";
+
+  document.body.insertBefore(subirBtn, document.body.firstChild);
+
+  // Modal
+  const modal = document.createElement("div");
+  modal.id = "modalStock";
+  modal.style.display = "none";
+  modal.style.position = "fixed";
+  modal.style.top = "10%";
+  modal.style.left = "50%";
+  modal.style.transform = "translateX(-50%)";
+  modal.style.background = "#fff";
+  modal.style.padding = "20px";
+  modal.style.border = "1px solid #ccc";
+  modal.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
+  modal.style.width = "700px";
+  modal.style.display = "flex";
+  modal.style.gap = "20px";
+  modal.style.zIndex = "1000";
+
+  // Formulario
+  const form = document.createElement("form");
+  form.id = "formStock";
+  form.innerHTML = `
+    <h3>Cargar producto</h3>
+    <label>Nombre:</label><input type="text" id="nombre" required><br><br>
+    <label>Color/Sabor:</label><input type="text" id="color" required><br><br>
+    <label>Precio:</label><input type="number" id="precio" required><br><br>
+    <label>Cantidad:</label><input type="number" id="cantidad" required><br><br>
+    <label>Fecha:</label><input type="date" id="fecha" required><br><br>
+    <label>Categoría:</label><input type="text" id="categoria" required><br><br>
+    <label>SKU/ID (opcional):</label><input type="text" id="sku"><br><br>
+    <button type="submit" style="background-color:#007bff; color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">Guardar</button>
+    <button type="button" id="cancelarBtn" style="background-color:#dc3545; color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">Cancelar</button>
+  `;
+  modal.appendChild(form);
+
+  // Panel resultados
+  const panel = document.createElement("div");
+  panel.id = "resultadosBusqueda";
+  panel.style.flex = "1";
+  panel.style.borderLeft = "1px solid #ccc";
+  panel.style.paddingLeft = "10px";
+  panel.style.overflowY = "auto";
+  panel.style.maxHeight = "500px";
+  panel.innerHTML = `<h4>Productos relacionados</h4><ul id="listaResultados"></ul>`;
+  modal.appendChild(panel);
+
+  document.body.appendChild(modal);
+
+  // Eventos
+  subirBtn.addEventListener("click", async () => {
+    await cargarCatalogo();
+    modal.style.display = "flex";
+  });
+
+  document.getElementById("cancelarBtn").addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  document.getElementById("nombre").addEventListener("input", () => {
+    const filtro = document.getElementById("nombre").value.toLowerCase();
+    const resultados = catalogoProductos.filter(p => p.nombre.toLowerCase().includes(filtro));
+    const lista = document.getElementById("listaResultados");
+    lista.innerHTML = "";
+    resultados.forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = `${p.nombre} - $${p.precio} (${p.color || ""}) [Stock: ${p.stock}]`;
+      lista.appendChild(li);
+    });
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const producto = {
+      nombre: document.getElementById("nombre").value.trim(),
+      color: document.getElementById("color").value.trim(),
+      precio: Number(document.getElementById("precio").value),
+      cantidad: Number(document.getElementById("cantidad").value),
+      fecha: document.getElementById("fecha").value,
+      categoria: document.getElementById("categoria").value.trim(),
+      sku: document.getElementById("sku").value.trim() || null
+    };
+
+    if (producto.sku) {
+      const q = query(collection(db, "productos"), where("sku", "==", producto.sku));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const productoRef = snapshot.docs[0].ref;
+        await updateDoc(productoRef, {
+          nombre: producto.nombre,
+          color: producto.color,
+          precio: producto.precio,
+          stock: increment(producto.cantidad),
+          categoria: producto.categoria,
+          fecha: producto.fecha
+        });
+        alert("Producto actualizado correctamente ✅");
+      } else {
+        await addDoc(collection(db, "productos"), { ...producto, stock: producto.cantidad });
+        alert("Producto agregado correctamente ✅");
+      }
+    } else {
+      await addDoc(collection(db, "productos"), { ...producto, stock: producto.cantidad });
+      alert("Producto agregado correctamente ✅");
+    }
+
+    modal.style.display = "none";
+  });
+});
   mostrarClientes();
   mostrarVentasCerradas();
 });
