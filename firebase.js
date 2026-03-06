@@ -649,82 +649,24 @@ for (const prod of clienteData.productos || []) {
 
 // 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
 document.addEventListener("DOMContentLoaded", () => {
-  // 🔹 Crear botón "Subir stock" y modal dinámico
-document.addEventListener("DOMContentLoaded", () => {
-  // Botón
-const subirBtn = document.createElement("button");
-subirBtn.textContent = "Subir stock";
-subirBtn.style.backgroundColor = "#28a745";
-subirBtn.style.color = "white";
-subirBtn.style.padding = "10px 20px";
-subirBtn.style.border = "none";
-subirBtn.style.borderRadius = "5px";
-subirBtn.style.cursor = "pointer";
+  document.addEventListener("DOMContentLoaded", () => {
+  const subirBtn = document.getElementById("btnSubir");
+  const modal = document.getElementById("modalStock");
+  const cancelarBtn = document.getElementById("cancelarBtn");
+  const form = document.getElementById("formStock");
 
-// 🔹 Posición fija arriba a la derecha
-subirBtn.style.position = "fixed";
-subirBtn.style.top = "10px";
-subirBtn.style.right = "10px";
-subirBtn.style.zIndex = "2000";
-
-document.body.appendChild(subirBtn);
-  // Modal
-  const modal = document.createElement("div");
-  modal.id = "modalStock";
-  modal.style.display = "none";
-  modal.style.position = "fixed";
-  modal.style.top = "10%";
-  modal.style.left = "50%";
-  modal.style.transform = "translateX(-50%)";
-  modal.style.background = "#fff";
-  modal.style.padding = "20px";
-  modal.style.border = "1px solid #ccc";
-  modal.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
-  modal.style.width = "700px";
-  modal.style.display = "flex";
-  modal.style.gap = "20px";
-  modal.style.zIndex = "1000";
-
-  // Formulario
-  const form = document.createElement("form");
-  form.id = "formStock";
-  form.innerHTML = `
-    <h3>Cargar producto</h3>
-    <label>Nombre:</label><input type="text" id="nombre" required><br><br>
-    <label>Color/Sabor:</label><input type="text" id="color" required><br><br>
-    <label>Precio:</label><input type="number" id="precio" required><br><br>
-    <label>Cantidad:</label><input type="number" id="cantidad" required><br><br>
-    <label>Fecha:</label><input type="date" id="fecha" required><br><br>
-    <label>Categoría:</label><input type="text" id="categoria" required><br><br>
-    <label>SKU/ID (opcional):</label><input type="text" id="sku"><br><br>
-    <button type="submit" style="background-color:#007bff; color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">Guardar</button>
-    <button type="button" id="cancelarBtn" style="background-color:#dc3545; color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">Cancelar</button>
-  `;
-  modal.appendChild(form);
-
-  // Panel resultados
-  const panel = document.createElement("div");
-  panel.id = "resultadosBusqueda";
-  panel.style.flex = "1";
-  panel.style.borderLeft = "1px solid #ccc";
-  panel.style.paddingLeft = "10px";
-  panel.style.overflowY = "auto";
-  panel.style.maxHeight = "500px";
-  panel.innerHTML = `<h4>Productos relacionados</h4><ul id="listaResultados"></ul>`;
-  modal.appendChild(panel);
-
-  document.body.appendChild(modal);
-
-  // Eventos
+  // Abrir modal
   subirBtn.addEventListener("click", async () => {
-    await cargarCatalogo();
+    await cargarCatalogo(); // tu función que trae productos
     modal.style.display = "flex";
   });
 
-  document.getElementById("cancelarBtn").addEventListener("click", () => {
+  // Cerrar modal
+  cancelarBtn.addEventListener("click", () => {
     modal.style.display = "none";
   });
 
+  // Buscar productos relacionados mientras escribís
   document.getElementById("nombre").addEventListener("input", () => {
     const filtro = document.getElementById("nombre").value.toLowerCase();
     const resultados = catalogoProductos.filter(p => p.nombre.toLowerCase().includes(filtro));
@@ -737,6 +679,7 @@ document.body.appendChild(subirBtn);
     });
   });
 
+  // Guardar producto en Firestore
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const producto = {
