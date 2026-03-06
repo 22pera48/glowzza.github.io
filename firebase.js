@@ -650,13 +650,13 @@ for (const prod of clienteData.productos || []) {
 // 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
 document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("DOMContentLoaded", () => {
-  const subirBtn = document.getElementById("btnSubir");
+  const subirBtnModal = document.getElementById("btnSubirModal");
   const modal = document.getElementById("modalStock");
   const cancelarBtn = document.getElementById("cancelarBtn");
   const form = document.getElementById("formStock");
 
   // Abrir modal
-  subirBtn.addEventListener("click", async () => {
+  subirBtnModal.addEventListener("click", async () => {
     await cargarCatalogo(); // tu función que trae productos
     modal.style.display = "flex";
   });
@@ -666,7 +666,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.style.display = "none";
   });
 
-  // Buscar productos relacionados mientras escribís
+  // Buscar productos relacionados
   document.getElementById("nombre").addEventListener("input", () => {
     const filtro = document.getElementById("nombre").value.toLowerCase();
     const resultados = catalogoProductos.filter(p => p.nombre.toLowerCase().includes(filtro));
