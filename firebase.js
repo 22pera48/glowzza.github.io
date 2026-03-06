@@ -652,17 +652,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🔹 Crear botón "Subir stock" y modal dinámico
 document.addEventListener("DOMContentLoaded", () => {
   // Botón
-  const subirBtn = document.createElement("button");
-  subirBtn.textContent = "Subir stock";
-  subirBtn.style.backgroundColor = "#28a745";
-  subirBtn.style.color = "white";
-  subirBtn.style.padding = "10px 20px";
-  subirBtn.style.border = "none";
-  subirBtn.style.borderRadius = "5px";
-  subirBtn.style.cursor = "pointer";
+const subirBtn = document.createElement("button");
+subirBtn.textContent = "Subir stock";
+subirBtn.style.backgroundColor = "#28a745";
+subirBtn.style.color = "white";
+subirBtn.style.padding = "10px 20px";
+subirBtn.style.border = "none";
+subirBtn.style.borderRadius = "5px";
+subirBtn.style.cursor = "pointer";
 
-  document.body.insertBefore(subirBtn, document.body.firstChild);
+// 🔹 Posición fija arriba a la derecha
+subirBtn.style.position = "fixed";
+subirBtn.style.top = "10px";
+subirBtn.style.right = "10px";
+subirBtn.style.zIndex = "2000";
 
+document.body.appendChild(subirBtn);
   // Modal
   const modal = document.createElement("div");
   modal.id = "modalStock";
