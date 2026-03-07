@@ -6,6 +6,25 @@ body {
   background-color: #fff;
   color: #333;
 }
+.producto-card {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  z-index: 1000;
+}
 
 /* Header y navegación */
 header {
