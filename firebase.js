@@ -654,6 +654,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelarBtn = document.getElementById("cancelarBtn");
   const form = document.getElementById("formStock");
 
+   // Estilos del botón
+  subirBtnModal.style.backgroundColor = "#28a745"; // verde llamativo
+  subirBtnModal.style.color = "white";
+  subirBtnModal.style.fontSize = "18px"; // más grande
+  subirBtnModal.style.padding = "12px 24px"; // más espacio interno
+  subirBtnModal.style.border = "none";
+  subirBtnModal.style.borderRadius = "6px";
+  subirBtnModal.style.cursor = "pointer";
+  subirBtnModal.style.margin = "10px 0";
+
+
   // Abrir modal
   subirBtnModal.addEventListener("click", async () => {
     console.log("Click en Subir stock"); // prueba rápida
