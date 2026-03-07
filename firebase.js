@@ -689,8 +689,13 @@ lista.innerHTML = "";
 resultados.forEach(p => {
   const card = document.createElement("div");
   card.className = "producto-card";
-  card.textContent = `${p.nombre} - $${p.precio} (${p.color || ""}) [Stock: ${p.stock}]`;
 
+  card.innerHTML = `
+    <h3>${p.nombre}</h3>
+    <p><strong>Precio:</strong> $${p.precio}</p>
+    <p><strong>Color/Sabor:</strong> ${p.color || "—"}</p>
+    <p><strong>Stock:</strong> ${p.stock}</p>
+  `;
   // Evento click para abrir modal de edición
   card.addEventListener("click", () => {
     const modal = document.createElement("div");
