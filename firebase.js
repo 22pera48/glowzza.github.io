@@ -647,9 +647,8 @@ for (const prod of clienteData.productos || []) {
   mostrarVentasCerradas();
 }
 
-// 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
+// Mantener un solo DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
-  document.addEventListener("DOMContentLoaded", () => {
   const subirBtnModal = document.getElementById("btnSubirModal");
   const modal = document.getElementById("modalStock");
   const cancelarBtn = document.getElementById("cancelarBtn");
@@ -657,6 +656,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Abrir modal
   subirBtnModal.addEventListener("click", async () => {
+    console.log("Click en Subir stock"); // prueba rápida
     await cargarCatalogo(); // tu función que trae productos
     modal.style.display = "flex";
   });
@@ -669,7 +669,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Buscar productos relacionados
   document.getElementById("nombre").addEventListener("input", () => {
     const filtro = document.getElementById("nombre").value.toLowerCase();
-    const resultados = catalogoProductos.filter(p => p.nombre.toLowerCase().includes(filtro));
+    const resultados = catalogoProductos.filter(p =>
+      p.nombre.toLowerCase().includes(filtro)
+    );
     const lista = document.getElementById("listaResultados");
     lista.innerHTML = "";
     resultados.forEach(p => {
@@ -717,7 +719,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modal.style.display = "none";
   });
-});
+
+  // Estas funciones las podés dejar al final
   mostrarClientes();
   mostrarVentasCerradas();
 });
