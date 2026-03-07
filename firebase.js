@@ -683,14 +683,52 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultados = catalogoProductos.filter(p =>
       p.nombre.toLowerCase().includes(filtro)
     );
-    const lista = document.getElementById("listaResultados");
-    lista.innerHTML = "";
-    resultados.forEach(p => {
-      const li = document.createElement("li");
-      li.textContent = `${p.nombre} - $${p.precio} (${p.color || ""}) [Stock: ${p.stock}]`;
-      lista.appendChild(li);
+const lista = document.getElementById("listaResultados");
+lista.innerHTML = "";
+
+resultados.forEach(p => {
+  const card = document.createElement("div");
+  card.className = "producto-card";
+  card.textContent = `${p.nombre} - $${p.precio} (${p.color || ""}) [Stock: ${p.stock}]`;
+
+  // Evento click para abrir modal de edición
+  card.addEventListener("click", () => {
+    const modal = document.createElement("div");
+    modal.className = "modal";
+
+    modal.innerHTML = `
+      <h3>Editar producto</h3>
+      <label>Precio: <input type="number" id="editPrecio" value="${p.precio}"></label><br>
+      <label>Stock: <input type="number" id="editStock" value="${p.stock}"></label><br>
+      <button id="confirmEdit">Guardar cambios</button>
+      <button id="cancelEdit">Cancelar</button>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector("#cancelEdit").addEventListener("click", () => {
+      modal.remove();
+    });
+
+    modal.querySelector("#confirmEdit").addEventListener("click", async () => {
+      if (confirm("¿Seguro que querés modificar este producto?")) {
+        const nuevoPrecio = Number(modal.querySelector("#editPrecio").value);
+        const nuevoStock = Number(modal.querySelector("#editStock").value);
+
+        const productoRef = doc(db, "productos", p.id);
+        await updateDoc(productoRef, {
+          precio: nuevoPrecio,
+          stock: nuevoStock
+        });
+
+        alert("Producto actualizado ✅");
+        modal.remove();
+      }
     });
   });
+
+  lista.appendChild(card);
+});  });
 
   // Guardar producto en Firestore
   form.addEventListener("submit", async (e) => {
