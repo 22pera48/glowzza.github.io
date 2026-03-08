@@ -1018,7 +1018,8 @@ nav a {
 
 /* Fondo oscuro del modal */
 /* 🔹 Fondo oscuro del modal */
-.modal {
+.modal-producto,
+.modal-imagen {
   display: none;
   position: fixed;
   z-index: 999;
@@ -1027,7 +1028,6 @@ nav a {
   overflow-y: auto;
   padding: 40px 0;
 }
-
 /* 🔹 Contenido del modal de producto */
 .modal-producto .modal-contenido {
   width: 90%;
