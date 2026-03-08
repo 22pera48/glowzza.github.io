@@ -699,61 +699,61 @@ document.getElementById("nombre").addEventListener("input", () => {
     `;
 
     // Evento click para abrir modal de edición
-    card.addEventListener("click", () => {
-      const overlay = document.createElement("div");
-      overlay.className = "modal-overlay";
+card.addEventListener("click", () => {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
 
-      const modal = document.createElement("div");
-      modal.className = "modal";
+  const modal = document.createElement("div");
+  modal.className = "modal";
 
-      modal.innerHTML = `
-        <h3>Editar producto</h3>
-        <label>Precio: <input type="number" id="editPrecio" value="${p.precio}"></label><br>
-        <label>Stock: <input type="number" id="editStock" value="${p.stock}"></label><br>
-        <button id="confirmEdit">Guardar cambios</button>
-        <button id="cancelEdit">Cancelar</button>
-      `;
+  modal.innerHTML = `
+    <h3>Editar producto</h3>
+    <label>Precio: <input type="number" id="editPrecio" value="${p.precio}"></label><br>
+    <label>Stock: <input type="number" id="editStock" value="${p.stock}"></label><br>
+    <button id="confirmEdit">Guardar cambios</button>
+    <button id="cancelEdit">Cancelar</button>
+  `;
 
-      document.body.appendChild(overlay);
-      document.body.appendChild(modal);
+  document.body.appendChild(overlay);
+  document.body.appendChild(modal);
 
-      // Cerrar modal
-      modal.querySelector("#cancelEdit").addEventListener("click", () => {
-        modal.remove();
-        overlay.remove();
-      });
-      overlay.addEventListener("click", () => {
-        modal.remove();
-        overlay.remove();
-      });
+  // Cerrar modal
+  modal.querySelector("#cancelEdit").addEventListener("click", () => {
+    modal.remove();
+    overlay.remove();
+  });
+  overlay.addEventListener("click", () => {
+    modal.remove();
+    overlay.remove();
+  });
 
-      // Guardar cambios
-      modal.querySelector("#confirmEdit").addEventListener("click", async () => {
-        if (confirm("¿Seguro que querés modificar este producto?")) {
-          const nuevoPrecio = Number(modal.querySelector("#editPrecio").value);
-          const nuevoStock = Number(modal.querySelector("#editStock").value);
+  // Guardar cambios
+  modal.querySelector("#confirmEdit").addEventListener("click", async () => {
+    if (confirm("¿Seguro que querés modificar este producto?")) {
+      const nuevoPrecio = Number(modal.querySelector("#editPrecio").value);
+      const nuevoStock = Number(modal.querySelector("#editStock").value);
 
-          if (!p.id) {
-            alert("⚠️ Este producto no tiene ID en Firestore, no se puede actualizar.");
-            return;
-          }
+      if (!p.id) {
+        alert("⚠️ Este producto no tiene ID en Firestore, no se puede actualizar.");
+        return;
+      }
 
-          const productoRef = doc(db, "productos", p.id);
-          await updateDoc(productoRef, { precio: nuevoPrecio, stock: nuevoStock });
+      const productoRef = doc(db, "productos", p.id);
+      await updateDoc(productoRef, { precio: nuevoPrecio, stock: nuevoStock });
 
-          alert("Producto actualizado ✅");
+      alert("Producto actualizado ✅");
 
-          // refrescar catálogo y resultados
-          await cargarCatalogo();
-          document.getElementById("nombre").dispatchEvent(new Event("input"));
+      // refrescar catálogo y resultados
+      await cargarCatalogo();
+      document.getElementById("nombre").dispatchEvent(new Event("input"));
 
-          modal.remove();
-          overlay.remove();
-        }
-      });
-    });
+      modal.remove();
+      overlay.remove();
+    }
+  });
+});
 
-    lista.appendChild(card);
+lista.appendChild(card);
   });
 }); // 👈 cierre del addEventListener("input")
 
