@@ -700,6 +700,9 @@ document.getElementById("nombre").addEventListener("input", () => {
 
     // Evento click para abrir modal de edición
 card.addEventListener("click", () => {
+  // Paso 4: confirmamos que el evento se dispara
+  console.log("Click en tarjeta:", p.nombre);
+
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
 
