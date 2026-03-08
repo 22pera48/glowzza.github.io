@@ -550,6 +550,15 @@ li.appendChild(terminarButton);
   });
 }
 
+
+
+
+
+
+
+
+
+
 // 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
   await cargarCatalogo();
@@ -647,160 +656,8 @@ for (const prod of clienteData.productos || []) {
   mostrarVentasCerradas();
 }
 
-// Mantener un solo DOMContentLoaded
+// 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
 document.addEventListener("DOMContentLoaded", () => {
-  const subirBtnModal = document.getElementById("btnSubirModal");
-  const modal = document.getElementById("modalStock");
-  const cancelarBtn = document.getElementById("cancelarBtn");
-  const form = document.getElementById("formStock");
-
-  // Estilos del botón
-  if (subirBtnModal) {
-    subirBtnModal.style.backgroundColor = "#28a745"; // verde llamativo
-    subirBtnModal.style.color = "white";
-    subirBtnModal.style.fontSize = "18px";
-    subirBtnModal.style.padding = "12px 24px";
-    subirBtnModal.style.border = "none";
-    subirBtnModal.style.borderRadius = "6px";
-    subirBtnModal.style.cursor = "pointer";
-    subirBtnModal.style.margin = "10px 0";
-  }
-
-  // Abrir modal
-  subirBtnModal?.addEventListener("click", async () => {
-    console.log("Click en Subir stock");
-    await cargarCatalogo(); // tu función que trae productos
-    modal.style.display = "flex";
-  });
-
-  // Cerrar modal
-  cancelarBtn?.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-
-  // 🔎 Buscador dinámico de productos en stock
-  const buscador = document.getElementById("buscadorProductos"); // nuevo input exclusivo
-  buscador?.addEventListener("input", () => {
-    const filtro = buscador.value.toLowerCase();
-    const resultados = catalogoProductos.filter(p =>
-      p.nombre.toLowerCase().includes(filtro)
-    );
-
-    const lista = document.getElementById("listaResultados");
-    lista.innerHTML = "";
-
-    resultados.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "producto-card";
-
-      card.innerHTML = `
-        <h3>${p.nombre}</h3>
-        <p><strong>Precio:</strong> $${p.precio}</p>
-        <p><strong>Color/Sabor:</strong> ${p.color || "—"}</p>
-        <p><strong>Stock:</strong> ${p.stock}</p>
-      `;
-
-      // Evento click para abrir modal de edición
-      card.addEventListener("click", () => {
-        console.log("Click en tarjeta:", p.nombre);
-
-        const overlay = document.createElement("div");
-        overlay.className = "modal-overlay";
-
-        const modalEdit = document.createElement("div");
-        modalEdit.className = "modal";
-
-        modalEdit.innerHTML = `
-          <h3>Editar producto</h3>
-          <label>Precio: <input type="number" id="editPrecio" value="${p.precio}"></label><br>
-          <label>Stock: <input type="number" id="editStock" value="${p.stock}"></label><br>
-          <button id="confirmEdit">Guardar cambios</button>
-          <button id="cancelEdit">Cancelar</button>
-        `;
-
-        document.body.appendChild(overlay);
-        document.body.appendChild(modalEdit);
-
-        // Cerrar modal
-        modalEdit.querySelector("#cancelEdit").addEventListener("click", () => {
-          modalEdit.remove();
-          overlay.remove();
-        });
-        overlay.addEventListener("click", () => {
-          modalEdit.remove();
-          overlay.remove();
-        });
-
-        // Guardar cambios
-        modalEdit.querySelector("#confirmEdit").addEventListener("click", async () => {
-          if (confirm("¿Seguro que querés modificar este producto?")) {
-            const nuevoPrecio = Number(modalEdit.querySelector("#editPrecio").value);
-            const nuevoStock = Number(modalEdit.querySelector("#editStock").value);
-
-            if (!p.id) {
-              alert("⚠️ Este producto no tiene ID en Firestore, no se puede actualizar.");
-              return;
-            }
-
-            const productoRef = doc(db, "productos", p.id);
-            await updateDoc(productoRef, { precio: nuevoPrecio, stock: nuevoStock });
-
-            alert("Producto actualizado ✅");
-
-            // refrescar catálogo y resultados
-            await cargarCatalogo();
-            buscador.dispatchEvent(new Event("input"));
-
-            modalEdit.remove();
-            overlay.remove();
-          }
-        });
-      });
-
-      lista.appendChild(card);
-    });
-  });
-
-  // Guardar producto en Firestore
-  form?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const producto = {
-      nombre: document.getElementById("nombre").value.trim(),
-      color: document.getElementById("color").value.trim(),
-      precio: Number(document.getElementById("precio").value),
-      cantidad: Number(document.getElementById("cantidad").value),
-      fecha: document.getElementById("fecha").value,
-      categoria: document.getElementById("categoria").value.trim(),
-      sku: document.getElementById("sku").value.trim() || null
-    };
-
-    if (producto.sku) {
-      const q = query(collection(db, "productos"), where("sku", "==", producto.sku));
-      const snapshot = await getDocs(q);
-      if (!snapshot.empty) {
-        const productoRef = snapshot.docs[0].ref;
-        await updateDoc(productoRef, {
-          nombre: producto.nombre,
-          color: producto.color,
-          precio: producto.precio,
-          stock: increment(producto.cantidad),
-          categoria: producto.categoria,
-          fecha: producto.fecha
-        });
-        alert("Producto actualizado correctamente ✅");
-      } else {
-        await addDoc(collection(db, "productos"), { ...producto, stock: producto.cantidad });
-        alert("Producto agregado correctamente ✅");
-      }
-    } else {
-      await addDoc(collection(db, "productos"), { ...producto, stock: producto.cantidad });
-      alert("Producto agregado correctamente ✅");
-    }
-
-    modal.style.display = "none";
-  });
-
-  // Estas funciones las podés dejar al final
   mostrarClientes();
   mostrarVentasCerradas();
 });
