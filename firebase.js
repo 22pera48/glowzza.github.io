@@ -697,9 +697,14 @@ resultados.forEach(p => {
     <p><strong>Stock:</strong> ${p.stock}</p>
   `;
   // Evento click para abrir modal de edición
+// Crear overlay global una sola vez
+const overlay = document.createElement("div");
+overlay.className = "modal-overlay";
+document.body.appendChild(overlay);
+overlay.style.display = "none"; // oculto al inicio
+
 card.addEventListener("click", () => {
-  const overlay = document.createElement("div");
-  overlay.className = "modal-overlay";
+  overlay.style.display = "block"; // mostrar overlay
 
   const modal = document.createElement("div");
   modal.className = "modal";
@@ -712,20 +717,34 @@ card.addEventListener("click", () => {
     <button id="cancelEdit">Cancelar</button>
   `;
 
-  document.body.appendChild(overlay);
   document.body.appendChild(modal);
 
   // Cerrar modal
   modal.querySelector("#cancelEdit").addEventListener("click", () => {
     modal.remove();
-    overlay.remove();
+    overlay.style.display = "none";
   });
-
   overlay.addEventListener("click", () => {
     modal.remove();
-    overlay.remove();
+    overlay.style.display = "none";
   });
 
+  // Guardar cambios
+  modal.querySelector("#confirmEdit").addEventListener("click", async () => {
+    const nuevoPrecio = Number(modal.querySelector("#editPrecio").value);
+    const nuevoStock = Number(modal.querySelector("#editStock").value);
+
+    const productoRef = doc(db, "productos", p.id);
+    await updateDoc(productoRef, { precio: nuevoPrecio, stock: nuevoStock });
+
+    alert("Producto actualizado ✅");
+
+    await cargarCatalogo();
+    document.getElementById("nombre").dispatchEvent(new Event("input"));
+
+    modal.remove();
+    overlay.style.display = "none";
+  });
   // Guardar cambios
   modal.querySelector("#confirmEdit").addEventListener("click", async () => {
     if (confirm("¿Seguro que querés modificar este producto?")) {
