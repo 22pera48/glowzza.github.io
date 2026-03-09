@@ -736,13 +736,39 @@ resultados.forEach(p => {
   const card = document.createElement("div");
   card.className = "producto-card";
   card.innerHTML = `
-    <h3>${p.nombre}</h3>
+    <h3 class="editable">${p.nombre}</h3>
     <p><strong>Precio:</strong> $${p.precio}</p>
     <p><strong>Stock:</strong> ${p.stock}</p>
     <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
     <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
-
   `;
+  
+  // 🔹 Evento de click en el nombre
+  card.querySelector(".editable").addEventListener("click", async () => {
+    const confirmar = confirm("¿Seguro que querés editar este producto?");
+    if (!confirmar) return;
+
+    const nuevoNombre = prompt("Editar nombre:", p.nombre);
+    const nuevoStock = prompt("Editar stock:", p.stock);
+
+    if (nuevoNombre !== null && nuevoStock !== null) {
+      try {
+        // 🔹 Actualizar en Firestore
+        const ref = doc(db, "productos", p.id);
+        await updateDoc(ref, {
+          nombre: nuevoNombre.trim(),
+          stock: Number(nuevoStock)
+        });
+
+        alert("Producto actualizado correctamente ✅");
+        await cargarCatalogo(); // refrescar catálogo
+      } catch (error) {
+        console.error("Error al actualizar producto:", error);
+        alert("Hubo un error al actualizar ❌");
+      }
+    }
+  });
+
   lista.appendChild(card);
 });
   });
