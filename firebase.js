@@ -94,8 +94,24 @@ async function cargarCatalogo() {
       stock: data.stock
     });
   });
-}
 
+  // 🔹 Refrescar listado general en el DOM
+  const listado = document.getElementById("listadoGeneral");
+  if (listado) {
+    listado.innerHTML = "";
+    catalogoProductos.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "producto-card";
+      card.innerHTML = `
+        <h3>[${p.orden}] ${p.nombre}</h3>
+        <p><strong>Precio:</strong> $${p.precio}</p>
+        <p><strong>Stock:</strong> ${p.stock}</p>
+        <p><strong>ID:</strong> ${p.id}</p>
+      `;
+      listado.appendChild(card);
+    });
+  }
+}
 // 🔹 Procesar productos desde TXT (reforma para sumar stock correctamente)
 async function cargarProductoDesdeTXT(nombre, precio, cantidad, orden, color, categoria, fecha) {
   // Normalizamos el nombre para evitar duplicados por espacios o mayúsculas
