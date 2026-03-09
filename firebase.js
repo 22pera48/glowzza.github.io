@@ -690,29 +690,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 🔹 Buscador dentro del modal (modalStock)
-  const buscadorModal = document.getElementById("buscadorProductos");
-  if (buscadorModal) {
-    buscadorModal.addEventListener("input", () => {
-      const filtro = buscadorModal.value.toLowerCase();
-      const resultados = catalogoProductos.filter(p =>
-        p.nombre.toLowerCase().includes(filtro)
-      );
-      const lista = document.getElementById("listaResultados");
-      lista.innerHTML = "";
-      resultados.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "producto-card";
-        card.innerHTML = `
-          <h3>${p.nombre}</h3>
-          <p><strong>Precio:</strong> $${p.precio}</p>
-          <p><strong>Stock:</strong> ${p.stock}</p>
-        `;
-        lista.appendChild(card);
-      });
+// Buscador dentro del modal (modalStock)
+const buscadorModal = document.getElementById("buscadorProductos");
+if (buscadorModal) {
+  buscadorModal.addEventListener("input", () => {
+    const filtro = buscadorModal.value.toLowerCase();
+    const resultados = catalogoProductos.filter(p =>
+      p.nombre.toLowerCase().includes(filtro)
+    );
+    const lista = document.getElementById("listaResultadosModal"); // 👈 nuevo ID
+    lista.innerHTML = "";
+    resultados.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "producto-card";
+      card.innerHTML = `
+        <h3>${p.nombre}</h3>
+        <p><strong>Precio:</strong> $${p.precio}</p>
+        <p><strong>Stock:</strong> ${p.stock}</p>
+      `;
+      lista.appendChild(card);
     });
-  }
-
+  });
+}
   // 🔹 Mantener buscador de clientes separado
   mostrarClientes();
   mostrarVentasCerradas();
