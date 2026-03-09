@@ -648,6 +648,22 @@ for (const prod of clienteData.productos || []) {
 // 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarCatalogo();
+  // Botón que abre el modal de stock
+const btnSubirModal = document.getElementById("btnSubirModal");
+const modalStock = document.getElementById("modalStock");
+const cancelarBtn = document.getElementById("cancelarBtn");
+
+if (btnSubirModal && modalStock) {
+  btnSubirModal.addEventListener("click", () => {
+    modalStock.style.display = "flex"; // 👈 muestra el modal
+  });
+}
+
+if (cancelarBtn && modalStock) {
+  cancelarBtn.addEventListener("click", () => {
+    modalStock.style.display = "none"; // 👈 cierra el modal
+  });
+}
 
   // 🔹 Buscador por nombre (stock.html)
   const buscador = document.getElementById("buscador");
