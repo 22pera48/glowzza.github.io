@@ -458,10 +458,6 @@ li.appendChild(terminarButton);
       buscador.style.display = visible ? "inline-block" : "none";
     });
 
-
-
-
-
     // Lista de productos ya cargados
     const productosList = document.createElement("ul");
     productosList.style.marginTop = "5px";
@@ -550,15 +546,6 @@ li.appendChild(terminarButton);
   });
 }
 
-
-
-
-
-
-
-
-
-
 // 🔹 Mostrar ventas cerradas
 async function mostrarVentasCerradas() {
   await cargarCatalogo();
@@ -596,6 +583,8 @@ const productosList = document.createElement("ul");
   });
 }
 // 🔹 Terminar compra y actualizar stock
+
+
 async function terminarCompra(clienteId) {
   
   const clienteRef = doc(db, "clientes", clienteId);
@@ -657,7 +646,74 @@ for (const prod of clienteData.productos || []) {
 }
 
 // 🔹 Mantener DOMContentLoaded para que todo se pinte al cargar
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await cargarCatalogo();
+
+  // 🔹 Buscador por nombre (stock.html)
+  const buscador = document.getElementById("buscador");
+  if (buscador) {
+    buscador.addEventListener("input", () => {
+      const filtro = buscador.value.toLowerCase();
+      const resultados = catalogoProductos.filter(p =>
+        p.nombre.toLowerCase().includes(filtro)
+      );
+      const lista = document.getElementById("resultadosBusqueda");
+      lista.innerHTML = "";
+      resultados.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = `[${p.orden}] ${p.nombre} - Stock: ${p.stock} - Precio: $${p.precio} - ID: ${p.id}`;
+        lista.appendChild(li);
+      });
+    });
+  }
+
+  // 🔹 Buscador por ID / Número (stock.html)
+  const buscadorEspecial = document.getElementById("buscadorEspecial");
+  if (buscadorEspecial) {
+    buscadorEspecial.addEventListener("input", async () => {
+      const filtro = buscadorEspecial.value.trim();
+      const lista = document.getElementById("resultadosBusquedaEspecial");
+      lista.innerHTML = "";
+      if (!filtro) return;
+
+      const productoRef = doc(db, "productos", filtro);
+      const productoSnap = await getDoc(productoRef);
+
+      if (productoSnap.exists()) {
+        const p = productoSnap.data();
+        const li = document.createElement("li");
+        li.textContent = `[${p.orden}] ${p.nombre} - Stock: ${p.stock} - Precio: $${p.precio} - ID: ${productoSnap.id}`;
+        lista.appendChild(li);
+      } else {
+        lista.innerHTML = "<li>No se encontró producto con ese ID/orden.</li>";
+      }
+    });
+  }
+
+  // 🔹 Buscador dentro del modal (modalStock)
+  const buscadorModal = document.getElementById("buscadorProductos");
+  if (buscadorModal) {
+    buscadorModal.addEventListener("input", () => {
+      const filtro = buscadorModal.value.toLowerCase();
+      const resultados = catalogoProductos.filter(p =>
+        p.nombre.toLowerCase().includes(filtro)
+      );
+      const lista = document.getElementById("listaResultados");
+      lista.innerHTML = "";
+      resultados.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "producto-card";
+        card.innerHTML = `
+          <h3>${p.nombre}</h3>
+          <p><strong>Precio:</strong> $${p.precio}</p>
+          <p><strong>Stock:</strong> ${p.stock}</p>
+        `;
+        lista.appendChild(card);
+      });
+    });
+  }
+
+  // 🔹 Mantener buscador de clientes separado
   mostrarClientes();
   mostrarVentasCerradas();
 });
