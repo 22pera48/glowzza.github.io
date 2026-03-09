@@ -706,15 +706,15 @@ if (cancelarBtn && modalStock) {
     });
   }
 
-// Buscador dentro del modal (modalStock)
-const buscadorModal = document.getElementById("buscadorProductos");
-if (buscadorModal) {
-  buscadorModal.addEventListener("input", () => {
-    const filtro = buscadorModal.value.toLowerCase();
+// Buscador dentro del modal (se activa al escribir en "Nombre")
+const inputNombre = document.getElementById("nombre");
+if (inputNombre) {
+  inputNombre.addEventListener("input", () => {
+    const filtro = inputNombre.value.toLowerCase();
     const resultados = catalogoProductos.filter(p =>
       p.nombre.toLowerCase().includes(filtro)
     );
-    const lista = document.getElementById("listaResultadosModal"); // 👈 nuevo ID
+    const lista = document.getElementById("listaResultadosModal");
     lista.innerHTML = "";
     resultados.forEach(p => {
       const card = document.createElement("div");
