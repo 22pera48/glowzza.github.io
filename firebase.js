@@ -748,8 +748,12 @@ resultados.forEach(p => {
     const confirmar = confirm("¿Seguro que querés editar este producto?");
     if (!confirmar) return;
 
-    const nuevoNombre = prompt("Editar nombre:", p.nombre);
-    const nuevoStock = prompt("Editar stock:", p.stock);
+// Prompts para todos los campos
+  const nuevoNombre = prompt("Editar nombre:", p.nombre);
+  const nuevoStock = prompt("Editar stock:", p.stock);
+  const nuevoPrecio = prompt("Editar precio:", p.precio);
+  const nuevoCategoria = prompt("Editar categoría:", p.categoria);
+  const nuevoColor = prompt("Editar color/sabor:", p.color);
 
     if (nuevoNombre !== null && nuevoStock !== null) {
       try {
