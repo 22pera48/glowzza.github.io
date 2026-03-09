@@ -762,7 +762,10 @@ if (formStock) {
       document.getElementById("modalStock").style.display = "none";
       formStock.reset();
       await cargarCatalogo();
-    } catch (error) {
+        mostrarClientes();
+        mostrarVentasCerradas();
+    } 
+    catch (error) {
       console.error("Error al guardar producto:", error);
       alert("Hubo un error al guardar el producto ❌");
     }
