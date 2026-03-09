@@ -730,18 +730,18 @@ if (inputNombre) {
     const resultados = catalogoProductos.filter(p =>
       p.nombre.toLowerCase().includes(filtro)
     );
-    const lista = document.getElementById("listaResultadosModal");
-    lista.innerHTML = "";
-    resultados.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "producto-card";
-      card.innerHTML = `
-        <h3>${p.nombre}</h3>
-        <p><strong>Precio:</strong> $${p.precio}</p>
-        <p><strong>Stock:</strong> ${p.stock}</p>
-      `;
-      lista.appendChild(card);
-    });
+const lista = document.getElementById("listaResultadosModal");
+lista.innerHTML = "";
+resultados.forEach(p => {
+  const card = document.createElement("div");
+  card.className = "producto-card";
+  card.innerHTML = `
+    <h3>${p.nombre}</h3>
+    <p><strong>Precio:</strong> $${p.precio}</p>
+    <p><strong>Stock:</strong> ${p.stock}</p>
+  `;
+  lista.appendChild(card);
+});
   });
 }
 // Guardar producto desde el modal
