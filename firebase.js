@@ -739,6 +739,9 @@ resultados.forEach(p => {
     <h3>${p.nombre}</h3>
     <p><strong>Precio:</strong> $${p.precio}</p>
     <p><strong>Stock:</strong> ${p.stock}</p>
+    <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
+    <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
+
   `;
   lista.appendChild(card);
 });
