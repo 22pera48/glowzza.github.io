@@ -149,32 +149,40 @@ ul li p {
   Ir a Productos Creados
 </button>
 <div id="toolbar">
-  <button id="btnSubirModal">Subir stock</button>
+  <!-- 🔹 Este abre el modal de carga manual -->
+  <button id="btnSubirModal">➕ Cargar producto manual</button>
 </div>
+
 <button onclick="document.getElementById('listaReemplazados').scrollIntoView({behavior: 'smooth'})">
   Ir a Productos Reemplazados
 </button>
-  <h2>Control de Stock</h2>
-  <button onclick="document.getElementById('archivoExcel').click()">Subir CSV</button>
+
+<h2>Control de Stock</h2>
+
+<!-- 🔹 Este se usa para subir stock desde archivo -->
+<button onclick="document.getElementById('archivoExcel').click()">📂 Subir CSV</button>
+
 <div id="dropZone" style="border:2px dashed #aaa; padding:20px; text-align:center;">
   Arrastrá y soltá tu archivo TXT aquí
 </div>
 
 <div id="acciones" style="margin-top:15px; display:none;">
   <button id="btnActualizar">Actualizar stock</button>
-  <button id="btnSubir">Subir stock</button>
-</div>  <button onclick="location.href='menu.html'">Volver al Menú Principal</button>
+  <button id="btnSubir">📂 Subir stock desde archivo</button>
+</div>
 
-  <input type="file" id="archivoExcel" style="display:none" accept=".csv">
-  <input type="file" id="archivoWhatsapp" style="display:none" accept=".txt">
+<button onclick="location.href='menu.html'">Volver al Menú Principal</button>
 
-  <h3>Buscar producto</h3>
-  <input type="text" id="buscador" placeholder="Escribí una palabra clave...">
-  <ul id="resultadosBusqueda"></ul>
+<input type="file" id="archivoExcel" style="display:none" accept=".csv">
+<input type="file" id="archivoWhatsapp" style="display:none" accept=".txt">
 
-  <h3>Buscar por ID / Número</h3>
-  <input type="text" id="buscadorEspecial" placeholder="Escribí un ID o número de orden...">
-  <ul id="resultadosBusquedaEspecial"></ul>
+<h3>Buscar producto</h3>
+<input type="text" id="buscador" placeholder="Escribí una palabra clave...">
+<ul id="resultadosBusqueda"></ul>
+
+<h3>Buscar por ID / Número</h3>
+<input type="text" id="buscadorEspecial" placeholder="Escribí un ID o número de orden...">
+<ul id="resultadosBusquedaEspecial"></ul>
 
 <h3>Listado General (<span id="contadorProductos">0</span>)</h3>
 <ul id="listaStock"></ul>
