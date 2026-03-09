@@ -744,35 +744,44 @@ resultados.forEach(p => {
   `;
   
   // 🔹 Evento de click en el nombre
-  card.querySelector(".editable").addEventListener("click", async () => {
-    const confirmar = confirm("¿Seguro que querés editar este producto?");
-    if (!confirmar) return;
+card.querySelector(".editable").addEventListener("click", async () => {
+  const confirmar = confirm("¿Seguro que querés editar este producto?");
+  if (!confirmar) return;
 
-// Prompts para todos los campos
+  // Prompts para todos los campos
   const nuevoNombre = prompt("Editar nombre:", p.nombre);
   const nuevoStock = prompt("Editar stock:", p.stock);
   const nuevoPrecio = prompt("Editar precio:", p.precio);
   const nuevoCategoria = prompt("Editar categoría:", p.categoria);
   const nuevoColor = prompt("Editar color/sabor:", p.color);
 
-    if (nuevoNombre !== null && nuevoStock !== null) {
-      try {
-        // 🔹 Actualizar en Firestore
-        const ref = doc(db, "productos", p.id);
-        await updateDoc(ref, {
-          nombre: nuevoNombre.trim(),
-          stock: Number(nuevoStock)
-        });
+  // Validar que no sean null (cancelado)
+  if (
+    nuevoNombre !== null &&
+    nuevoStock !== null &&
+    nuevoPrecio !== null &&
+    nuevoCategoria !== null &&
+    nuevoColor !== null
+  ) {
+    try {
+      // 🔹 Actualizar en Firestore
+      const ref = doc(db, "productos", p.id);
+      await updateDoc(ref, {
+        nombre: nuevoNombre.trim(),
+        stock: Number(nuevoStock),
+        precio: Number(nuevoPrecio),
+        categoria: nuevoCategoria.trim(),
+        color: nuevoColor.trim()
+      });
 
-        alert("Producto actualizado correctamente ✅");
-        await cargarCatalogo(); // refrescar catálogo
-      } catch (error) {
-        console.error("Error al actualizar producto:", error);
-        alert("Hubo un error al actualizar ❌");
-      }
+      alert("Producto actualizado correctamente ✅");
+      await cargarCatalogo(); // refrescar catálogo
+    } catch (error) {
+      console.error("Error al actualizar producto:", error);
+      alert("Hubo un error al actualizar ❌");
     }
-  });
-
+  }
+});
   lista.appendChild(card);
 });
   });
