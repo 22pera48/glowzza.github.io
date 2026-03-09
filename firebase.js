@@ -773,6 +773,7 @@ if (formStock) {
       });
 
       alert("Producto guardado correctamente ✅");
+       location.reload();
 
       // Cerrar modal y refrescar catálogo
       document.getElementById("modalStock").style.display = "none";
