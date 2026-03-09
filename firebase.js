@@ -728,6 +728,46 @@ if (inputNombre) {
     });
   });
 }
+// Guardar producto desde el modal
+const formStock = document.getElementById("formStock");
+if (formStock) {
+  formStock.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Tomar valores del formulario
+    const nombre = document.getElementById("nombre").value.trim();
+    const color = document.getElementById("color").value.trim();
+    const precio = Number(document.getElementById("precio").value);
+    const cantidad = Number(document.getElementById("cantidad").value);
+    const fecha = document.getElementById("fecha").value;
+    const categoria = document.getElementById("categoria").value.trim();
+    const sku = document.getElementById("sku").value.trim();
+
+    try {
+      // Guardar en Firestore
+      await addDoc(collection(db, "productos"), {
+        nombre,
+        color,
+        precio,
+        stock: cantidad,
+        fecha,
+        categoria,
+        sku: sku || null,
+        creadoEn: new Date().toISOString()
+      });
+
+      alert("Producto guardado correctamente ✅");
+
+      // Cerrar modal y refrescar catálogo
+      document.getElementById("modalStock").style.display = "none";
+      formStock.reset();
+      await cargarCatalogo();
+    } catch (error) {
+      console.error("Error al guardar producto:", error);
+      alert("Hubo un error al guardar el producto ❌");
+    }
+  });
+}
   // 🔹 Mantener buscador de clientes separado
   mostrarClientes();
   mostrarVentasCerradas();
