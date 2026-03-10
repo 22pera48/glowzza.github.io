@@ -789,68 +789,46 @@ card.querySelector(".editable").addEventListener("click", async () => {
 // Guardar producto desde el modal
 const formStock = document.getElementById("formStock");
 if (formStock) {
-// 🔹 Generar orden único para cargas manuales (M1, M2, ...)
-async function obtenerNuevoOrdenManual() {
-  const productosSnap = await getDocs(collection(db, "productos"));
-  let maxManual = 0;
+  formStock.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  productosSnap.forEach(docSnap => {
-    const prod = docSnap.data();
-    if (prod.orden && prod.orden.startsWith("M")) {
-      const num = parseInt(prod.orden.substring(1), 10);
-      if (!isNaN(num) && num > maxManual) {
-        maxManual = num;
-      }
+    // Tomar valores del formulario
+    const nombre = document.getElementById("nombre").value.trim();
+    const color = document.getElementById("color").value.trim();
+    const precio = Number(document.getElementById("precio").value);
+    const cantidad = Number(document.getElementById("cantidad").value);
+    const fecha = document.getElementById("fecha").value;
+    const categoria = document.getElementById("categoria").value.trim();
+    const sku = document.getElementById("sku").value.trim();
+
+    try {
+      // Guardar en Firestore
+      await addDoc(collection(db, "productos"), {
+        nombre,
+        color,
+        precio,
+        stock: cantidad,
+        fecha,
+        categoria,
+        sku: sku || null,
+        creadoEn: new Date().toISOString()
+      });
+
+      alert("Producto guardado correctamente ✅");
+       location.reload();
+
+      // Cerrar modal y refrescar catálogo
+      document.getElementById("modalStock").style.display = "none";
+      formStock.reset();
+      await cargarCatalogo();
+        mostrarClientes();
+        mostrarVentasCerradas();
+    } 
+    catch (error) {
+      console.error("Error al guardar producto:", error);
+      alert("Hubo un error al guardar el producto ❌");
     }
   });
-
-  return "M" + (maxManual + 1);
-}
-
-// 🔹 Evento submit del formulario
-formStock.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  // Tomar valores del formulario
-  const nombre = document.getElementById("nombre").value.trim();
-  const color = document.getElementById("color").value.trim();
-  const precio = Number(document.getElementById("precio").value);
-  const cantidad = Number(document.getElementById("cantidad").value);
-  const fecha = document.getElementById("fecha").value;
-  const categoria = document.getElementById("categoria").value.trim();
-  const sku = document.getElementById("sku").value.trim();
-
-  try {
-    // Generar orden único con prefijo M
-    const nuevoOrden = await obtenerNuevoOrdenManual();
-
-    // Guardar en Firestore
-    await addDoc(collection(db, "productos"), {
-      orden: nuevoOrden,   // 👈 ahora se guarda siempre
-      nombre,
-      color,
-      precio,
-      stock: cantidad,
-      fecha,
-      categoria,
-      sku: sku || null,
-      creadoEn: new Date().toISOString()
-    });
-
-    alert("Producto guardado correctamente ✅");
-    location.reload();
-
-    // Cerrar modal y refrescar catálogo
-    document.getElementById("modalStock").style.display = "none";
-    formStock.reset();
-    await cargarCatalogo();
-    mostrarClientes();
-    mostrarVentasCerradas();
-  } catch (error) {
-    console.error("Error al guardar producto:", error);
-    alert("Hubo un error al guardar el producto ❌");
-  }
-});
 }
   // 🔹 Mantener buscador de clientes separado
   mostrarClientes();
