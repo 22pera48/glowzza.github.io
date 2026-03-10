@@ -537,7 +537,7 @@ async function subirProductos(productos) {
 
       } else {
         // 🔹 Caso creado
-        const nuevoOrden = await obtenerNuevoOrden(db);
+        const nuevoOrden = obtenerNuevoOrden();
         const docRef = await addDoc(collection(db, "productos"), {
           orden: nuevoOrden,
           nombre: prod.nombre,
@@ -614,8 +614,7 @@ async function actualizarStock(productos) {
         });
 
       } else {
-const nuevoOrden = await obtenerNuevoOrden(db);
-
+const nuevoOrden = obtenerNuevoOrden();
 const docRef = await addDoc(collection(db, "productos"), {
   orden: nuevoOrden,   // 🔹 ahora se asigna el orden libre
   nombre: prod.nombre,
@@ -677,8 +676,7 @@ async function subirStock(productos) {
         });
 
       } else {
-const nuevoOrden = await obtenerNuevoOrden(db);
-
+const nuevoOrden = obtenerNuevoOrden();
 const docRef = await addDoc(collection(db, "productos"), {
   orden: nuevoOrden,   // 🔹 ahora se asigna el orden libre
   nombre: prod.nombre,
@@ -764,26 +762,6 @@ document.getElementById("buscadorEspecial").addEventListener("input", async (e) 
   }
 });
 // 🔹 Función reutilizable para calcular el próximo orden libre
-async function obtenerNuevoOrden(db) {
-  const productosSnap = await getDocs(collection(db, "productos"));
-  const ordenesUsados = [];
-
-  productosSnap.forEach(docSnap => {
-    const prod = docSnap.data();
-    if (prod.orden) ordenesUsados.push(prod.orden);
-  });
-
-  ordenesUsados.sort((a, b) => a - b);
-
-  let nuevoOrden = 1;
-  for (let i = 0; i < ordenesUsados.length; i++) {
-    if (ordenesUsados[i] !== nuevoOrden) {
-      return nuevoOrden; // hueco encontrado
-    }
-    nuevoOrden++;
-  }
-  return nuevoOrden; // si no hay huecos, devuelve el siguiente consecutivo
-}
 setInterval(() => {
   const dots = document.getElementById("dots");
   if (dots) {
