@@ -793,23 +793,33 @@ if (formStock) {
 // 🔹 Generar orden único para cargas manuales (M1, M2, M3...)
 async function obtenerNuevoOrdenManual() {
   const productosSnap = await getDocs(collection(db, "productos"));
-  let maxManual = 0;
+  const usados = [];
 
   productosSnap.forEach(docSnap => {
     const prod = docSnap.data();
     const ordenStr = prod.orden ? String(prod.orden) : "";
-
     if (ordenStr.startsWith("M")) {
       const num = parseInt(ordenStr.substring(1), 10);
-      if (!isNaN(num) && num > maxManual) {
-        maxManual = num;
+      if (!isNaN(num)) {
+        usados.push(num);
       }
     }
   });
 
-  return "M" + (maxManual + 1);
-}
+  usados.sort((a, b) => a - b);
 
+  // Buscar el primer hueco
+  let nuevoNum = 1;
+  for (let i = 0; i < usados.length; i++) {
+    if (usados[i] !== nuevoNum) {
+      return "M" + nuevoNum; // reutiliza hueco
+    }
+    nuevoNum++;
+  }
+
+  // Si no hay huecos, asigna el siguiente consecutivo
+  return "M" + nuevoNum;
+}
 // 🔹 Evento submit del formulario
 formStock.addEventListener("submit", async (e) => {
   e.preventDefault();
