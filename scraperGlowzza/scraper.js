@@ -79,7 +79,14 @@ export async function scrapeProductos() {
 
       let imagen = await obtenerImagenDesdeDetalle(urlProducto);
 
-productos.push
+      productos.push({
+        idProducto: urlProducto,
+        nombre,
+        precio: precio ?? precioRaw,
+        img: imagen || null,
+        fecha: new Date().toISOString(),
+        origen: "scraper"
+      });
     } else {
       console.warn("⚠️ Producto sin enlace válido:", nombre);
     }
