@@ -6,75 +6,73 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h2 { margin-top: 30px; }
-    .producto { 
-      border: 1px solid #ccc; 
-      padding: 10px; 
-      margin: 10px 0; 
-      display: flex; 
-      align-items: center; 
+    .producto {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
     }
-    .producto img { 
-      max-width: 120px; 
-      margin-right: 15px; 
+    .producto img {
+      max-width: 120px;
+      margin-right: 15px;
     }
-    .info { 
-      flex: 1; 
+    .info {
+      flex: 1;
     }
   </style>
 </head>
 <body>
-  <h1>Control del Scraper</h1>
-  <button onclick="ejecutarScraper()">Ejecutar scraper ahora</button>
-  <button onclick="volverMenu()">Volver al menú</button>
+  <h1>Catálogo Belleza Armonica</h1>
+  <button onclick="refreshProductos()">🔄 Refresh</button>
 
   <div id="resultado"></div>
 
-  <script>
-    async function ejecutarScraper() {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    // ⚠️ Configuración de tu proyecto Firebase
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_DOMINIO.firebaseapp.com",
+      projectId: "TU_PROJECT_ID",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function refreshProductos() {
       const resultadoDiv = document.getElementById("resultado");
-      resultadoDiv.innerHTML = "⏳ Ejecutando scraper...";
+      resultadoDiv.innerHTML = "⏳ Cargando productos desde Firebase...";
 
-      try {
-        const res = await fetch("/ejecutar-scraper", { method: "POST" });
-        const data = await res.json();
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      const productos = [];
+      querySnapshot.forEach(doc => productos.push(doc.data()));
 
-        resultadoDiv.innerHTML = `<h2>${data.mensaje}</h2>`;
+      resultadoDiv.innerHTML = "";
 
-        // Agrupar por tienda (ejemplo: producto.tienda)
-        const grupos = {};
-        data.productos.forEach(prod => {
-          const tienda = prod.tienda || "Sin tienda";
-          if (!grupos[tienda]) grupos[tienda] = [];
-          grupos[tienda].push(prod);
-        });
+      // Mostrar bajo el título fijo "Belleza Armonica"
+      const titulo = document.createElement("h2");
+      titulo.textContent = "🛍️ Belleza Armonica";
+      resultadoDiv.appendChild(titulo);
 
-        // Mostrar cada grupo
-        for (const tienda in grupos) {
-          const titulo = document.createElement("h2");
-          titulo.textContent = `🛍️ ${tienda}`;
-          resultadoDiv.appendChild(titulo);
-
-          grupos[tienda].forEach(prod => {
-            const div = document.createElement("div");
-            div.className = "producto";
-            div.innerHTML = `
-              <img src="${prod.img}" alt="${prod.nombre}">
-              <div class="info">
-                <strong>${prod.nombre}</strong><br>
-                Precio: ${prod.precio || "N/A"}
-              </div>
-            `;
-            resultadoDiv.appendChild(div);
-          });
-        }
-      } catch (err) {
-        resultadoDiv.innerHTML = "❌ Error al conectar con el servidor";
-      }
+      productos.forEach(prod => {
+        const div = document.createElement("div");
+        div.className = "producto";
+        div.innerHTML = `
+          <img src="${prod.img}" alt="${prod.nombre}">
+          <div class="info">
+            <strong>${prod.nombre}</strong><br>
+            Precio: ${prod.precio}
+          </div>
+        `;
+        resultadoDiv.appendChild(div);
+      });
     }
 
-    function volverMenu() {
-      window.location.href = "/menu.html"; 
-    }
+    // Exponer la función al botón
+    window.refreshProductos = refreshProductos;
   </script>
 </body>
 </html>
