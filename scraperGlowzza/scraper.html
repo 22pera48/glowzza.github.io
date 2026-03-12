@@ -3,28 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <title>Scraper Manual</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    button { margin: 5px; padding: 10px 15px; }
+    #resultado { margin-top: 20px; }
+    .producto { border-bottom: 1px solid #ccc; padding: 10px 0; }
+    .producto img { max-width: 150px; display: block; margin-top: 5px; }
+  </style>
 </head>
 <body>
   <h1>Control del Scraper</h1>
   <button onclick="ejecutarScraper()">Ejecutar scraper ahora</button>
   <button onclick="volverMenu()">Volver al menú</button>
 
-  <p id="resultado"></p>
+  <div id="resultado"></div>
 
   <script>
     async function ejecutarScraper() {
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.innerHTML = "⏳ Ejecutando scraper...";
+
       try {
         const res = await fetch("http://localhost:3000/ejecutar-scraper", { method: "POST" });
-        const texto = await res.text();
-        document.getElementById("resultado").innerText = texto;
+        const data = await res.json();
+
+        resultadoDiv.innerHTML = `<h2>${data.mensaje}</h2>`;
+
+        // Mostrar productos
+        data.productos.forEach(prod => {
+          const div = document.createElement("div");
+          div.className = "producto";
+          div.innerHTML = `
+            <strong>${prod.nombre}</strong><br>
+            Precio: ${prod.precio || "N/A"}<br>
+            <img src="${prod.img}" alt="${prod.nombre}">
+          `;
+          resultadoDiv.appendChild(div);
+        });
       } catch (err) {
-        document.getElementById("resultado").innerText = "❌ Error al conectar con el servidor";
+        resultadoDiv.innerHTML = "❌ Error al conectar con el servidor";
       }
     }
 
     function volverMenu() {
-      // Redirige al menú dentro de tu proyecto Glowzza
-      window.location.href = "https://glowzza.com.ar/scraperGlowzza/menu.html";
+      // Ajustá esta ruta según dónde esté tu menu.html
+      window.location.href = "/menu.html"; 
+      // Ejemplo alternativo si está en otra carpeta:
+      // window.location.href = "/scraperGlowzza/menu.html";
+      // window.location.href = "/panel/menu.html";
     }
   </script>
 </body>
