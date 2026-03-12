@@ -1,7 +1,20 @@
 // scraper.js
-import puppeteer from "puppeteer";
+
+import fetch from "node-fetch";
 import * as cheerio from "cheerio";
-import fs from "fs";
+import { initializeApp } from "firebase/app";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  getDocs 
+} from "firebase/firestore";
+import { firebaseConfig } from "./firebaseConfig.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 function limpiarPrecio(precioRaw) {
   if (!precioRaw) return null;
@@ -12,95 +25,45 @@ function limpiarPrecio(precioRaw) {
   return isNaN(valor) ? null : valor;
 }
 
-async function obtenerImagenDesdeDetalle(urlProducto) {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-
-  await page.goto(urlProducto, { waitUntil: "networkidle2" });
-
-  let imagen = null;
-  try {
-    await page.waitForSelector("img", { timeout: 10000 });
-    imagen = await page.evaluate(() => {
-      // Caso principal: imagen con clase js-product-slide-img
-      const el = document.querySelector("img.js-product-slide-img");
-      if (el) {
-        if (el.src) return el.src;
-        if (el.getAttribute("data-src")) return el.getAttribute("data-src");
-        if (el.getAttribute("srcset")) {
-          const srcset = el.getAttribute("srcset");
-          return srcset.split(",").pop().trim().split(" ")[0];
-        }
-      }
-
-      // Caso alternativo: div con background-image
-      const div = document.querySelector(".js-product-gallery div, .product-gallery div");
-      if (div && div.style && div.style.backgroundImage) {
-        return div.style.backgroundImage.replace(/url\(["']?(.*?)["']?\)/, "$1");
-      }
-
-      return null;
-    });
-  } catch (err) {
-    console.warn("⚠️ Error al obtener imagen de detalle:", urlProducto);
-  }
-
-  await browser.close();
-  return imagen;
-}
-
 export async function scrapeProductos() {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-
-  await page.goto("https://cye2616.mitiendanube.com/productos/", {
-    waitUntil: "networkidle2"
-  });
-
-  const html = await page.content();
+  const res = await fetch("https://cye2616.mitiendanube.com/productos/");
+  const html = await res.text();
   const $ = cheerio.load(html);
 
-  let productos = [];
+  let count = 0;
 
-  const contenedores = $(".js-product-container");
-
-  for (let i = 0; i < contenedores.length; i++) {
-    const el = contenedores[i];
+  $(".js-product-container").each(async (i, el) => {
     const nombre = $(el).find(".js-item-name").text().trim();
     const precioRaw = $(el).find(".item-price-container").text().trim();
     const precio = limpiarPrecio(precioRaw);
-    let urlProducto = $(el).find("a.item-link").attr("href");
+    const urlProducto = $(el).find("a.item-link").attr("href");
+    const imagen = $(el).find("img").attr("srcset") || $(el).find("img").attr("src");
 
-    // Normalizar URL solo si existe
-    if (urlProducto) {
-      if (!urlProducto.startsWith("http")) {
-        urlProducto = "https://cye2616.mitiendanube.com" + urlProducto;
+    if (nombre && urlProducto) {
+      const q = query(collection(db, "productos_scraper"), where("idProducto", "==", urlProducto));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        await addDoc(collection(db, "productos_scraper"), {
+          idProducto: urlProducto,
+          nombre,
+          precio: precio ?? precioRaw,
+          imagen: imagen || "N/A",
+          fecha: new Date().toISOString(),
+          origen: "scraper"
+        });
+        console.log(`✅ Guardado: ${nombre} - ${precioRaw} → ${precio}`);
+        count++;
+      } else {
+        console.log(`⚠️ Ya existente: ${nombre}`);
       }
-
-      let imagen = await obtenerImagenDesdeDetalle(urlProducto);
-
-      productos.push({
-        idProducto: urlProducto,
-        nombre,
-        precio: precio ?? precioRaw,
-        img: imagen || null,
-        fecha: new Date().toISOString(),
-        origen: "scraper"
-      });
-    } else {
-      console.warn("⚠️ Producto sin enlace válido:", nombre);
     }
-  }
+  });
 
-  await browser.close();
-  return productos;
+  console.log(`📁 Total productos procesados: ${count}`);
 }
 
-// Para pruebas directas
+// Si querés que siga funcionando con "npm start", podés dejar esto:
 if (process.argv[1].includes("scraper.js")) {
-  scrapeProductos().then(p => {
-    console.log("✅ Productos obtenidos:", p.length);
-    const sinImagen = p.filter(prod => !prod.img);
-    console.log("🖼️ Sin imagen:", sinImagen.length);
-  });
+  scrapeProductos();
 }
