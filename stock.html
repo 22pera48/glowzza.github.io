@@ -243,17 +243,6 @@ ul li p {
   let productosParseados = [];
   let ordenesUsados = [];
 
-async function subirImagenCloudinary(file) {
-  const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "glowzza_preset"); // 👈 tu preset
-  formData.append("folder", "glowzzaimages");          // 👈 carpeta
-
-  const res = await fetch(url, { method: "POST", body: formData });
-  const data = await res.json();
-  return data.secure_url;
-}
   // 🔹 Función global para calcular el próximo orden libre
   function obtenerNuevoOrden() {
     let nuevoOrden = 1;
