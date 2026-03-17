@@ -209,62 +209,52 @@ ul li p {
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getFirestore, 
-      addDoc,        
-      getDocs, 
-      collection, 
-      updateDoc,
-      deleteDoc,
-      doc,
-      query,
-      where,
-      increment   // 🔹 agregado aquí
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getFirestore, 
+    setDoc,
+    addDoc,        
+    getDocs, 
+    collection, 
+    updateDoc,
+    deleteDoc,
+    doc,
+    query,
+    where,
+    increment
+  } 
+  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+    authDomain: "glowzzainventario.firebaseapp.com",
+    projectId: "glowzzainventario",
+    storageBucket: "glowzzainventario.appspot.com",
+    messagingSenderId: "159721581844",
+    appId: "1:159721581844:web:f62cdb303258dc847b6601",
+    measurementId: "G-0FR3Q6P3L2"
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
-  authDomain: "glowzzainventario.firebaseapp.com",
-  projectId: "glowzzainventario",
-  storageBucket: "glowzzainventario.appspot.com",   // 🔹 corregido
-  messagingSenderId: "159721581844",
-  appId: "1:159721581844:web:f62cdb303258dc847b6601",
-  measurementId: "G-0FR3Q6P3L2"
-};
-let productosParseados = [];
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-const dropZone = document.getElementById("dropZone");
-dropZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
- dropZone.classList.add("dragover");
-});
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("dragover");
-});
-dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  dropZone.classList.remove("dragover");
+  // 🔹 Variables globales
+  let productosParseados = [];
+  let ordenesUsados = [];
 
+async function subirImagenCloudinary(file) {
+  const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "glowzza_preset"); // 👈 tu preset
+  formData.append("folder", "glowzzaimages");          // 👈 carpeta
 
-  const file = e.dataTransfer.files[0];
-  const reader = new FileReader();
-reader.onload = async (ev) => {
-  const lines = ev.target.result.split("\n");
-  productosParseados = [];
-
-  // Paso 1: obtener todos los órdenes existentes desde Firestore
-  const productosSnap = await getDocs(collection(db, "productos"));
-  const ordenesUsados = [];
-  productosSnap.forEach(docSnap => {
-    const prod = docSnap.data();
-    if (prod.orden) ordenesUsados.push(prod.orden);
-  });
-  ordenesUsados.sort((a, b) => a - b);
-
-  // Función para calcular el próximo orden libre (reutiliza huecos)
+  const res = await fetch(url, { method: "POST", body: formData });
+  const data = await res.json();
+  return data.secure_url;
+}
+  // 🔹 Función global para calcular el próximo orden libre
   function obtenerNuevoOrden() {
     let nuevoOrden = 1;
     for (let i = 0; i < ordenesUsados.length; i++) {
@@ -276,53 +266,99 @@ reader.onload = async (ev) => {
     return nuevoOrden; // si no hay huecos, devuelve el siguiente consecutivo
   }
 
-  // Paso 2: parsear cada línea y asignar orden correcto
-  lines.forEach(line => {
-    line = line.replace(/^\d{1,2}\/\d{1,2}\/\d{4},\s*\d{1,2}:\d{2}\s*-\s*/, "");
-    const idx = line.indexOf(":");
-    if (idx !== -1) line = line.substring(idx + 1).trim();
-    line = line.replace(/<Se editó.*?>/i, "").trim();
+  // 🔹 Drag & Drop TXT/CSV
+  const dropZone = document.getElementById("dropZone");
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+  });
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+  });
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
 
-    const parts = line.split(",");
-    if (parts.length >= 6) {
-      const nuevoOrden = obtenerNuevoOrden();
+    const file = e.dataTransfer.files[0];
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const lines = ev.target.result.split("\n");
+      productosParseados = [];
 
-      productosParseados.push({
-        orden: nuevoOrden,
-        nombre: parts[0].trim(),
-        color: parts[1].trim(),
-        precio: Number(parts[2]),
-        stock: Number(parts[3]),
-        fecha: parts[4].trim(),
-        categoria: parts[5].trim(),
-        claveUnica: `${parts[0].trim()}|${parts[1].trim()}|${parts[5].trim()}`
+      // Paso 1: obtener todos los órdenes existentes desde Firestore
+      const productosSnap = await getDocs(collection(db, "productos"));
+      ordenesUsados = [];
+      productosSnap.forEach(docSnap => {
+        const prod = docSnap.data();
+        if (prod.orden) ordenesUsados.push(prod.orden);
+      });
+      ordenesUsados.sort((a, b) => a - b);
+
+      // Paso 2: parsear cada línea y asignar orden correcto
+      lines.forEach(line => {
+        line = line.replace(/^\d{1,2}\/\d{1,2}\/\d{4},\s*\d{1,2}:\d{2}\s*-\s*/, "");
+        const idx = line.indexOf(":");
+        if (idx !== -1) line = line.substring(idx + 1).trim();
+        line = line.replace(/<Se editó.*?>/i, "").trim();
+
+        const parts = line.split(",");
+        if (parts.length >= 6) {
+          const nuevoOrden = obtenerNuevoOrden();
+
+          productosParseados.push({
+            orden: nuevoOrden,
+            nombre: parts[0].trim(),
+            color: parts[1].trim(),
+            precio: Number(parts[2]),
+            stock: Number(parts[3]),
+            fecha: parts[4].trim(),
+            categoria: parts[5].trim(),
+            claveUnica: `${parts[0].trim()}|${parts[1].trim()}|${parts[5].trim()}`
+          });
+
+          ordenesUsados.push(nuevoOrden);
+          ordenesUsados.sort((a, b) => a - b);
+        }
       });
 
-      // actualizar lista de órdenes usados para el próximo producto
-      ordenesUsados.push(nuevoOrden);
-      ordenesUsados.sort((a, b) => a - b);
-    }
+      // Mostrar botones de acción
+      document.getElementById("acciones").style.display = "block";
+    };
+    reader.readAsText(file);
   });
 
-  // Mostrar botones de acción
-  document.getElementById("acciones").style.display = "block";
-};
-  reader.readAsText(file);
-});
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  // 🔹 Carga manual
+  async function cargarProductoManual(nombreInput, colorInput, precioInput, stockInput, categoriaInput) {
+    const nuevoOrden = obtenerNuevoOrden();
 
-    async function migrarClaveUnica() {
-  const productosSnap = await getDocs(collection(db, "productos"));
-  productosSnap.forEach(async (docSnap) => {
-    const prod = docSnap.data();
-    if (!prod.claveUnica) {
-      const claveUnica = `${prod.nombre}|${prod.color}|${prod.categoria}`;
-      await updateDoc(doc(db, "productos", docSnap.id), { claveUnica });
-    }
-  });
-  alert("Migración de claveUnica finalizada");
-}
+    const nuevoProducto = {
+      orden: nuevoOrden,
+      nombre: nombreInput.value.trim(),
+      color: colorInput.value.trim(),
+      precio: Number(precioInput.value),
+      stock: Number(stockInput.value),
+      categoria: categoriaInput.value.trim(),
+      claveUnica: `${nombreInput.value.trim()}|${colorInput.value.trim()}|${categoriaInput.value.trim()}`
+    };
+
+    await setDoc(doc(collection(db, "productos")), nuevoProducto);
+
+    ordenesUsados.push(nuevoOrden);
+    ordenesUsados.sort((a, b) => a - b);
+  }
+
+  // 🔹 Migración de claveUnica
+  async function migrarClaveUnica() {
+    const productosSnap = await getDocs(collection(db, "productos"));
+    productosSnap.forEach(async (docSnap) => {
+      const prod = docSnap.data();
+      if (!prod.claveUnica) {
+        const claveUnica = `${prod.nombre}|${prod.color}|${prod.categoria}`;
+        await updateDoc(doc(db, "productos", docSnap.id), { claveUnica });
+      }
+    });
+    alert("Migración de claveUnica finalizada");
+  }
 
 function crearItem(prod, productoId, conBoton = true) {
   const li = document.createElement("li");
@@ -513,7 +549,7 @@ async function subirProductos(productos) {
 
       } else {
         // 🔹 Caso creado
-        const nuevoOrden = await obtenerNuevoOrden(db);
+        const nuevoOrden = obtenerNuevoOrden();
         const docRef = await addDoc(collection(db, "productos"), {
           orden: nuevoOrden,
           nombre: prod.nombre,
@@ -590,8 +626,7 @@ async function actualizarStock(productos) {
         });
 
       } else {
-const nuevoOrden = await obtenerNuevoOrden(db);
-
+const nuevoOrden = obtenerNuevoOrden();
 const docRef = await addDoc(collection(db, "productos"), {
   orden: nuevoOrden,   // 🔹 ahora se asigna el orden libre
   nombre: prod.nombre,
@@ -653,8 +688,7 @@ async function subirStock(productos) {
         });
 
       } else {
-const nuevoOrden = await obtenerNuevoOrden(db);
-
+const nuevoOrden = obtenerNuevoOrden();
 const docRef = await addDoc(collection(db, "productos"), {
   orden: nuevoOrden,   // 🔹 ahora se asigna el orden libre
   nombre: prod.nombre,
@@ -740,26 +774,6 @@ document.getElementById("buscadorEspecial").addEventListener("input", async (e) 
   }
 });
 // 🔹 Función reutilizable para calcular el próximo orden libre
-async function obtenerNuevoOrden(db) {
-  const productosSnap = await getDocs(collection(db, "productos"));
-  const ordenesUsados = [];
-
-  productosSnap.forEach(docSnap => {
-    const prod = docSnap.data();
-    if (prod.orden) ordenesUsados.push(prod.orden);
-  });
-
-  ordenesUsados.sort((a, b) => a - b);
-
-  let nuevoOrden = 1;
-  for (let i = 0; i < ordenesUsados.length; i++) {
-    if (ordenesUsados[i] !== nuevoOrden) {
-      return nuevoOrden; // hueco encontrado
-    }
-    nuevoOrden++;
-  }
-  return nuevoOrden; // si no hay huecos, devuelve el siguiente consecutivo
-}
 setInterval(() => {
   const dots = document.getElementById("dots");
   if (dots) {
@@ -811,6 +825,8 @@ setInterval(() => {
       <label>Cantidad:</label><input type="number" id="cantidad" required><br><br>
       <label>Fecha:</label><input type="date" id="fecha" required><br><br>
       <label>Categoría:</label><input type="text" id="categoria" required><br><br>
+      <label>Imagen:</label>
+      <input type="file" id="imagen" accept="image/*" required><br><br>
       <label>SKU/ID (opcional):</label><input type="text" id="sku"><br><br>
       <button type="submit">Guardar</button>
       <button type="button" id="cancelarBtn">Cancelar</button>
