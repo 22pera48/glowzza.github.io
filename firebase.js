@@ -820,6 +820,19 @@ async function obtenerNuevoOrdenManual() {
   // Si no hay huecos, asigna el siguiente consecutivo
   return "M" + nuevoNum;
 }
+// 🔹 Función para subir imagen a Cloudinary
+async function subirImagenCloudinary(file) {
+  const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "glowzza_preset");
+  formData.append("folder", "glowzzaimages");
+
+  const res = await fetch(url, { method: "POST", body: formData });
+  const data = await res.json();
+  return data.secure_url;
+}
+
 // 🔹 Evento submit del formulario
 // 🔹 Paso 3: Listener del formulario con subida de imagen
 formStock.addEventListener("submit", async (e) => {
