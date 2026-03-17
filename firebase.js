@@ -821,6 +821,7 @@ async function obtenerNuevoOrdenManual() {
   return "M" + nuevoNum;
 }
 // 🔹 Evento submit del formulario
+// 🔹 Paso 3: Listener del formulario con subida de imagen
 formStock.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -831,11 +832,16 @@ formStock.addEventListener("submit", async (e) => {
   const fecha = document.getElementById("fecha").value;
   const categoria = document.getElementById("categoria").value.trim();
   const sku = document.getElementById("sku").value.trim();
+  const imagenFile = document.getElementById("imagen").files[0];
 
   try {
     // 🔹 Generar orden único con prefijo M
     const nuevoOrden = await obtenerNuevoOrdenManual();
 
+    // 🔹 Subir imagen a Cloudinary
+    const imagenUrl = await subirImagenCloudinary(imagenFile);
+
+    // 🔹 Guardar en Firebase con la URL de Cloudinary
     await addDoc(collection(db, "productos"), {
       orden: nuevoOrden,   // 👈 siempre se guarda como M1, M2, M3...
       nombre,
@@ -845,6 +851,7 @@ formStock.addEventListener("submit", async (e) => {
       fecha,
       categoria,
       sku: sku || null,
+      imagen: imagenUrl,   // 👈 nuevo campo con la URL
       creadoEn: new Date().toISOString()
     });
 
