@@ -699,16 +699,19 @@ if (cancelarBtn && modalStock) {
     });
   }
 
-  // 🔹 Buscador por ID / Número (stock.html)
-  const buscadorEspecial = document.getElementById("buscadorEspecial");
-  if (buscadorEspecial) {
-    buscadorEspecial.addEventListener("input", async () => {
-      const filtro = buscadorEspecial.value.trim();
-      const lista = document.getElementById("resultadosBusquedaEspecial");
-      lista.innerHTML = "";
-      if (!filtro) return;
+// 🔹 Buscador por ID exacto (stock.html)
+const buscadorEspecial = document.getElementById("buscadorEspecial");
 
-      const productoRef = doc(db, "productos", filtro);
+if (buscadorEspecial) {
+  buscadorEspecial.addEventListener("input", async () => {
+    const filtro = buscadorEspecial.value.trim();
+    const lista = document.getElementById("resultadosBusquedaEspecial");
+    lista.innerHTML = "";
+
+    if (!filtro) return;
+
+    try {
+      const productoRef = doc(db, "productos", filtro); // 👈 busca por ID exacto
       const productoSnap = await getDoc(productoRef);
 
       if (productoSnap.exists()) {
@@ -717,11 +720,14 @@ if (cancelarBtn && modalStock) {
         li.textContent = `[${p.orden}] ${p.nombre} - Stock: ${p.stock} - Precio: $${p.precio} - ID: ${productoSnap.id}`;
         lista.appendChild(li);
       } else {
-        lista.innerHTML = "<li>No se encontró producto con ese ID/orden.</li>";
+        lista.innerHTML = "<li>No se encontró producto con ese ID exacto.</li>";
       }
-    });
-  }
-
+    } catch (err) {
+      console.error("❌ Error buscando producto:", err);
+      lista.innerHTML = "<li>Error al buscar producto.</li>";
+    }
+  });
+}
 // Buscador dentro del modal (se activa al escribir en "Nombre")
 const inputNombre = document.getElementById("nombre");
 if (inputNombre) {
