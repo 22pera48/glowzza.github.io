@@ -813,7 +813,16 @@ setInterval(() => {
       <label>Precio:</label><input type="number" id="precio" required><br><br>
       <label>Cantidad:</label><input type="number" id="cantidad" required><br><br>
       <label>Fecha:</label><input type="date" id="fecha" required><br><br>
-      <label>Categoría:</label><input type="text" id="categoria" required><br><br>
+<label for="categoria">Categoría:</label>
+<select id="categoria" name="categoria" required>
+  <option value="">-- Seleccionar categoría --</option>
+  <option value="skincare">Skincare</option>
+  <option value="perfume y esencias">Perfume y esencias</option>
+  <option value="maquillaje">Maquillaje</option>
+  <option value="cuidado personal">Cuidado personal</option>
+  <option value="peluqueria">Peluquería</option>
+</select>
+<br><br>
       <label>Imagen:</label>
       <input type="file" id="imagen" accept="image/*" required><br><br>
       <label>SKU/ID (opcional):</label><input type="text" id="sku"><br><br>
