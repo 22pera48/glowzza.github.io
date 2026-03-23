@@ -794,101 +794,102 @@ card.querySelector(".editable").addEventListener("click", async () => {
 }
 // Guardar producto desde el modal
 const formStock = document.getElementById("formStock");
+
 if (formStock) {
-// 🔹 Generar orden único para cargas manuales (M1, M2, ...)
-// 🔹 Generar orden único para cargas manuales (M1, M2, M3...)
-async function obtenerNuevoOrdenManual() {
-  const productosSnap = await getDocs(collection(db, "productos"));
-  const usados = [];
+  // 🔹 Generar orden único para cargas manuales (M1, M2, M3...)
+  async function obtenerNuevoOrdenManual() {
+    const productosSnap = await getDocs(collection(db, "productos"));
+    const usados = [];
 
-  productosSnap.forEach(docSnap => {
-    const prod = docSnap.data();
-    const ordenStr = prod.orden ? String(prod.orden) : "";
-    if (ordenStr.startsWith("M")) {
-      const num = parseInt(ordenStr.substring(1), 10);
-      if (!isNaN(num)) {
-        usados.push(num);
+    productosSnap.forEach(docSnap => {
+      const prod = docSnap.data();
+      const ordenStr = prod.orden ? String(prod.orden) : "";
+      if (ordenStr.startsWith("M")) {
+        const num = parseInt(ordenStr.substring(1), 10);
+        if (!isNaN(num)) {
+          usados.push(num);
+        }
       }
-    }
-  });
-
-  usados.sort((a, b) => a - b);
-
-  // Buscar el primer hueco
-  let nuevoNum = 1;
-  for (let i = 0; i < usados.length; i++) {
-    if (usados[i] !== nuevoNum) {
-      return "M" + nuevoNum; // reutiliza hueco
-    }
-    nuevoNum++;
-  }
-
-  // Si no hay huecos, asigna el siguiente consecutivo
-  return "M" + nuevoNum;
-}
-// 🔹 Función para subir imagen a Cloudinary
-async function subirImagenCloudinary(file) {
-  const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "glowzza_preset");
-  formData.append("folder", "glowzzaimages");
-
-  const res = await fetch(url, { method: "POST", body: formData });
-  const data = await res.json();
-  return data.secure_url;
-}
-
-// 🔹 Evento submit del formulario
-// 🔹 Paso 3: Listener del formulario con subida de imagen
-formStock.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const nombre = document.getElementById("nombre").value.trim();
-  const color = document.getElementById("color").value.trim();
-  const precio = Number(document.getElementById("precio").value);
-  const cantidad = Number(document.getElementById("cantidad").value);
-  const fecha = document.getElementById("fecha").value;
-  const categoria = document.getElementById("categoria").value.trim();
-  const sku = document.getElementById("sku").value.trim();
-  const imagenFile = document.getElementById("imagen").files[0];
-
-  try {
-    // 🔹 Generar orden único con prefijo M
-    const nuevoOrden = await obtenerNuevoOrdenManual();
-
-    // 🔹 Subir imagen a Cloudinary
-    const imagenUrl = await subirImagenCloudinary(imagenFile);
-
-    // 🔹 Guardar en Firebase con la URL de Cloudinary
-    await addDoc(collection(db, "productos"), {
-      orden: nuevoOrden,   // 👈 siempre se guarda como M1, M2, M3...
-      nombre,
-      color,
-      precio,
-      stock: cantidad,
-      fecha,
-      categoria,
-      sku: sku || null,
-      imagen: imagenUrl,   // 👈 nuevo campo con la URL
-      creadoEn: new Date().toISOString()
     });
 
-    alert("Producto guardado correctamente ✅");
-    location.reload();
+    usados.sort((a, b) => a - b);
 
-    document.getElementById("modalStock").style.display = "none";
-    formStock.reset();
-    await cargarCatalogo();
-    mostrarClientes();
-    mostrarVentasCerradas();
-  } catch (error) {
-    console.error("Error al guardar producto:", error);
-    alert("Hubo un error al guardar el producto ❌");
+    // Buscar el primer hueco
+    let nuevoNum = 1;
+    for (let i = 0; i < usados.length; i++) {
+      if (usados[i] !== nuevoNum) {
+        return "M" + nuevoNum; // reutiliza hueco
+      }
+      nuevoNum++;
+    }
+
+    // Si no hay huecos, asigna el siguiente consecutivo
+    return "M" + nuevoNum;
   }
-});
+
+  // 🔹 Función para subir imagen a Cloudinary
+  async function subirImagenCloudinary(file) {
+    const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "glowzza_preset");
+    formData.append("folder", "glowzzaimages");
+
+    const res = await fetch(url, { method: "POST", body: formData });
+    const data = await res.json();
+    return data.secure_url;
+  }
+
+  // 🔹 Evento submit del formulario
+  formStock.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const color = document.getElementById("color").value.trim();
+    const precio = Number(document.getElementById("precio").value);
+    const cantidad = Number(document.getElementById("cantidad").value);
+    const fecha = document.getElementById("fecha").value;
+    const categoria = document.getElementById("categoria").value.trim();
+    const sku = document.getElementById("sku").value.trim();
+    const imagenFile = document.getElementById("imagen").files[0];
+
+    try {
+      // 🔹 Generar orden único con prefijo M
+      const nuevoOrden = await obtenerNuevoOrdenManual();
+
+      // 🔹 Subir imagen a Cloudinary
+      const imagenUrl = await subirImagenCloudinary(imagenFile);
+
+      // 🔹 Guardar en Firebase con la URL de Cloudinary
+      await addDoc(collection(db, "productos"), {
+        orden: nuevoOrden,   // 👈 siempre se guarda como M1, M2, M3...
+        nombre,
+        color,
+        precio,
+        stock: cantidad,
+        fecha,
+        categoria,
+        sku: sku || null,
+        imagen: imagenUrl,   // 👈 nuevo campo con la URL
+        creadoEn: new Date().toISOString()
+      });
+
+      alert("Producto guardado correctamente ✅");
+      location.reload();
+
+      document.getElementById("modalStock").style.display = "none";
+      formStock.reset();
+      await cargarCatalogo();
+      mostrarClientes();
+      mostrarVentasCerradas();
+    } catch (error) {
+      console.error("Error al guardar producto:", error);
+      alert("Hubo un error al guardar el producto ❌");
+    }
+  });
 }
+
 // 🔹 Mantener buscador de clientes separado
 mostrarClientes();
 mostrarVentasCerradas();
-});
+  });
