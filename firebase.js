@@ -796,35 +796,24 @@ card.querySelector(".editable").addEventListener("click", async () => {
 const formStock = document.getElementById("formStock");
 
 if (formStock) {
-  // 🔹 Generar orden único para cargas manuales (M1, M2, M3...)
+  // 🔹 Generar orden único en secuencia (M1, M2, M3...)
   async function obtenerNuevoOrdenManual() {
     const productosSnap = await getDocs(collection(db, "productos"));
-    const usados = [];
+    let maxNum = 0;
 
     productosSnap.forEach(docSnap => {
       const prod = docSnap.data();
       const ordenStr = prod.orden ? String(prod.orden) : "";
       if (ordenStr.startsWith("M")) {
         const num = parseInt(ordenStr.substring(1), 10);
-        if (!isNaN(num)) {
-          usados.push(num);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
         }
       }
     });
 
-    usados.sort((a, b) => a - b);
-
-    // Buscar el primer hueco
-    let nuevoNum = 1;
-    for (let i = 0; i < usados.length; i++) {
-      if (usados[i] !== nuevoNum) {
-        return "M" + nuevoNum; // reutiliza hueco
-      }
-      nuevoNum++;
-    }
-
-    // Si no hay huecos, asigna el siguiente consecutivo
-    return "M" + nuevoNum;
+    // siempre asigna el siguiente consecutivo
+    return "M" + (maxNum + 1);
   }
 
   // 🔹 Función para subir imagen a Cloudinary
@@ -862,7 +851,7 @@ if (formStock) {
 
       // 🔹 Guardar en Firebase con la URL de Cloudinary
       await addDoc(collection(db, "productos"), {
-        orden: nuevoOrden,   // 👈 siempre se guarda como M1, M2, M3...
+        orden: nuevoOrden,   // 👈 siempre en secuencia M1, M2, M3...
         nombre,
         color,
         precio,
@@ -870,7 +859,7 @@ if (formStock) {
         fecha,
         categoria,
         sku: sku || null,
-        imagen: imagenUrl,   // 👈 nuevo campo con la URL
+        imagen: imagenUrl,
         creadoEn: new Date().toISOString()
       });
 
