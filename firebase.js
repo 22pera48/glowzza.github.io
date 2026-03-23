@@ -704,35 +704,30 @@ if (cancelarBtn && modalStock) {
 const buscadorEspecial = document.getElementById("buscadorEspecial");
 
 if (buscadorEspecial) {
-  buscadorEspecial.addEventListener("input", async () => {
-    const filtro = buscadorEspecial.value.trim().toLowerCase();
-    const lista = document.getElementById("resultadosBusquedaEspecial");
-    lista.innerHTML = "";
+  buscadorEspecial.addEventListener("input", () => {
+    const filtro = buscadorEspecial.value.trim().toUpperCase();
+    const listado = document.getElementById("listadoGeneral");
+    if (!listado) return;
 
-    if (!filtro) return;
+    const cards = listado.querySelectorAll(".producto-card");
+    let encontrados = 0;
 
-    try {
-      // 🔹 Buscar por campo "orden" en la colección productos
-      const q = query(collection(db, "productos"), where("orden", "==", filtro.toUpperCase())); 
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach((docSnap) => {
-          const p = docSnap.data();
-          const li = document.createElement("li");
-          li.textContent = `[${p.orden}] ${p.nombre} - Stock: ${p.stock} - Precio: $${p.precio} - ID: ${docSnap.id}`;
-          lista.appendChild(li);
-        });
+    cards.forEach(card => {
+      const texto = card.querySelector("h3")?.textContent || "";
+      if (texto.includes(`[${filtro}]`)) {
+        card.style.display = "block";
+        encontrados++;
       } else {
-        lista.innerHTML = "<li>No se encontró producto con ese orden.</li>";
+        card.style.display = "none";
       }
-    } catch (err) {
-      console.error("❌ Error buscando producto:", err);
-      lista.innerHTML = "<li>Error al buscar producto.</li>";
+    });
+
+    // 🔹 Si no se encontró nada, mostrar alerta
+    if (filtro && encontrados === 0) {
+      alert(`No se encontró producto con orden ${filtro}`);
     }
   });
 }
-
 // Buscador dentro del modal (se activa al escribir en "Nombre")
 const inputNombre = document.getElementById("nombre");
 if (inputNombre) {
