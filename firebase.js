@@ -2,6 +2,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, addDoc, getDocs, collection, updateDoc,getDoc, deleteDoc, doc, query, where, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import {getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 // 🔹 Configuración Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
@@ -704,23 +706,26 @@ const buscadorEspecial = document.getElementById("buscadorEspecial");
 
 if (buscadorEspecial) {
   buscadorEspecial.addEventListener("input", async () => {
-    const filtro = buscadorEspecial.value.trim();
+    const filtro = buscadorEspecial.value.trim().toLowerCase();
     const lista = document.getElementById("resultadosBusquedaEspecial");
     lista.innerHTML = "";
 
     if (!filtro) return;
 
     try {
-      const productoRef = doc(db, "productos", filtro); // 👈 busca por ID exacto
-      const productoSnap = await getDoc(productoRef);
+      // 🔹 Buscar por campo "orden" en la colección productos
+      const q = query(collection(db, "productos"), where("orden", "==", filtro.toUpperCase())); 
+      const querySnapshot = await getDocs(q);
 
-      if (productoSnap.exists()) {
-        const p = productoSnap.data();
-        const li = document.createElement("li");
-        li.textContent = `[${p.orden}] ${p.nombre} - Stock: ${p.stock} - Precio: $${p.precio} - ID: ${productoSnap.id}`;
-        lista.appendChild(li);
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach((docSnap) => {
+          const p = docSnap.data();
+          const li = document.createElement("li");
+          li.textContent = `[${p.orden}] ${p.nombre} - Stock: ${p.stock} - Precio: $${p.precio} - ID: ${docSnap.id}`;
+          lista.appendChild(li);
+        });
       } else {
-        lista.innerHTML = "<li>No se encontró producto con ese ID exacto.</li>";
+        lista.innerHTML = "<li>No se encontró producto con ese orden.</li>";
       }
     } catch (err) {
       console.error("❌ Error buscando producto:", err);
@@ -728,6 +733,7 @@ if (buscadorEspecial) {
     }
   });
 }
+
 // Buscador dentro del modal (se activa al escribir en "Nombre")
 const inputNombre = document.getElementById("nombre");
 if (inputNombre) {
