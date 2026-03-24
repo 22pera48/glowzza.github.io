@@ -832,6 +832,70 @@ if (formStock) {
   }
 
 // 🔹 Función para subir imagen a Cloudinary
+// 🔹 Inicialización de Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// -------------------------------------------------------------------
+// 🔹 Buscador dinámico en el modal de modificación
+const buscador = document.getElementById("buscadorModificar");
+const resultadosDiv = document.getElementById("resultadosBusqueda");
+
+buscador.addEventListener("input", async () => {
+  const texto = buscador.value.trim().toLowerCase();
+  resultadosDiv.innerHTML = "";
+
+  if (texto.length < 2) return; // esperar mínimo 2 letras
+
+  try {
+    // Buscar por nombre o por orden
+    const qNombre = query(collection(db, "productos"), where("nombre", "==", texto));
+    const qOrden = query(collection(db, "productos"), where("orden", "==", texto));
+
+    const [snapNombre, snapOrden] = await Promise.all([
+      getDocs(qNombre),
+      getDocs(qOrden)
+    ]);
+
+    let resultados = [];
+    snapNombre.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
+    snapOrden.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
+
+    if (resultados.length === 0) {
+      resultadosDiv.innerHTML = "<p>No se encontró ningún producto ❌</p>";
+      return;
+    }
+
+    resultados.forEach(prod => {
+      const item = document.createElement("div");
+      item.style.cursor = "pointer";
+      item.style.padding = "5px";
+      item.style.borderBottom = "1px solid #ddd";
+      item.textContent = `${prod.orden} - ${prod.nombre} (${prod.categoria})`;
+
+      item.addEventListener("click", () => {
+        // Cargar datos en el formulario
+        document.getElementById("ordenModificar").value = prod.orden;
+        document.getElementById("nombreModificar").value = prod.nombre;
+        document.getElementById("colorModificar").value = prod.color;
+        document.getElementById("precioModificar").value = prod.precio;
+        document.getElementById("cantidadModificar").value = prod.cantidad;
+        document.getElementById("fechaModificar").value = prod.fecha;
+        document.getElementById("categoriaModificar").value = prod.categoria;
+        document.getElementById("skuModificar").value = prod.sku || "";
+
+        resultadosDiv.innerHTML = ""; // limpiar resultados
+        buscador.value = ""; // limpiar buscador
+      });
+
+      resultadosDiv.appendChild(item);
+    });
+  } catch (error) {
+    console.error("Error en buscador dinámico:", error);
+    resultadosDiv.innerHTML = "<p>Error al buscar producto ⚠️</p>";
+  }
+});
+
 async function subirImagenCloudinary(file) {
   const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
   const formData = new FormData();
@@ -946,6 +1010,8 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
   }
 });
 // 🔹 Mantener buscador de clientes separado
+
+
 mostrarClientes();
 mostrarVentasCerradas();
   });
