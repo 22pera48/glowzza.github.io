@@ -1151,7 +1151,8 @@ function mostrarResultados(resultados) {
 
       // mostrar el orden actual debajo del campo
       ordenActualTexto.textContent = "Orden actual del producto: " + prod.orden;
-
+document.getElementById("idActualTexto").textContent =
+  "ID actual del producto: " + prod.id;
       // llenar el resto de campos
       document.getElementById("nombreModificar").value = prod.nombre;
       document.getElementById("colorModificar").value = prod.color;
