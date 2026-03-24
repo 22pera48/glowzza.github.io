@@ -832,11 +832,7 @@ if (formStock) {
   }
 
 // 🔹 Función para subir imagen a Cloudinary
-// 🔹 Inicialización de Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
-// -------------------------------------------------------------------
 // 🔹 Buscador dinámico en el modal de modificación
 const buscador = document.getElementById("buscadorModificar");
 const resultadosDiv = document.getElementById("resultadosBusqueda");
@@ -848,9 +844,19 @@ buscador.addEventListener("input", async () => {
   if (texto.length < 2) return; // esperar mínimo 2 letras
 
   try {
-    // Buscar por nombre o por orden
-    const qNombre = query(collection(db, "productos"), where("nombre", "==", texto));
-    const qOrden = query(collection(db, "productos"), where("orden", "==", texto));
+    // Coincidencia parcial en nombre
+    const qNombre = query(
+      collection(db, "productos"),
+      where("nombre", ">=", texto),
+      where("nombre", "<=", texto + "\uf8ff")
+    );
+
+    // Coincidencia parcial en orden
+    const qOrden = query(
+      collection(db, "productos"),
+      where("orden", ">=", texto),
+      where("orden", "<=", texto + "\uf8ff")
+    );
 
     const [snapNombre, snapOrden] = await Promise.all([
       getDocs(qNombre),
@@ -874,7 +880,6 @@ buscador.addEventListener("input", async () => {
       item.textContent = `${prod.orden} - ${prod.nombre} (${prod.categoria})`;
 
       item.addEventListener("click", () => {
-        // Cargar datos en el formulario
         document.getElementById("ordenModificar").value = prod.orden;
         document.getElementById("nombreModificar").value = prod.nombre;
         document.getElementById("colorModificar").value = prod.color;
@@ -884,8 +889,8 @@ buscador.addEventListener("input", async () => {
         document.getElementById("categoriaModificar").value = prod.categoria;
         document.getElementById("skuModificar").value = prod.sku || "";
 
-        resultadosDiv.innerHTML = ""; // limpiar resultados
-        buscador.value = ""; // limpiar buscador
+        resultadosDiv.innerHTML = "";
+        buscador.value = "";
       });
 
       resultadosDiv.appendChild(item);
@@ -895,7 +900,6 @@ buscador.addEventListener("input", async () => {
     resultadosDiv.innerHTML = "<p>Error al buscar producto ⚠️</p>";
   }
 });
-
 async function subirImagenCloudinary(file) {
   const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
   const formData = new FormData();
