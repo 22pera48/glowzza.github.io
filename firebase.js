@@ -1066,6 +1066,7 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
   }
 });
 // 🔹 Cargar opciones de N° Orden
+// 🔹 Cargar opciones de N° Orden
 async function cargarOpcionesOrden() {
   const ordenSelect = document.getElementById("ordenModificar");
   ordenSelect.innerHTML = "";
@@ -1123,36 +1124,47 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
   cargarOpcionesOrden();
 });
 
-// 🔹 Al seleccionar producto en buscador
-item.addEventListener("click", () => {
-  const ordenSelect = document.getElementById("ordenModificar");
-  const ordenActualTexto = document.getElementById("ordenActualTexto");
-
-  // Si el orden actual del producto no está en las opciones, lo agregamos
-  if (![...ordenSelect.options].some(opt => opt.value === prod.orden)) {
-    const optActual = document.createElement("option");
-    optActual.value = prod.orden;
-    optActual.textContent = "Actual: " + prod.orden;
-    ordenSelect.insertBefore(optActual, ordenSelect.firstChild);
-  }
-
-  // Setear el valor actual en el select
-  ordenSelect.value = prod.orden;
-
-  // Mostrar el orden actual debajo del campo
-  ordenActualTexto.textContent = "Orden actual del producto: " + prod.orden;
-
-  // Llenar el resto de campos
-  document.getElementById("nombreModificar").value = prod.nombre;
-  document.getElementById("colorModificar").value = prod.color;
-  document.getElementById("precioModificar").value = prod.precio;
-  document.getElementById("cantidadModificar").value = prod.stock;
-  document.getElementById("fechaModificar").value = prod.fecha;
-  document.getElementById("categoriaModificar").value = prod.categoria;
-  document.getElementById("skuModificar").value = prod.sku || "";
-
-  window.productoSeleccionadoId = prod.id;
-
+// 🔹 Al mostrar resultados del buscador
+function mostrarResultados(resultados) {
+  const resultadosDivModal = document.getElementById("resultadosBusquedaModal");
   resultadosDivModal.innerHTML = "";
-  buscadorModal.value = "";
-});
+
+  resultados.forEach(prod => {
+    const item = document.createElement("div");
+    item.textContent = prod.nombre + " (" + prod.orden + ")";
+    resultadosDivModal.appendChild(item);
+
+    item.addEventListener("click", () => {
+      const ordenSelect = document.getElementById("ordenModificar");
+      const ordenActualTexto = document.getElementById("ordenActualTexto");
+
+      // agregar opción actual si no está
+      if (![...ordenSelect.options].some(opt => opt.value === prod.orden)) {
+        const optActual = document.createElement("option");
+        optActual.value = prod.orden;
+        optActual.textContent = "Actual: " + prod.orden;
+        ordenSelect.insertBefore(optActual, ordenSelect.firstChild);
+      }
+
+      // setear valor actual en el select
+      ordenSelect.value = prod.orden;
+
+      // mostrar el orden actual debajo del campo
+      ordenActualTexto.textContent = "Orden actual del producto: " + prod.orden;
+
+      // llenar el resto de campos
+      document.getElementById("nombreModificar").value = prod.nombre;
+      document.getElementById("colorModificar").value = prod.color;
+      document.getElementById("precioModificar").value = prod.precio;
+      document.getElementById("cantidadModificar").value = prod.stock;
+      document.getElementById("fechaModificar").value = prod.fecha;
+      document.getElementById("categoriaModificar").value = prod.categoria;
+      document.getElementById("skuModificar").value = prod.sku || "";
+
+      window.productoSeleccionadoId = prod.id;
+
+      resultadosDivModal.innerHTML = "";
+      document.getElementById("buscadorModificarModal").value = "";
+    });
+  });
+}
