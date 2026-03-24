@@ -736,63 +736,79 @@ if (inputNombre) {
     const resultados = catalogoProductos.filter(p =>
       p.nombre.toLowerCase().includes(filtro)
     );
-const lista = document.getElementById("listaResultadosModal");
-lista.innerHTML = "";
-resultados.forEach(p => {
-  const card = document.createElement("div");
-  card.className = "producto-card";
-  card.innerHTML = `
-    <h3 class="editable">${p.nombre}</h3>
-    <p><strong>Precio:</strong> $${p.precio}</p>
-    <p><strong>Stock:</strong> ${p.stock}</p>
-    <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
-    <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
-  `;
-  
-  // 🔹 Evento de click en el nombre
-card.querySelector(".editable").addEventListener("click", async () => {
-  const confirmar = confirm("¿Seguro que querés editar este producto?");
-  if (!confirmar) return;
+    const lista = document.getElementById("listaResultadosModal");
+    lista.innerHTML = "";
 
-  // Prompts para todos los campos
-  const nuevoNombre = prompt("Editar nombre:", p.nombre);
-  const nuevoStock = prompt("Editar stock:", p.stock);
-  const nuevoPrecio = prompt("Editar precio:", p.precio);
-  const nuevoCategoria = prompt("Editar categoría:", p.categoria);
-  const nuevoColor = prompt("Editar color/sabor:", p.color);
+    resultados.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "producto-card";
+      card.innerHTML = `
+        <h3 class="editable">${p.nombre}</h3>
+        <p><strong>Precio:</strong> $${p.precio}</p>
+        <p><strong>Stock:</strong> ${p.stock}</p>
+        <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
+        <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
+        <label>Nueva imagen (opcional):</label>
+        <input type="file" id="imagenEdit-${p.id}" accept="image/*">
+      `;
 
-  // Validar que no sean null (cancelado)
-  if (
-    nuevoNombre !== null &&
-    nuevoStock !== null &&
-    nuevoPrecio !== null &&
-    nuevoCategoria !== null &&
-    nuevoColor !== null
-  ) {
-    try {
-      // 🔹 Actualizar en Firestore
-      const ref = doc(db, "productos", p.id);
-      await updateDoc(ref, {
-        nombre: nuevoNombre.trim(),
-        stock: Number(nuevoStock),
-        precio: Number(nuevoPrecio),
-        categoria: nuevoCategoria.trim(),
-        color: nuevoColor.trim()
+      // 🔹 Evento de click en el nombre
+      card.querySelector(".editable").addEventListener("click", async () => {
+        const confirmar = confirm("¿Seguro que querés editar este producto?");
+        if (!confirmar) return;
+
+        // Prompts para todos los campos
+        const nuevoNombre = prompt("Editar nombre:", p.nombre);
+        const nuevoStock = prompt("Editar stock:", p.stock);
+        const nuevoPrecio = prompt("Editar precio:", p.precio);
+        const nuevoCategoria = prompt("Editar categoría:", p.categoria);
+        const nuevoColor = prompt("Editar color/sabor:", p.color);
+
+        // 🔹 Tomar archivo del input de imagen opcional
+        const imagenFile = document.getElementById(`imagenEdit-${p.id}`).files[0];
+        let nuevaImagenUrl = null;
+        if (imagenFile) {
+          nuevaImagenUrl = await subirImagenCloudinary(imagenFile);
+        }
+
+        // Validar que no sean null (cancelado)
+        if (
+          nuevoNombre !== null &&
+          nuevoStock !== null &&
+          nuevoPrecio !== null &&
+          nuevoCategoria !== null &&
+          nuevoColor !== null
+        ) {
+          try {
+            const ref = doc(db, "productos", p.id);
+            const updateData = {
+              nombre: nuevoNombre.trim(),
+              stock: Number(nuevoStock),
+              precio: Number(nuevoPrecio),
+              categoria: nuevoCategoria.trim(),
+              color: nuevoColor.trim()
+            };
+
+            // 🔹 Si hay nueva imagen, se actualiza
+            if (nuevaImagenUrl) {
+              updateData.imagen = nuevaImagenUrl;
+            }
+
+            await updateDoc(ref, updateData);
+
+            alert("Producto actualizado correctamente ✅");
+            await cargarCatalogo(); // refrescar catálogo
+          } catch (error) {
+            console.error("Error al actualizar producto:", error);
+            alert("Hubo un error al actualizar ❌");
+          }
+        }
       });
 
-      alert("Producto actualizado correctamente ✅");
-      await cargarCatalogo(); // refrescar catálogo
-    } catch (error) {
-      console.error("Error al actualizar producto:", error);
-      alert("Hubo un error al actualizar ❌");
-    }
-  }
-});
-  lista.appendChild(card);
-});
+      lista.appendChild(card);
+    });
   });
-}
-// Guardar producto desde el modal
+}// Guardar producto desde el modal
 const formStock = document.getElementById("formStock");
 
 if (formStock) {
@@ -816,20 +832,22 @@ if (formStock) {
     return "M" + (maxNum + 1);
   }
 
-  // 🔹 Función para subir imagen a Cloudinary
-  async function subirImagenCloudinary(file) {
-    const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "glowzza_preset");
-    formData.append("folder", "glowzzaimages");
+// 🔹 Función para subir imagen a Cloudinary
+async function subirImagenCloudinary(file) {
+  const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "glowzza_preset");
+  formData.append("folder", "glowzzaimages");
 
-    const res = await fetch(url, { method: "POST", body: formData });
-    const data = await res.json();
-    return data.secure_url;
-  }
+  const res = await fetch(url, { method: "POST", body: formData });
+  const data = await res.json();
+  return data.secure_url;
+}
 
-  // 🔹 Evento submit del formulario
+// 🔹 Evento submit del formulario (cargar producto nuevo)
+const formStock = document.getElementById("formStock");
+if (formStock) {
   formStock.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -876,6 +894,7 @@ if (formStock) {
       alert("Hubo un error al guardar el producto ❌");
     }
   });
+}
 }
 
 // 🔹 Mantener buscador de clientes separado
