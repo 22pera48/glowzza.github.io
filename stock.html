@@ -854,7 +854,10 @@ setInterval(() => {
   <div style="background:white; padding:20px; border-radius:8px; max-width:400px;">
     <form id="formModificar">
       <h3>Modificar producto</h3>
-
+      <label for="buscadorModificar">Buscar producto:</label>
+<input type="text" id="buscadorModificar" placeholder="Escribí nombre o N° orden">
+<div id="resultadosBusqueda" style="margin-top:10px; max-height:150px; overflow-y:auto; border:1px solid #ccc; padding:5px;"></div>
+<br><br>
       <label>N° Orden:</label>
       <input type="text" id="ordenModificar" required><br><br>
 
