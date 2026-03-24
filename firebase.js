@@ -834,24 +834,22 @@ if (formStock) {
 // 🔹 Función para subir imagen a Cloudinary
 
 // 🔹 Buscador dinámico en el modal de modificación
-const buscador = document.getElementById("buscadorModificar");
-const resultadosDiv = document.getElementById("resultadosBusqueda");
+const buscadorModal = document.getElementById("buscadorModificarModal");
+const resultadosDivModal = document.getElementById("resultadosBusquedaModal");
 
-buscador.addEventListener("input", async () => {
-  const texto = buscador.value.trim().toLowerCase();
-  resultadosDiv.innerHTML = "";
+buscadorModal.addEventListener("input", async () => {
+  const texto = buscadorModal.value.trim().toLowerCase();
+  resultadosDivModal.innerHTML = "";
 
-  if (texto.length < 2) return; // esperar mínimo 2 letras
+  if (texto.length < 2) return;
 
   try {
-    // Coincidencia parcial en nombre
     const qNombre = query(
       collection(db, "productos"),
       where("nombre", ">=", texto),
       where("nombre", "<=", texto + "\uf8ff")
     );
 
-    // Coincidencia parcial en orden
     const qOrden = query(
       collection(db, "productos"),
       where("orden", ">=", texto),
@@ -868,7 +866,7 @@ buscador.addEventListener("input", async () => {
     snapOrden.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
 
     if (resultados.length === 0) {
-      resultadosDiv.innerHTML = "<p>No se encontró ningún producto ❌</p>";
+      resultadosDivModal.innerHTML = "<p>No se encontró ningún producto ❌</p>";
       return;
     }
 
@@ -889,15 +887,15 @@ buscador.addEventListener("input", async () => {
         document.getElementById("categoriaModificar").value = prod.categoria;
         document.getElementById("skuModificar").value = prod.sku || "";
 
-        resultadosDiv.innerHTML = "";
-        buscador.value = "";
+        resultadosDivModal.innerHTML = "";
+        buscadorModal.value = "";
       });
 
-      resultadosDiv.appendChild(item);
+      resultadosDivModal.appendChild(item);
     });
   } catch (error) {
     console.error("Error en buscador dinámico:", error);
-    resultadosDiv.innerHTML = "<p>Error al buscar producto ⚠️</p>";
+    resultadosDivModal.innerHTML = "<p>Error al buscar producto ⚠️</p>";
   }
 });
 async function subirImagenCloudinary(file) {
