@@ -1065,9 +1065,10 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
     alert("⚠️ No se pudo guardar el cambio");
   }
 });
+// 🔹 Cargar opciones de N° Orden
 async function cargarOpcionesOrden() {
   const ordenSelect = document.getElementById("ordenModificar");
-  ordenSelect.innerHTML = ""; // limpiar opciones previas
+  ordenSelect.innerHTML = "";
 
   try {
     const snap = await getDocs(collection(db, "productos"));
@@ -1083,7 +1084,6 @@ async function cargarOpcionesOrden() {
 
     ordenes.sort((a, b) => a - b);
 
-    // detectar agujeros
     let max = ordenes[ordenes.length - 1] || 0;
     let faltantes = [];
     for (let i = 1; i <= max; i++) {
@@ -1092,7 +1092,7 @@ async function cargarOpcionesOrden() {
       }
     }
 
-    // agregar opciones faltantes
+    // opciones faltantes
     faltantes.forEach(num => {
       const opt = document.createElement("option");
       opt.value = "M" + num;
@@ -1100,13 +1100,13 @@ async function cargarOpcionesOrden() {
       ordenSelect.appendChild(opt);
     });
 
-    // opción para el siguiente número
+    // siguiente número
     const optNuevo = document.createElement("option");
     optNuevo.value = "M" + (max + 1);
     optNuevo.textContent = "Nuevo: M" + (max + 1);
     ordenSelect.appendChild(optNuevo);
 
-    // opción manual
+    // manual
     const optManual = document.createElement("option");
     optManual.value = "";
     optManual.textContent = "Asignar manualmente...";
@@ -1117,8 +1117,39 @@ async function cargarOpcionesOrden() {
   }
 }
 
-// 🔹 Llamar esta función cuando abras el modal
+// 🔹 Al abrir el modal
 document.getElementById("btnModificarModal").addEventListener("click", () => {
   document.getElementById("modalModificar").style.display = "block";
   cargarOpcionesOrden();
+});
+
+// 🔹 Al seleccionar producto en buscador
+item.addEventListener("click", () => {
+  const ordenSelect = document.getElementById("ordenModificar");
+
+  // Si el orden del producto no está en las opciones, lo agregamos
+  if (![...ordenSelect.options].some(opt => opt.value === prod.orden)) {
+    const optActual = document.createElement("option");
+    optActual.value = prod.orden;
+    optActual.textContent = "Actual: " + prod.orden;
+    ordenSelect.insertBefore(optActual, ordenSelect.firstChild);
+  }
+
+  // Setear el valor actual
+  ordenSelect.value = prod.orden;
+
+  // Llenar el resto de campos
+  document.getElementById("nombreModificar").value = prod.nombre;
+  document.getElementById("colorModificar").value = prod.color;
+  document.getElementById("precioModificar").value = prod.precio;
+  document.getElementById("cantidadModificar").value = prod.stock;
+  document.getElementById("fechaModificar").value = prod.fecha;
+  document.getElementById("categoriaModificar").value = prod.categoria;
+  document.getElementById("skuModificar").value = prod.sku || "";
+
+  // Guardar id real del documento
+  window.productoSeleccionadoId = prod.id;
+
+  resultadosDivModal.innerHTML = "";
+  buscadorModal.value = "";
 });
