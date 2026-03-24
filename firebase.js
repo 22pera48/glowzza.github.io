@@ -969,28 +969,18 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
       console.log("Texto buscado dentro del modal:", texto);
 
       try {
-        // 🔹 Coincidencia parcial en nombre
-        const qNombre = query(
-          collection(db, "productos"),
-          where("nombre", ">=", texto),
-          where("nombre", "<=", texto + "\uf8ff")
-        );
-
-        // 🔹 Coincidencia parcial en orden
-        const qOrden = query(
-          collection(db, "productos"),
-          where("orden", ">=", texto),
-          where("orden", "<=", texto + "\uf8ff")
-        );
-
-        const [snapNombre, snapOrden] = await Promise.all([
-          getDocs(qNombre),
-          getDocs(qOrden)
-        ]);
-
+        // 🔹 Traer todos los productos y filtrar en cliente
+        const snap = await getDocs(collection(db, "productos"));
         let resultados = [];
-        snapNombre.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
-        snapOrden.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          if (
+            data.nombre.toLowerCase().includes(texto) || // 👈 busca en cualquier parte del nombre
+            String(data.orden).toLowerCase().includes(texto) // 👈 también por número de orden
+          ) {
+            resultados.push({ id: docSnap.id, ...data });
+          }
+        });
 
         if (resultados.length === 0) {
           resultadosDivModal.innerHTML = "<p>No se encontró ningún producto ❌</p>";
@@ -1009,7 +999,7 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
             document.getElementById("nombreModificar").value = prod.nombre;
             document.getElementById("colorModificar").value = prod.color;
             document.getElementById("precioModificar").value = prod.precio;
-            document.getElementById("cantidadModificar").value = prod.cantidad;
+            document.getElementById("cantidadModificar").value = prod.stock;
             document.getElementById("fechaModificar").value = prod.fecha;
             document.getElementById("categoriaModificar").value = prod.categoria;
             document.getElementById("skuModificar").value = prod.sku || "";
