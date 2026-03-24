@@ -832,72 +832,6 @@ if (formStock) {
   }
 
 // 🔹 Función para subir imagen a Cloudinary
-
-// 🔹 Buscador dinámico en el modal de modificación
-const buscadorModal = document.getElementById("buscadorModificarModal");
-const resultadosDivModal = document.getElementById("resultadosBusquedaModal");
-
-buscadorModal.addEventListener("input", async () => {
-  const texto = buscadorModal.value.trim().toLowerCase();
-  resultadosDivModal.innerHTML = "";
-
-  if (texto.length < 2) return;
-
-  try {
-    const qNombre = query(
-      collection(db, "productos"),
-      where("nombre", ">=", texto),
-      where("nombre", "<=", texto + "\uf8ff")
-    );
-
-    const qOrden = query(
-      collection(db, "productos"),
-      where("orden", ">=", texto),
-      where("orden", "<=", texto + "\uf8ff")
-    );
-
-    const [snapNombre, snapOrden] = await Promise.all([
-      getDocs(qNombre),
-      getDocs(qOrden)
-    ]);
-
-    let resultados = [];
-    snapNombre.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
-    snapOrden.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
-
-    if (resultados.length === 0) {
-      resultadosDivModal.innerHTML = "<p>No se encontró ningún producto ❌</p>";
-      return;
-    }
-
-    resultados.forEach(prod => {
-      const item = document.createElement("div");
-      item.style.cursor = "pointer";
-      item.style.padding = "5px";
-      item.style.borderBottom = "1px solid #ddd";
-      item.textContent = `${prod.orden} - ${prod.nombre} (${prod.categoria})`;
-
-      item.addEventListener("click", () => {
-        document.getElementById("ordenModificar").value = prod.orden;
-        document.getElementById("nombreModificar").value = prod.nombre;
-        document.getElementById("colorModificar").value = prod.color;
-        document.getElementById("precioModificar").value = prod.precio;
-        document.getElementById("cantidadModificar").value = prod.cantidad;
-        document.getElementById("fechaModificar").value = prod.fecha;
-        document.getElementById("categoriaModificar").value = prod.categoria;
-        document.getElementById("skuModificar").value = prod.sku || "";
-
-        resultadosDivModal.innerHTML = "";
-        buscadorModal.value = "";
-      });
-
-      resultadosDivModal.appendChild(item);
-    });
-  } catch (error) {
-    console.error("Error en buscador dinámico:", error);
-    resultadosDivModal.innerHTML = "<p>Error al buscar producto ⚠️</p>";
-  }
-});
 async function subirImagenCloudinary(file) {
   const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
   const formData = new FormData();
@@ -1017,3 +951,81 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
 mostrarClientes();
 mostrarVentasCerradas();
   });
+// 🔹 Abrir modal de modificación y enganchar buscador dinámico
+document.getElementById("btnModificarModal").addEventListener("click", () => {
+  document.getElementById("modalModificar").style.display = "block";
+
+  const buscadorModal = document.getElementById("buscadorModificarModal");
+  const resultadosDivModal = document.getElementById("resultadosBusquedaModal");
+
+  // Evitar duplicar listeners si abrís varias veces el modal
+  if (!buscadorModal.dataset.listenerAttached) {
+    buscadorModal.addEventListener("input", async () => {
+      const texto = buscadorModal.value.trim().toLowerCase();
+      resultadosDivModal.innerHTML = "";
+
+      if (texto.length < 2) return;
+
+      console.log("Texto buscado dentro del modal:", texto);
+
+      try {
+        // 🔹 Coincidencia parcial en nombre
+        const qNombre = query(
+          collection(db, "productos"),
+          where("nombre", ">=", texto),
+          where("nombre", "<=", texto + "\uf8ff")
+        );
+
+        // 🔹 Coincidencia parcial en orden
+        const qOrden = query(
+          collection(db, "productos"),
+          where("orden", ">=", texto),
+          where("orden", "<=", texto + "\uf8ff")
+        );
+
+        const [snapNombre, snapOrden] = await Promise.all([
+          getDocs(qNombre),
+          getDocs(qOrden)
+        ]);
+
+        let resultados = [];
+        snapNombre.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
+        snapOrden.forEach(docSnap => resultados.push({ id: docSnap.id, ...docSnap.data() }));
+
+        if (resultados.length === 0) {
+          resultadosDivModal.innerHTML = "<p>No se encontró ningún producto ❌</p>";
+          return;
+        }
+
+        resultados.forEach(prod => {
+          const item = document.createElement("div");
+          item.style.cursor = "pointer";
+          item.style.padding = "5px";
+          item.style.borderBottom = "1px solid #ddd";
+          item.textContent = `${prod.orden} - ${prod.nombre} (${prod.categoria})`;
+
+          item.addEventListener("click", () => {
+            document.getElementById("ordenModificar").value = prod.orden;
+            document.getElementById("nombreModificar").value = prod.nombre;
+            document.getElementById("colorModificar").value = prod.color;
+            document.getElementById("precioModificar").value = prod.precio;
+            document.getElementById("cantidadModificar").value = prod.cantidad;
+            document.getElementById("fechaModificar").value = prod.fecha;
+            document.getElementById("categoriaModificar").value = prod.categoria;
+            document.getElementById("skuModificar").value = prod.sku || "";
+
+            resultadosDivModal.innerHTML = "";
+            buscadorModal.value = "";
+          });
+
+          resultadosDivModal.appendChild(item);
+        });
+      } catch (error) {
+        console.error("Error en buscador dinámico:", error);
+        resultadosDivModal.innerHTML = "<p>Error al buscar producto ⚠️</p>";
+      }
+    });
+
+    buscadorModal.dataset.listenerAttached = "true";
+  }
+});
