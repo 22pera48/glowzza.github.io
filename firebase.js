@@ -748,8 +748,6 @@ if (inputNombre) {
         <p><strong>Stock:</strong> ${p.stock}</p>
         <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
         <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
-        <label>Nueva imagen (opcional):</label>
-        <input type="file" id="imagenEdit-${p.id}" accept="image/*">
       `;
 
       // 🔹 Evento de click en el nombre
