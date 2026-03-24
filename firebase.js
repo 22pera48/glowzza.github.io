@@ -951,14 +951,12 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
 mostrarClientes();
 mostrarVentasCerradas();
   });
-// 🔹 Abrir modal de modificación y enganchar buscador dinámico
 document.getElementById("btnModificarModal").addEventListener("click", () => {
   document.getElementById("modalModificar").style.display = "block";
 
   const buscadorModal = document.getElementById("buscadorModificarModal");
   const resultadosDivModal = document.getElementById("resultadosBusquedaModal");
 
-  // Evitar duplicar listeners si abrís varias veces el modal
   if (!buscadorModal.dataset.listenerAttached) {
     buscadorModal.addEventListener("input", async () => {
       const texto = buscadorModal.value.trim().toLowerCase();
@@ -966,21 +964,23 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
 
       if (texto.length < 2) return;
 
-      console.log("Texto buscado dentro del modal:", texto);
-
       try {
-        // 🔹 Traer todos los productos y filtrar en cliente
         const snap = await getDocs(collection(db, "productos"));
         let resultados = [];
         snap.forEach(docSnap => {
           const data = docSnap.data();
           if (
-            data.nombre.toLowerCase().includes(texto) || // 👈 busca en cualquier parte del nombre
-            String(data.orden).toLowerCase().includes(texto) // 👈 también por número de orden
+            data.nombre.toLowerCase().includes(texto) ||
+            String(data.orden).toLowerCase().includes(texto)
           ) {
             resultados.push({ id: docSnap.id, ...data });
           }
         });
+
+        // 🔹 Eliminar duplicados por ID
+        resultados = resultados.filter(
+          (prod, index, self) => index === self.findIndex(p => p.id === prod.id)
+        );
 
         if (resultados.length === 0) {
           resultadosDivModal.innerHTML = "<p>No se encontró ningún producto ❌</p>";
