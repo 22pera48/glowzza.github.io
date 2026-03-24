@@ -895,7 +895,56 @@ if (formStock) {
   });
 }
 }
+// Abrir modal al apretar el botón nuevo
+document.getElementById("btnModificarModal").addEventListener("click", () => {
+  document.getElementById("modalModificar").style.display = "block";
+});
 
+// Cerrar modal
+document.getElementById("cancelarModificar").addEventListener("click", () => {
+  document.getElementById("modalModificar").style.display = "none";
+});
+
+// Guardar cambios (ejemplo de flujo similar al buscador dinámico)
+document.getElementById("formModificar").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const orden = document.getElementById("ordenModificar").value.trim();
+  const nombre = document.getElementById("nombreModificar").value.trim();
+  const color = document.getElementById("colorModificar").value.trim();
+  const precio = Number(document.getElementById("precioModificar").value);
+  const cantidad = Number(document.getElementById("cantidadModificar").value);
+  const fecha = document.getElementById("fechaModificar").value;
+  const categoria = document.getElementById("categoriaModificar").value.trim();
+  const sku = document.getElementById("skuModificar").value.trim();
+  const imagenFile = document.getElementById("imagenModificar").files[0];
+
+  try {
+    let imagenUrl = null;
+    if (imagenFile) {
+      imagenUrl = await subirImagenCloudinary(imagenFile);
+    }
+
+    // 🔹 Buscar producto por N° Orden y actualizar
+    const q = query(collection(db, "productos"), where("orden", "==", orden));
+    const snap = await getDocs(q);
+
+    snap.forEach(async (docSnap) => {
+      const ref = doc(db, "productos", docSnap.id);
+      const updateData = { nombre, color, precio, stock: cantidad, fecha, categoria, sku: sku || null };
+      if (imagenUrl) updateData.imagen = imagenUrl;
+
+      await updateDoc(ref, updateData);
+    });
+
+    alert("Producto modificado correctamente ✅");
+    document.getElementById("modalModificar").style.display = "none";
+    await cargarCatalogo();
+  } catch (error) {
+    console.error("Error al modificar producto:", error);
+    alert("Hubo un error al modificar ❌");
+  }
+});
 // 🔹 Mantener buscador de clientes separado
 mostrarClientes();
 mostrarVentasCerradas();
