@@ -1126,8 +1126,9 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
 // 🔹 Al seleccionar producto en buscador
 item.addEventListener("click", () => {
   const ordenSelect = document.getElementById("ordenModificar");
+  const ordenActualTexto = document.getElementById("ordenActualTexto");
 
-  // Si el orden del producto no está en las opciones, lo agregamos
+  // Si el orden actual del producto no está en las opciones, lo agregamos
   if (![...ordenSelect.options].some(opt => opt.value === prod.orden)) {
     const optActual = document.createElement("option");
     optActual.value = prod.orden;
@@ -1135,8 +1136,11 @@ item.addEventListener("click", () => {
     ordenSelect.insertBefore(optActual, ordenSelect.firstChild);
   }
 
-  // Setear el valor actual
+  // Setear el valor actual en el select
   ordenSelect.value = prod.orden;
+
+  // Mostrar el orden actual debajo del campo
+  ordenActualTexto.textContent = "Orden actual del producto: " + prod.orden;
 
   // Llenar el resto de campos
   document.getElementById("nombreModificar").value = prod.nombre;
@@ -1147,7 +1151,6 @@ item.addEventListener("click", () => {
   document.getElementById("categoriaModificar").value = prod.categoria;
   document.getElementById("skuModificar").value = prod.sku || "";
 
-  // Guardar id real del documento
   window.productoSeleccionadoId = prod.id;
 
   resultadosDivModal.innerHTML = "";
