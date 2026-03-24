@@ -951,6 +951,7 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
 mostrarClientes();
 mostrarVentasCerradas();
   });
+// 🔹 Abrir modal de modificación y activar buscador
 document.getElementById("btnModificarModal").addEventListener("click", () => {
   document.getElementById("modalModificar").style.display = "block";
 
@@ -1004,6 +1005,9 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
             document.getElementById("categoriaModificar").value = prod.categoria;
             document.getElementById("skuModificar").value = prod.sku || "";
 
+            // 🔹 Guardar el id real del documento seleccionado
+            window.productoSeleccionadoId = prod.id;
+
             resultadosDivModal.innerHTML = "";
             buscadorModal.value = "";
           });
@@ -1017,5 +1021,47 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
     });
 
     buscadorModal.dataset.listenerAttached = "true";
+  }
+});
+
+// 🔹 Guardar cambios al modificar producto
+document.getElementById("formModificar").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  try {
+    const orden = document.getElementById("ordenModificar").value;
+    const nombre = document.getElementById("nombreModificar").value;
+    const color = document.getElementById("colorModificar").value;
+    const precio = parseFloat(document.getElementById("precioModificar").value);
+    const cantidad = parseInt(document.getElementById("cantidadModificar").value);
+    const fecha = document.getElementById("fechaModificar").value;
+    const categoria = document.getElementById("categoriaModificar").value;
+    const sku = document.getElementById("skuModificar").value;
+
+    const productoId = window.productoSeleccionadoId;
+    if (!productoId) {
+      alert("⚠️ No se pudo identificar el producto a modificar");
+      return;
+    }
+
+    const productoRef = doc(db, "productos", productoId);
+
+    await updateDoc(productoRef, {
+      orden: orden,
+      nombre: nombre,
+      color: color,
+      precio: precio,
+      stock: cantidad,
+      fecha: fecha,
+      categoria: categoria,
+      sku: sku
+    });
+
+    alert("✅ Producto actualizado correctamente");
+    document.getElementById("modalModificar").style.display = "none";
+
+  } catch (error) {
+    console.error("Error al actualizar producto:", error);
+    alert("⚠️ No se pudo guardar el cambio");
   }
 });
