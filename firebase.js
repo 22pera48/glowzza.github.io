@@ -748,6 +748,7 @@ if (inputNombre) {
         <p><strong>Stock:</strong> ${p.stock}</p>
         <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
         <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
+        <p><strong>Orden:</strong> ${p.orden || "-"}</p>
       `;
 
       // 🔹 Evento de click en el nombre
