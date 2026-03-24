@@ -1065,3 +1065,60 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
     alert("⚠️ No se pudo guardar el cambio");
   }
 });
+async function cargarOpcionesOrden() {
+  const ordenSelect = document.getElementById("ordenModificar");
+  ordenSelect.innerHTML = ""; // limpiar opciones previas
+
+  try {
+    const snap = await getDocs(collection(db, "productos"));
+    let ordenes = [];
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.orden) {
+        const num = parseInt(String(data.orden).replace("M", ""));
+        ordenes.push(num);
+      }
+    });
+
+    ordenes.sort((a, b) => a - b);
+
+    // detectar agujeros
+    let max = ordenes[ordenes.length - 1] || 0;
+    let faltantes = [];
+    for (let i = 1; i <= max; i++) {
+      if (!ordenes.includes(i)) {
+        faltantes.push(i);
+      }
+    }
+
+    // agregar opciones faltantes
+    faltantes.forEach(num => {
+      const opt = document.createElement("option");
+      opt.value = "M" + num;
+      opt.textContent = "Disponible: M" + num;
+      ordenSelect.appendChild(opt);
+    });
+
+    // opción para el siguiente número
+    const optNuevo = document.createElement("option");
+    optNuevo.value = "M" + (max + 1);
+    optNuevo.textContent = "Nuevo: M" + (max + 1);
+    ordenSelect.appendChild(optNuevo);
+
+    // opción manual
+    const optManual = document.createElement("option");
+    optManual.value = "";
+    optManual.textContent = "Asignar manualmente...";
+    ordenSelect.appendChild(optManual);
+
+  } catch (error) {
+    console.error("Error cargando opciones de orden:", error);
+  }
+}
+
+// 🔹 Llamar esta función cuando abras el modal
+document.getElementById("btnModificarModal").addEventListener("click", () => {
+  document.getElementById("modalModificar").style.display = "block";
+  cargarOpcionesOrden();
+});
