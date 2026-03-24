@@ -739,21 +739,17 @@ if (inputNombre) {
     const lista = document.getElementById("listaResultadosModal");
     lista.innerHTML = "";
 
-resultados.forEach(p => {
-  const card = document.createElement("div");
-  card.className = "producto-card";
-  card.innerHTML = `
-    <h3>
-      ${p.nombre}
-      <button class="btn-edit" data-id="${p.id}">Editar</button>
-    </h3>
-    <p><strong>Precio:</strong> $${p.precio}</p>
-    <p><strong>Stock:</strong> ${p.stock}</p>
-    <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
-    <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
-    <p><strong>Orden:</strong> ${p.orden || "-"}</p>
-  `;
-
+    resultados.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "producto-card";
+      card.innerHTML = `
+        <h3 class="editable">${p.nombre}</h3>
+        <p><strong>Precio:</strong> $${p.precio}</p>
+        <p><strong>Stock:</strong> ${p.stock}</p>
+        <p><strong>Color/Sabor:</strong> ${p.color || "-"}</p>
+        <p><strong>Categoría:</strong> ${p.categoria || "-"}</p>
+        <p><strong>Orden:</strong> ${p.orden || "-"}</p>
+      `;
 
       // 🔹 Evento de click en el nombre
       card.querySelector(".editable").addEventListener("click", async () => {
