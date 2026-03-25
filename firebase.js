@@ -952,6 +952,7 @@ mostrarClientes();
 mostrarVentasCerradas();
   });
 // 🔹 Abrir modal de modificación y activar buscador
+// 🔹 Abrir modal de modificación y activar buscador
 document.getElementById("btnModificarModal").addEventListener("click", () => {
   document.getElementById("modalModificar").style.display = "block";
 
@@ -995,27 +996,27 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
           item.style.borderBottom = "1px solid #ddd";
           item.textContent = `${prod.orden} - ${prod.nombre} (${prod.categoria})`;
 
-item.addEventListener("click", () => {
-  document.getElementById("ordenModificar").value = prod.orden;
-  document.getElementById("nombreModificar").value = prod.nombre;
-  document.getElementById("colorModificar").value = prod.color;
-  document.getElementById("precioModificar").value = prod.precio;
-  document.getElementById("cantidadModificar").value = prod.stock;
-  document.getElementById("fechaModificar").value = prod.fecha;
-  document.getElementById("categoriaModificar").value = prod.categoria;
-  document.getElementById("skuModificar").value = prod.sku || "";
+          item.addEventListener("click", () => {
+            document.getElementById("ordenModificar").value = prod.orden;
+            document.getElementById("nombreModificar").value = prod.nombre;
+            document.getElementById("colorModificar").value = prod.color;
+            document.getElementById("precioModificar").value = prod.precio;
+            document.getElementById("cantidadModificar").value = prod.stock;
+            document.getElementById("fechaModificar").value = prod.fecha;
+            document.getElementById("categoriaModificar").value = prod.categoria;
+            document.getElementById("skuModificar").value = prod.sku || "";
 
-  // 🔹 Actualizar los <p> visibles
-  document.getElementById("ordenActualTexto").textContent =
-    "Orden actual del producto: " + prod.orden;
-  document.getElementById("idActualTexto").textContent =
-    "ID actual del producto: " + prod.id;
+            // 🔹 Actualizar los <p> visibles
+            document.getElementById("ordenActualTexto").textContent =
+              "Orden actual del producto: " + prod.orden;
+            document.getElementById("idActualTexto").textContent =
+              "ID actual del producto: " + prod.id;
 
-  window.productoSeleccionadoId = prod.id;
+            window.productoSeleccionadoId = prod.id;
 
-  resultadosDivModal.innerHTML = "";
-  buscadorModal.value = "";
-});
+            resultadosDivModal.innerHTML = "";
+            buscadorModal.value = "";
+          });
           resultadosDivModal.appendChild(item);
         });
       } catch (error) {
@@ -1050,8 +1051,8 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
 
     const productoRef = doc(db, "productos", productoId);
 
-    await updateDoc(productoRef, {
-      orden: orden,
+    // 🔹 Construir objeto de actualización
+    let updateData = {
       nombre: nombre,
       color: color,
       precio: precio,
@@ -1059,7 +1060,14 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
       fecha: fecha,
       categoria: categoria,
       sku: sku
-    });
+    };
+
+    // 🔹 Solo actualizar 'orden' si no es "sin_cambios"
+    if (orden !== "sin_cambios") {
+      updateData.orden = orden;
+    }
+
+    await updateDoc(productoRef, updateData);
 
     alert("✅ Producto actualizado correctamente");
     document.getElementById("modalModificar").style.display = "none";
@@ -1069,7 +1077,7 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
     alert("⚠️ No se pudo guardar el cambio");
   }
 });
-// 🔹 Cargar opciones de N° Orden
+
 // 🔹 Cargar opciones de N° Orden
 async function cargarOpcionesOrden() {
   const ordenSelect = document.getElementById("ordenModificar");
@@ -1097,36 +1105,37 @@ async function cargarOpcionesOrden() {
       }
     }
 
-// opciones faltantes
-faltantes.forEach(num => {
-  const opt = document.createElement("option");
-  opt.value = "M" + num;
-  opt.textContent = "Disponible: M" + num;
-  ordenSelect.appendChild(opt);
-});
+    // opciones faltantes
+    faltantes.forEach(num => {
+      const opt = document.createElement("option");
+      opt.value = "M" + num;
+      opt.textContent = "Disponible: M" + num;
+      ordenSelect.appendChild(opt);
+    });
 
-// siguiente número
-const optNuevo = document.createElement("option");
-optNuevo.value = "M" + (max + 1);
-optNuevo.textContent = "Nuevo: M" + (max + 1);
-ordenSelect.appendChild(optNuevo);
+    // siguiente número
+    const optNuevo = document.createElement("option");
+    optNuevo.value = "M" + (max + 1);
+    optNuevo.textContent = "Nuevo: M" + (max + 1);
+    ordenSelect.appendChild(optNuevo);
 
-// manual
-const optManual = document.createElement("option");
-optManual.value = "";
-optManual.textContent = "Asignar manualmente...";
-ordenSelect.appendChild(optManual);
+    // manual
+    const optManual = document.createElement("option");
+    optManual.value = "";
+    optManual.textContent = "Asignar manualmente...";
+    ordenSelect.appendChild(optManual);
 
-// 🔹 opción sin cambios
-const optSinCambios = document.createElement("option");
-optSinCambios.value = "sin_cambios";
-optSinCambios.textContent = "Sin cambios";
-ordenSelect.appendChild(optSinCambios);
+    // 🔹 opción sin cambios
+    const optSinCambios = document.createElement("option");
+    optSinCambios.value = "sin_cambios";
+    optSinCambios.textContent = "Sin cambios";
+    ordenSelect.appendChild(optSinCambios);
 
-} catch (error) {
-  console.error("Error cargando opciones de orden:", error);
+  } catch (error) {
+    console.error("Error cargando opciones de orden:", error);
+  }
 }
-}
+
 // 🔹 Al abrir el modal
 document.getElementById("btnModificarModal").addEventListener("click", () => {
   document.getElementById("modalModificar").style.display = "block";
@@ -1160,8 +1169,9 @@ function mostrarResultados(resultados) {
 
       // mostrar el orden actual debajo del campo
       ordenActualTexto.textContent = "Orden actual del producto: " + prod.orden;
-document.getElementById("idActualTexto").textContent =
-  "ID actual del producto: " + prod.id;
+      document.getElementById("idActualTexto").textContent =
+        "ID actual del producto: " + prod.id;
+
       // llenar el resto de campos
       document.getElementById("nombreModificar").value = prod.nombre;
       document.getElementById("colorModificar").value = prod.color;
