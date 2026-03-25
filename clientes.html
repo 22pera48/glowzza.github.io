@@ -90,8 +90,8 @@
     <input type="text" id="clienteIdEliminar" placeholder="ID del cliente">
     <button id="btnEliminarCliente" class="btn-danger">Eliminar Cliente</button>
     <h4>Eliminar Venta Cerrada por ID</h4>
-<input type="text" id="ventaIdEliminar" placeholder="ID de la venta cerrada">
-<button id="btnEliminarVenta" class="btn-danger">Eliminar Venta</button>
+    <input type="text" id="ventaIdEliminar" placeholder="ID de la venta cerrada">
+    <button id="btnEliminarVenta" class="btn-danger">Eliminar Venta</button>
   </div>
 
   <!-- Contenido de pestañas -->
@@ -176,7 +176,12 @@
       document.getElementById("modalCredenciales").style.display = "block";
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Mostrar listas al inicio
+      if (typeof mostrarClientes === "function") await mostrarClientes();
+      if (typeof mostrarVentasCerradas === "function") await mostrarVentasCerradas();
+      mostrarTab("clientes");
+
       const btnConfirmar = document.getElementById("btnConfirmarEliminar");
       if (btnConfirmar) {
         btnConfirmar.addEventListener("click", async () => {
@@ -194,84 +199,89 @@
 
           if (valido) {
             await deleteDoc(doc(db, coleccionAEliminar, itemAEliminar));
-            alert("Eliminado correctamente");
+            alert("Eliminado correctamente ✅");
             document.getElementById("modalCredenciales").style.display = "none";
             location.reload();
           } else {
-            alert("Usuario o contraseña incorrectos");
+            alert("Usuario o contraseña incorrectos ❌");
           }
         });
       }
 
-const btnEliminar = document.getElementById("btnEliminarCliente");
-if (btnEliminar) {
-  btnEliminar.addEventListener("click", () => {
-    const clienteId = document.getElementById("clienteIdEliminar").value.trim();
-    if (!clienteId) {
-      alert("Ingresá un ID de cliente válido");
-      return;
-    }
-    // Guardamos el ID y la colección a eliminar
-    itemAEliminar = clienteId;
-    coleccionAEliminar = "clientes";
-    // Abrimos el modal de credenciales
-    document.getElementById("modalCredenciales").style.display = "block";
-  });
-}
-const btnEliminarVenta = document.getElementById("btnEliminarVenta");
-if (btnEliminarVenta) {
-  btnEliminarVenta.addEventListener("click", async () => {
-    const ventaCodigo = document.getElementById("ventaIdEliminar").value.trim();
-    if (!ventaCodigo) {
-      alert("Ingresá un código de venta válido");
-      return;
-    }
+      const btnEliminar = document.getElementById("btnEliminarCliente");
+      if (btnEliminar) {
+        btnEliminar.addEventListener("click", () => {
+          const clienteId = document.getElementById("clienteIdEliminar").value.trim();
+          if (!clienteId) {
+            alert("Ingresá un ID de cliente válido");
+            return;
+          }
+          itemAEliminar = clienteId;
+          coleccionAEliminar = "clientes";
+          document.getElementById("modalCredenciales").style.display = "block";
+        });
+      }
 
-    // Buscar el documento cuyo campo "codigo" coincida
-    const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
-    let ventaEncontrada = null;
-    ventasSnap.forEach(docSnap => {
-      const data = docSnap.data();
-      if (data.etiqueta === ventaCodigo) {
-        ventaEncontrada = docSnap.id;
+      const btnEliminarVenta = document.getElementById("btnEliminarVenta");
+      if (btnEliminarVenta) {
+        btnEliminarVenta.addEventListener("click", async () => {
+          const ventaCodigo = document.getElementById("ventaIdEliminar").value.trim();
+          if (!ventaCodigo) {
+            alert("Ingresá un código de venta válido");
+            return;
+          }
+
+          const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
+          let ventaEncontrada = null;
+          ventasSnap.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data.etiqueta === ventaCodigo) {
+              ventaEncontrada = docSnap.id;
+            }
+          });
+
+          if (!ventaEncontrada) {
+            alert("No se encontró ninguna venta con ese código ❌");
+            return;
+          }
+
+          itemAEliminar = ventaEncontrada;
+          coleccionAEliminar = "ventasCerradas";
+          document.getElementById("modalCredenciales").style.display = "block";
+        });
+      }
+
+      // Buscador de ventas cerradas
+      const buscadorVentas = document.getElementById("buscadorVentas");
+      if (buscadorVentas) {
+        buscadorVentas.addEventListener("input", () => {
+          const termino = buscadorVentas.value.toLowerCase();
+          const lista = document.getElementById("listaVentasCerradas");
+          const items = lista.getElementsByTagName("li");
+
+          for (let i = 0; i < items.length; i++) {
+            const texto = items[i].textContent.toLowerCase();
+            items[i].style.display = texto.includes(termino) ? "" : "none";
+          }
+        });
+      }
+
+      // Buscador dinámico de clientes
+      const buscadorClientes = document.getElementById("buscadorClientes");
+      if (buscadorClientes) {
+        buscadorClientes.addEventListener("input", () => {
+          const termino = buscadorClientes.value.toLowerCase();
+          const lista = document.getElementById("listaClientes");
+          const items = lista.getElementsByTagName("li");
+
+          for (let i = 0; i < items.length; i++) {
+            const texto = items[i].textContent.toLowerCase();
+            items[i].style.display = texto.includes(termino) ? "" : "none";
+          }
+        });
       }
     });
 
-    if (!ventaEncontrada) {
-      alert("No se encontró ninguna venta con ese código");
-      return;
-    }
-
-    // Guardamos el ID real y abrimos el modal de credenciales
-    itemAEliminar = ventaEncontrada;
-    coleccionAEliminar = "ventasCerradas";
-    document.getElementById("modalCredenciales").style.display = "block";
-  });
-}
-// Buscador de ventas cerradas
-document.getElementById("buscadorVentas").addEventListener("input", () => {
-  const termino = document.getElementById("buscadorVentas").value.toLowerCase();
-  const lista = document.getElementById("listaVentasCerradas");
-  const items = lista.getElementsByTagName("li");
-
-  for (let i = 0; i < items.length; i++) {
-    const texto = items[i].textContent.toLowerCase();
-    items[i].style.display = texto.includes(termino) ? "" : "none";
-  }
-});
-// Buscador dinámico de clientes
-document.getElementById("buscadorClientes").addEventListener("input", () => {
-  const termino = document.getElementById("buscadorClientes").value.toLowerCase();
-  const lista = document.getElementById("listaClientes");
-  const items = lista.getElementsByTagName("li");
-
-  for (let i = 0; i < items.length; i++) {
-    const texto = items[i].textContent.toLowerCase();
-    items[i].style.display = texto.includes(termino) ? "" : "none";
-  }
-});
-    });
-    
     // Exponer funciones al contexto global
     window.mostrarTab = mostrarTab;
     window.buscarParaEliminar = buscarParaEliminar;
