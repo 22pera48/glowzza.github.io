@@ -1167,11 +1167,15 @@ async function cargarOpcionesOrden() {
 }
 
 // 🔹 Al abrir el modal
+// 🔹 Abrir modal de modificación
 const btnModificarModal = document.getElementById("btnModificarModal");
 if (btnModificarModal) {
   btnModificarModal.addEventListener("click", () => {
-    document.getElementById("modalModificar").style.display = "block";
-    cargarOpcionesOrden();
+    const modal = document.getElementById("modalModificar");
+    if (modal) modal.style.display = "block";
+    if (typeof cargarOpcionesOrden === "function") {
+      cargarOpcionesOrden();
+    }
   });
 }
 
@@ -1193,6 +1197,7 @@ function mostrarResultados(resultados) {
       const idActualTexto = document.getElementById("idActualTexto");
 
       if (ordenSelect && ordenActualTexto && idActualTexto) {
+        // agregar opción actual si no está
         if (![...ordenSelect.options].some(opt => opt.value === prod.orden)) {
           const optActual = document.createElement("option");
           optActual.value = prod.orden;
@@ -1204,13 +1209,21 @@ function mostrarResultados(resultados) {
         ordenActualTexto.textContent = "Orden actual del producto: " + prod.orden;
         idActualTexto.textContent = "ID actual del producto: " + prod.id;
 
-        document.getElementById("nombreModificar").value = prod.nombre;
-        document.getElementById("colorModificar").value = prod.color;
-        document.getElementById("precioModificar").value = prod.precio;
-        document.getElementById("cantidadModificar").value = prod.stock;
-        document.getElementById("fechaModificar").value = prod.fecha;
-        document.getElementById("categoriaModificar").value = prod.categoria;
-        document.getElementById("skuModificar").value = prod.sku || "";
+        const nombreEl = document.getElementById("nombreModificar");
+        const colorEl = document.getElementById("colorModificar");
+        const precioEl = document.getElementById("precioModificar");
+        const cantidadEl = document.getElementById("cantidadModificar");
+        const fechaEl = document.getElementById("fechaModificar");
+        const categoriaEl = document.getElementById("categoriaModificar");
+        const skuEl = document.getElementById("skuModificar");
+
+        if (nombreEl) nombreEl.value = prod.nombre;
+        if (colorEl) colorEl.value = prod.color;
+        if (precioEl) precioEl.value = prod.precio;
+        if (cantidadEl) cantidadEl.value = prod.stock;
+        if (fechaEl) fechaEl.value = prod.fecha;
+        if (categoriaEl) categoriaEl.value = prod.categoria;
+        if (skuEl) skuEl.value = prod.sku || "";
 
         window.productoSeleccionadoId = prod.id;
 
