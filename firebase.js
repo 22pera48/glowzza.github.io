@@ -1097,31 +1097,36 @@ async function cargarOpcionesOrden() {
       }
     }
 
-    // opciones faltantes
-    faltantes.forEach(num => {
-      const opt = document.createElement("option");
-      opt.value = "M" + num;
-      opt.textContent = "Disponible: M" + num;
-      ordenSelect.appendChild(opt);
-    });
+// opciones faltantes
+faltantes.forEach(num => {
+  const opt = document.createElement("option");
+  opt.value = "M" + num;
+  opt.textContent = "Disponible: M" + num;
+  ordenSelect.appendChild(opt);
+});
 
-    // siguiente número
-    const optNuevo = document.createElement("option");
-    optNuevo.value = "M" + (max + 1);
-    optNuevo.textContent = "Nuevo: M" + (max + 1);
-    ordenSelect.appendChild(optNuevo);
+// siguiente número
+const optNuevo = document.createElement("option");
+optNuevo.value = "M" + (max + 1);
+optNuevo.textContent = "Nuevo: M" + (max + 1);
+ordenSelect.appendChild(optNuevo);
 
-    // manual
-    const optManual = document.createElement("option");
-    optManual.value = "";
-    optManual.textContent = "Asignar manualmente...";
-    ordenSelect.appendChild(optManual);
+// manual
+const optManual = document.createElement("option");
+optManual.value = "";
+optManual.textContent = "Asignar manualmente...";
+ordenSelect.appendChild(optManual);
 
-  } catch (error) {
-    console.error("Error cargando opciones de orden:", error);
-  }
+// 🔹 opción sin cambios
+const optSinCambios = document.createElement("option");
+optSinCambios.value = "sin_cambios";
+optSinCambios.textContent = "Sin cambios";
+ordenSelect.appendChild(optSinCambios);
+
+} catch (error) {
+  console.error("Error cargando opciones de orden:", error);
 }
-
+}
 // 🔹 Al abrir el modal
 document.getElementById("btnModificarModal").addEventListener("click", () => {
   document.getElementById("modalModificar").style.display = "block";
