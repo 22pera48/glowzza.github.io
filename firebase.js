@@ -995,23 +995,27 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
           item.style.borderBottom = "1px solid #ddd";
           item.textContent = `${prod.orden} - ${prod.nombre} (${prod.categoria})`;
 
-          item.addEventListener("click", () => {
-            document.getElementById("ordenModificar").value = prod.orden;
-            document.getElementById("nombreModificar").value = prod.nombre;
-            document.getElementById("colorModificar").value = prod.color;
-            document.getElementById("precioModificar").value = prod.precio;
-            document.getElementById("cantidadModificar").value = prod.stock;
-            document.getElementById("fechaModificar").value = prod.fecha;
-            document.getElementById("categoriaModificar").value = prod.categoria;
-            document.getElementById("skuModificar").value = prod.sku || "";
+item.addEventListener("click", () => {
+  document.getElementById("ordenModificar").value = prod.orden;
+  document.getElementById("nombreModificar").value = prod.nombre;
+  document.getElementById("colorModificar").value = prod.color;
+  document.getElementById("precioModificar").value = prod.precio;
+  document.getElementById("cantidadModificar").value = prod.stock;
+  document.getElementById("fechaModificar").value = prod.fecha;
+  document.getElementById("categoriaModificar").value = prod.categoria;
+  document.getElementById("skuModificar").value = prod.sku || "";
 
-            // 🔹 Guardar el id real del documento seleccionado
-            window.productoSeleccionadoId = prod.id;
+  // 🔹 Actualizar los <p> visibles
+  document.getElementById("ordenActualTexto").textContent =
+    "Orden actual del producto: " + prod.orden;
+  document.getElementById("idActualTexto").textContent =
+    "ID actual del producto: " + prod.id;
 
-            resultadosDivModal.innerHTML = "";
-            buscadorModal.value = "";
-          });
+  window.productoSeleccionadoId = prod.id;
 
+  resultadosDivModal.innerHTML = "";
+  buscadorModal.value = "";
+});
           resultadosDivModal.appendChild(item);
         });
       } catch (error) {
