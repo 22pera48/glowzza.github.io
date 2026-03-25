@@ -1028,6 +1028,31 @@ document.getElementById("btnModificarModal").addEventListener("click", () => {
     buscadorModal.dataset.listenerAttached = "true";
   }
 });
+// 🔹 Función original para subir imagen (stock)
+async function subirImagenCloudinary(file) {
+  const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "glowzza_preset");
+  formData.append("folder", "glowzzaimages");
+
+  const res = await fetch(url, { method: "POST", body: formData });
+  const data = await res.json();
+  return data.secure_url;
+}
+
+// 🔹 Función independiente para subir imagen al modificar producto
+async function subirImagenCloudinaryModificar(file) {
+  const url = "https://api.cloudinary.com/v1_1/duduckoiw/image/upload";
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "glowzza_preset");
+  formData.append("folder", "glowzzaimages_modificados"); // carpeta distinta
+
+  const res = await fetch(url, { method: "POST", body: formData });
+  const data = await res.json();
+  return data.secure_url;
+}
 
 // 🔹 Guardar cambios al modificar producto
 document.getElementById("formModificar").addEventListener("submit", async (e) => {
@@ -1067,6 +1092,13 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
       updateData.orden = orden;
     }
 
+    // 🔹 Reemplazar imagen en Cloudinary si se subió una nueva
+    const file = document.getElementById("imagenModificar").files[0];
+    if (file) {
+      const nuevaImagenUrl = await subirImagenCloudinaryModificar(file);
+      updateData.imagen = nuevaImagenUrl;
+    }
+
     await updateDoc(productoRef, updateData);
 
     alert("✅ Producto actualizado correctamente");
@@ -1077,7 +1109,6 @@ document.getElementById("formModificar").addEventListener("submit", async (e) =>
     alert("⚠️ No se pudo guardar el cambio");
   }
 });
-
 // 🔹 Cargar opciones de N° Orden
 async function cargarOpcionesOrden() {
   const ordenSelect = document.getElementById("ordenModificar");
