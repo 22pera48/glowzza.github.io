@@ -1168,6 +1168,7 @@ async function cargarOpcionesOrden() {
 
 // 🔹 Al abrir el modal
 // 🔹 Abrir modal de modificación
+// 🔹 Abrir modal de modificación
 const btnModificarModal = document.getElementById("btnModificarModal");
 if (btnModificarModal) {
   btnModificarModal.addEventListener("click", () => {
