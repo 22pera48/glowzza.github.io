@@ -1181,6 +1181,7 @@ if (btnModificarModal) {
 }
 
 // 🔹 Al mostrar resultados del buscador
+// 🔹 Al mostrar resultados del buscador
 function mostrarResultados(resultados) {
   const resultadosDivModal = document.getElementById("resultadosBusquedaModal");
   if (!resultadosDivModal) return;
@@ -1209,29 +1210,34 @@ function mostrarResultados(resultados) {
         ordenSelect.value = prod.orden;
         ordenActualTexto.textContent = "Orden actual del producto: " + prod.orden;
         idActualTexto.textContent = "ID actual del producto: " + prod.id;
-
-        const nombreEl = document.getElementById("nombreModificar");
-        const colorEl = document.getElementById("colorModificar");
-        const precioEl = document.getElementById("precioModificar");
-        const cantidadEl = document.getElementById("cantidadModificar");
-        const fechaEl = document.getElementById("fechaModificar");
-        const categoriaEl = document.getElementById("categoriaModificar");
-        const skuEl = document.getElementById("skuModificar");
-
-        if (nombreEl) nombreEl.value = prod.nombre;
-        if (colorEl) colorEl.value = prod.color;
-        if (precioEl) precioEl.value = prod.precio;
-        if (cantidadEl) cantidadEl.value = prod.stock;
-        if (fechaEl) fechaEl.value = prod.fecha;
-        if (categoriaEl) categoriaEl.value = prod.categoria;
-        if (skuEl) skuEl.value = prod.sku || "";
-
-        window.productoSeleccionadoId = prod.id;
-
-        resultadosDivModal.innerHTML = "";
-        const buscadorModal = document.getElementById("buscadorModificarModal");
-        if (buscadorModal) buscadorModal.value = "";
       }
+
+      const nombreEl = document.getElementById("nombreModificar");
+      if (nombreEl) nombreEl.value = prod.nombre;
+
+      const colorEl = document.getElementById("colorModificar");
+      if (colorEl) colorEl.value = prod.color;
+
+      const precioEl = document.getElementById("precioModificar");
+      if (precioEl) precioEl.value = prod.precio;
+
+      const cantidadEl = document.getElementById("cantidadModificar");
+      if (cantidadEl) cantidadEl.value = prod.stock;
+
+      const fechaEl = document.getElementById("fechaModificar");
+      if (fechaEl) fechaEl.value = prod.fecha;
+
+      const categoriaEl = document.getElementById("categoriaModificar");
+      if (categoriaEl) categoriaEl.value = prod.categoria;
+
+      const skuEl = document.getElementById("skuModificar");
+      if (skuEl) skuEl.value = prod.sku || "";
+
+      window.productoSeleccionadoId = prod.id;
+
+      resultadosDivModal.innerHTML = "";
+      const buscadorModal = document.getElementById("buscadorModificarModal");
+      if (buscadorModal) buscadorModal.value = "";
     });
   });
 }
