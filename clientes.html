@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Registro de Clientes</title>
-<link rel="stylesheet" href="clientes.css"></head>
+  <link rel="stylesheet" href="clientes.css">
+</head>
 <body>
   <h2>Registrar Cliente</h2>
   <form id="clienteForm">
@@ -53,7 +54,7 @@
   </div>
 
   <!-- Modal de credenciales -->
-  <div id="modalCredenciales">
+  <div id="modalCredenciales" style="display:none;">
     <div>
       <h3>Confirmar eliminación</h3>
       <input type="text" id="usuarioCheck" placeholder="Usuario"><br><br>
@@ -62,7 +63,8 @@
       <button onclick="document.getElementById('modalCredenciales').style.display='none'">Cancelar</button>
     </div>
   </div>
-   <!-- 🔹 Modal de edición de cliente -->
+
+  <!-- Modal de edición de cliente -->
   <div id="modalEditarCliente" style="display:none; position:fixed; top:0; left:0;
        width:100%; height:100%; background:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
     <div style="background:#fff; padding:20px; border-radius:10px; display:inline-block; border:2px solid #c0392b;">
@@ -79,129 +81,7 @@
     </div>
   </div>
 
-
-  <!-- Bloque único de imports y lógica -->
-  <script type="module">
-
-    // Manejo de pestañas
-    function mostrarTab(tab) {
-      document.getElementById("tabClientes").style.display = (tab === "clientes") ? "block" : "none";
-      document.getElementById("tabVentas").style.display = (tab === "ventas") ? "block" : "none";
-      document.getElementById("eliminar").style.display = (tab === "eliminar") ? "block" : "none";
-
-      const buttons = document.querySelectorAll(".tabs button");
-      buttons.forEach(btn => btn.classList.remove("active"));
-      if (tab === "clientes") buttons[0].classList.add("active");
-      else if (tab === "ventas") buttons[1].classList.add("active");
-      else if (tab === "eliminar") buttons[2].classList.add("active");
-    }
-
-    // Registrar cliente
-    const clienteForm = document.getElementById("clienteForm");
-    if (clienteForm) {
-      clienteForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const nombre = document.getElementById("nombre").value.trim();
-        const telefono = document.getElementById("telefono").value.trim();
-        const nemonico = document.getElementById("nemonico").value.trim();
-        const fecha = document.getElementById("fecha").value;
-
-        if (!nombre || !telefono || !fecha) {
-          alert("⚠️ Completá todos los campos obligatorios");
-          return;
-        }
-
-        try {
-          await addDoc(collection(db, "clientes"), { nombre, telefono, nemonico, fecha });
-          alert("✅ Cliente registrado correctamente");
-          clienteForm.reset();
-          mostrarClientes();
-        } catch (error) {
-          console.error("Error al registrar cliente:", error);
-          alert("❌ No se pudo registrar el cliente");
-        }
-      });
-    }
-
-    // Mostrar lista de clientes
-    async function mostrarClientes() {
-      const lista = document.getElementById("listaClientes");
-      const contador = document.getElementById("contadorClientes");
-      if (!lista || !contador) return;
-
-      lista.innerHTML = "";
-      const snap = await getDocs(collection(db, "clientes"));
-      let count = 0;
-      snap.forEach(docSnap => {
-        const data = docSnap.data();
-        const li = document.createElement("li");
-        li.textContent = `${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}`;
-        lista.appendChild(li);
-        count++;
-      });
-      contador.textContent = count;
-    }
-
-    // Mostrar lista de ventas cerradas
-    async function mostrarVentasCerradas() {
-      const lista = document.getElementById("listaVentasCerradas");
-      const contador = document.getElementById("contadorVentas");
-      if (!lista || !contador) return;
-
-      lista.innerHTML = "";
-      const snap = await getDocs(collection(db, "ventasCerradas"));
-      let count = 0;
-      snap.forEach(docSnap => {
-        const data = docSnap.data();
-        const li = document.createElement("li");
-        li.textContent = `Venta ${data.codigo} - Total: $${data.total}`;
-        lista.appendChild(li);
-        count++;
-      });
-      contador.textContent = count;
-    }
-
-    // Buscador dinámico de ventas cerradas
-    const buscadorVentas = document.getElementById("buscadorVentas");
-    if (buscadorVentas) {
-      buscadorVentas.addEventListener("input", () => {
-        const termino = buscadorVentas.value.toLowerCase();
-        const lista = document.getElementById("listaVentasCerradas");
-        const items = lista.getElementsByTagName("li");
-        let visible = 0;
-        for (let i = 0; i < items.length; i++) {
-          const texto = items[i].textContent.toLowerCase();
-          const match = texto.includes(termino);
-          items[i].style.display = match ? "" : "none";
-          if (match) visible++;
-        }
-        if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
-      });
-    }
-
-    // Buscador dinámico de clientes
-    const buscadorClientes = document.getElementById("buscadorClientes");
-    if (buscadorClientes) {
-      buscadorClientes.addEventListener("input", () => {
-        const termino = buscadorClientes.value.toLowerCase();
-        const lista = document.getElementById("listaClientes");
-        const items = lista.getElementsByTagName("li");
-        let visible = 0;
-        for (let i = 0; i < items.length; i++) {
-          const texto = items[i].textContent.toLowerCase();
-          const match = texto.includes(termino);
-          items[i].style.display = match ? "" : "none";
-          if (match) visible++;
-        }
-        if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
-      });
-    }
-
-    // Exponer funciones al contexto global
-    window.mostrarTab = mostrarTab;
-    window.buscarParaEliminar = buscarParaEliminar;
-    window.mostrarClientes = mostrarClientes;
-    window.mostrarVentasCerradas = mostrarVentasCerradas;
-  </script>
+  <!-- 🔹 Cargar la lógica desde clientes.js -->
+  <script type="module" src="clientes.js"></script>
 </body>
 </html>
