@@ -3,64 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Registro de Clientes</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f4f6f8;
-    }
-    h2 { margin-top: 0; }
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .tabs button {
-      padding: 10px 20px;
-      border: none;
-      background: #ddd;
-      cursor: pointer;
-      border-radius: 5px 5px 0 0;
-      font-weight: bold;
-    }
-    .tabs button.active {
-      background: #4CAF50;
-      color: white;
-    }
-    .tab-content {
-      border: 1px solid #ccc;
-      border-radius: 0 5px 5px 5px;
-      padding: 20px;
-      margin-top: -1px;
-      background: white;
-    }
-    .counter {
-      font-weight: bold;
-      margin-bottom: 15px;
-      color: #333;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 10px;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-    }
-    .btn-danger {
-      background:#d9534f;
-      color:white;
-      padding:10px;
-      border:none;
-      border-radius:5px;
-      cursor:pointer;
-    }
-  </style>
-</head>
+<link rel="stylesheet" href="clientes.css"></head>
 <body>
   <h2>Registrar Cliente</h2>
   <form id="clienteForm">
@@ -110,9 +53,8 @@
   </div>
 
   <!-- Modal de credenciales -->
-  <div id="modalCredenciales" style="display:none; position:fixed; top:0; left:0;
-       width:100%; height:100%; background:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
-    <div style="background:#fff; padding:20px; border-radius:10px; display:inline-block;">
+  <div id="modalCredenciales">
+    <div>
       <h3>Confirmar eliminación</h3>
       <input type="text" id="usuarioCheck" placeholder="Usuario"><br><br>
       <input type="password" id="passwordCheck" placeholder="Contraseña"><br><br>
@@ -120,11 +62,29 @@
       <button onclick="document.getElementById('modalCredenciales').style.display='none'">Cancelar</button>
     </div>
   </div>
+   <!-- 🔹 Modal de edición de cliente -->
+  <div id="modalEditarCliente" style="display:none; position:fixed; top:0; left:0;
+       width:100%; height:100%; background:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
+    <div style="background:#fff; padding:20px; border-radius:10px; display:inline-block; border:2px solid #c0392b;">
+      <h3 style="color:#c0392b;">Editar Cliente</h3>
+      <form id="formEditarCliente">
+        <input type="hidden" id="editarId">
+        <input type="text" id="editarNombre" placeholder="Nombre" required><br><br>
+        <input type="tel" id="editarTelefono" placeholder="Teléfono" required><br><br>
+        <input type="text" id="editarNemonico" placeholder="#nemonico"><br><br>
+        <input type="date" id="editarFecha" required><br><br>
+        <button type="submit">Guardar cambios</button>
+        <button type="button" onclick="document.getElementById('modalEditarCliente').style.display='none'">Cancelar</button>
+      </form>
+    </div>
+  </div>
+
 
   <!-- Bloque único de imports y lógica -->
   <script type="module">
-    import { db, getDocs, collection, deleteDoc, doc } from "./firebase.js";
+    import { db, getDocs, collection, deleteDoc, doc, addDoc } from "./firebase.js";
 
+    // Manejo de pestañas
     function mostrarTab(tab) {
       document.getElementById("tabClientes").style.display = (tab === "clientes") ? "block" : "none";
       document.getElementById("tabVentas").style.display = (tab === "ventas") ? "block" : "none";
@@ -137,154 +97,112 @@
       else if (tab === "eliminar") buttons[2].classList.add("active");
     }
 
-    async function buscarParaEliminar() {
-      const termino = document.getElementById("buscadorEliminar").value.toLowerCase();
-      const resultadoDiv = document.getElementById("resultadoEliminar");
-      resultadoDiv.innerHTML = "";
+    // Registrar cliente
+    const clienteForm = document.getElementById("clienteForm");
+    if (clienteForm) {
+      clienteForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById("nombre").value.trim();
+        const telefono = document.getElementById("telefono").value.trim();
+        const nemonico = document.getElementById("nemonico").value.trim();
+        const fecha = document.getElementById("fecha").value;
 
-      const clientesSnap = await getDocs(collection(db, "clientes"));
-      clientesSnap.forEach(docSnap => {
-        const data = docSnap.data();
-        if (data.nombre.toLowerCase().includes(termino) || (data.codigo?.toLowerCase().includes(termino))) {
-          resultadoDiv.innerHTML += `
-            <div>
-              Cliente: ${data.nombre} - Tel: ${data.telefono}
-              <button onclick="pedirCredenciales('${docSnap.id}', 'clientes')">Eliminar</button>
-            </div>`;
+        if (!nombre || !telefono || !fecha) {
+          alert("⚠️ Completá todos los campos obligatorios");
+          return;
         }
-      });
 
-      const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
-      ventasSnap.forEach(docSnap => {
-        const data = docSnap.data();
-        if (data.codigo?.toLowerCase().includes(termino)) {
-          resultadoDiv.innerHTML += `
-            <div>
-              Venta ${data.codigo} - Total: $${data.total}
-              <button onclick="pedirCredenciales('${docSnap.id}', 'ventasCerradas')">Eliminar</button>
-            </div>`;
+        try {
+          await addDoc(collection(db, "clientes"), { nombre, telefono, nemonico, fecha });
+          alert("✅ Cliente registrado correctamente");
+          clienteForm.reset();
+          mostrarClientes();
+        } catch (error) {
+          console.error("Error al registrar cliente:", error);
+          alert("❌ No se pudo registrar el cliente");
         }
       });
     }
 
-    let itemAEliminar = null;
-    let coleccionAEliminar = null;
+    // Mostrar lista de clientes
+    async function mostrarClientes() {
+      const lista = document.getElementById("listaClientes");
+      const contador = document.getElementById("contadorClientes");
+      if (!lista || !contador) return;
 
-    window.pedirCredenciales = function(id, coleccion) {
-      itemAEliminar = id;
-      coleccionAEliminar = coleccion;
-      document.getElementById("modalCredenciales").style.display = "block";
-    };
+      lista.innerHTML = "";
+      const snap = await getDocs(collection(db, "clientes"));
+      let count = 0;
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}`;
+        lista.appendChild(li);
+        count++;
+      });
+      contador.textContent = count;
+    }
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      // Mostrar listas al inicio
-      if (typeof mostrarClientes === "function") await mostrarClientes();
-      if (typeof mostrarVentasCerradas === "function") await mostrarVentasCerradas();
-      mostrarTab("clientes");
+    // Mostrar lista de ventas cerradas
+    async function mostrarVentasCerradas() {
+      const lista = document.getElementById("listaVentasCerradas");
+      const contador = document.getElementById("contadorVentas");
+      if (!lista || !contador) return;
 
-      const btnConfirmar = document.getElementById("btnConfirmarEliminar");
-      if (btnConfirmar) {
-        btnConfirmar.addEventListener("click", async () => {
-          const usuario = document.getElementById("usuarioCheck").value;
-          const password = document.getElementById("passwordCheck").value;
+      lista.innerHTML = "";
+      const snap = await getDocs(collection(db, "ventasCerradas"));
+      let count = 0;
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.textContent = `Venta ${data.codigo} - Total: $${data.total}`;
+        lista.appendChild(li);
+        count++;
+      });
+      contador.textContent = count;
+    }
 
-          const credSnap = await getDocs(collection(db, "adminCredenciales"));
-          let valido = false;
-          credSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            if (data.usuario === usuario && data.password === password) {
-              valido = true;
-            }
-          });
+    // Buscador dinámico de ventas cerradas
+    const buscadorVentas = document.getElementById("buscadorVentas");
+    if (buscadorVentas) {
+      buscadorVentas.addEventListener("input", () => {
+        const termino = buscadorVentas.value.toLowerCase();
+        const lista = document.getElementById("listaVentasCerradas");
+        const items = lista.getElementsByTagName("li");
+        let visible = 0;
+        for (let i = 0; i < items.length; i++) {
+          const texto = items[i].textContent.toLowerCase();
+          const match = texto.includes(termino);
+          items[i].style.display = match ? "" : "none";
+          if (match) visible++;
+        }
+        if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
+      });
+    }
 
-          if (valido) {
-            await deleteDoc(doc(db, coleccionAEliminar, itemAEliminar));
-            alert("Eliminado correctamente ✅");
-            document.getElementById("modalCredenciales").style.display = "none";
-            location.reload();
-          } else {
-            alert("Usuario o contraseña incorrectos ❌");
-          }
-        });
-      }
-
-      const btnEliminar = document.getElementById("btnEliminarCliente");
-      if (btnEliminar) {
-        btnEliminar.addEventListener("click", () => {
-          const clienteId = document.getElementById("clienteIdEliminar").value.trim();
-          if (!clienteId) {
-            alert("Ingresá un ID de cliente válido");
-            return;
-          }
-          itemAEliminar = clienteId;
-          coleccionAEliminar = "clientes";
-          document.getElementById("modalCredenciales").style.display = "block";
-        });
-      }
-
-      const btnEliminarVenta = document.getElementById("btnEliminarVenta");
-      if (btnEliminarVenta) {
-        btnEliminarVenta.addEventListener("click", async () => {
-          const ventaCodigo = document.getElementById("ventaIdEliminar").value.trim();
-          if (!ventaCodigo) {
-            alert("Ingresá un código de venta válido");
-            return;
-          }
-
-          const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
-          let ventaEncontrada = null;
-          ventasSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            if (data.etiqueta === ventaCodigo) {
-              ventaEncontrada = docSnap.id;
-            }
-          });
-
-          if (!ventaEncontrada) {
-            alert("No se encontró ninguna venta con ese código ❌");
-            return;
-          }
-
-          itemAEliminar = ventaEncontrada;
-          coleccionAEliminar = "ventasCerradas";
-          document.getElementById("modalCredenciales").style.display = "block";
-        });
-      }
-
-      // Buscador de ventas cerradas
-      const buscadorVentas = document.getElementById("buscadorVentas");
-      if (buscadorVentas) {
-        buscadorVentas.addEventListener("input", () => {
-          const termino = buscadorVentas.value.toLowerCase();
-          const lista = document.getElementById("listaVentasCerradas");
-          const items = lista.getElementsByTagName("li");
-
-          for (let i = 0; i < items.length; i++) {
-            const texto = items[i].textContent.toLowerCase();
-            items[i].style.display = texto.includes(termino) ? "" : "none";
-          }
-        });
-      }
-
-      // Buscador dinámico de clientes
-      const buscadorClientes = document.getElementById("buscadorClientes");
-      if (buscadorClientes) {
-        buscadorClientes.addEventListener("input", () => {
-          const termino = buscadorClientes.value.toLowerCase();
-          const lista = document.getElementById("listaClientes");
-          const items = lista.getElementsByTagName("li");
-
-          for (let i = 0; i < items.length; i++) {
-            const texto = items[i].textContent.toLowerCase();
-            items[i].style.display = texto.includes(termino) ? "" : "none";
-          }
-        });
-      }
-    });
+    // Buscador dinámico de clientes
+    const buscadorClientes = document.getElementById("buscadorClientes");
+    if (buscadorClientes) {
+      buscadorClientes.addEventListener("input", () => {
+        const termino = buscadorClientes.value.toLowerCase();
+        const lista = document.getElementById("listaClientes");
+        const items = lista.getElementsByTagName("li");
+        let visible = 0;
+        for (let i = 0; i < items.length; i++) {
+          const texto = items[i].textContent.toLowerCase();
+          const match = texto.includes(termino);
+          items[i].style.display = match ? "" : "none";
+          if (match) visible++;
+        }
+        if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
+      });
+    }
 
     // Exponer funciones al contexto global
     window.mostrarTab = mostrarTab;
     window.buscarParaEliminar = buscarParaEliminar;
+    window.mostrarClientes = mostrarClientes;
+    window.mostrarVentasCerradas = mostrarVentasCerradas;
   </script>
 </body>
 </html>
