@@ -1,5 +1,4 @@
 // clientes.js
-import { db, getDocs, collection, deleteDoc, doc, addDoc, updateDoc } from "./firebase.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
   getFirestore, getDocs, collection, deleteDoc, doc, addDoc, updateDoc 
