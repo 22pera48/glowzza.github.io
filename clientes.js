@@ -120,13 +120,13 @@ async function mostrarClientes() {
       <!-- Botones de estado -->
       <div class="estadoVenta">
         <select class="estadoDespacho">
-          <option value="">Estado despacho</option>
+          <option value="">Estado</option>
           <option value="despachado">Despachado</option>
           <option value="deposito">En depósito</option>
         </select>
 
         <select class="estadoPago">
-          <option value="">Estado pago</option>
+          <option value="">Estado</option>
           <option value="pagado">Pagado</option>
           <option value="sinpagar">Sin pagar</option>
         </select>
@@ -196,33 +196,40 @@ async function inicializarBuscadoresProductos() {
       menu.style.display = filtrados.length > 0 ? "block" : "none";
     });
 
-    // Botón "+" → solo agrega producto con botón ❌
-    btnAgregar.addEventListener("click", () => {
-      const nombreProducto = buscador.value.trim();
-      const cantidad = parseInt(cantidadInput.value, 10);
-      if (!nombreProducto) return;
+// Botón "+" → valida stock antes de agregar
+btnAgregar.addEventListener("click", () => {
+  const nombreProducto = buscador.value.trim();
+  const cantidad = parseInt(cantidadInput.value, 10);
+  if (!nombreProducto) return;
 
-      const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
-      if (!producto) {
-        alert("Producto no encontrado.");
-        return;
-      }
+  const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+  if (!producto) {
+    alert("Producto no encontrado.");
+    return;
+  }
 
-      const liProd = document.createElement("li");
-      liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
-      const btnEliminar = document.createElement("button");
-      btnEliminar.textContent = "❌";
-      btnEliminar.style.marginLeft = "10px";
-      btnEliminar.addEventListener("click", () => {
-        listaProductosCliente.removeChild(liProd);
-      });
-      liProd.appendChild(btnEliminar);
-      listaProductosCliente.appendChild(liProd);
+  // 🔹 Validar stock disponible
+  if (cantidad > (producto.stock ?? 0)) {
+    alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
+    return; // no agrega nada
+  }
 
-      buscador.value = "";
-      cantidadInput.value = 1;
-    });
+  // ✅ Si hay stock suficiente, agregar producto con botón de eliminar
+  const liProd = document.createElement("li");
+  liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
+  const btnEliminar = document.createElement("button");
+  btnEliminar.textContent = "❌";
+  btnEliminar.style.marginLeft = "10px";
+  btnEliminar.addEventListener("click", () => {
+    listaProductosCliente.removeChild(liProd);
+  });
+  liProd.appendChild(btnEliminar);
+  listaProductosCliente.appendChild(liProd);
 
+  // Resetear campos
+  buscador.value = "";
+  cantidadInput.value = 1;
+});
     // Validar credenciales al seleccionar "Pagado"
     estadoPago.addEventListener("change", () => {
       if (estadoPago.value === "pagado") {
