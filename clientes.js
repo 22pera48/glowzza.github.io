@@ -209,17 +209,41 @@ async function inicializarBuscadoresProductos() {
     const menu = buscador.parentElement.querySelector(".menuProductos");
     const cantidadInput = buscador.parentElement.querySelector(".cantidadProducto");
     const btnAgregar = buscador.parentElement.querySelector(".btnAgregarProducto");
-    const listaProductosCliente = buscador.parentElement.parentElement.querySelector(".listaProductosCliente");
-    const estadoDespacho = buscador.parentElement.parentElement.querySelector(".estadoDespacho");
-    const estadoPago = buscador.parentElement.parentElement.querySelector(".estadoPago");
-    const btnCerrarVenta = buscador.parentElement.parentElement.querySelector(".btnCerrarVenta");
+    const liCliente = buscador.closest("li"); // 🔹 obtener el <li> del cliente
+    const listaProductosCliente = liCliente.querySelector(".listaProductosCliente");
+    const estadoDespacho = liCliente.querySelector(".estadoDespacho");
+    const estadoPago = liCliente.querySelector(".estadoPago");
+    const btnCerrarVenta = liCliente.querySelector(".btnCerrarVenta");
+    const btnCuotas = liCliente.querySelector(".btnCuotas");
 
-    // Mostrar todos los productos
+    // Botón Cuotas
+    if (btnCuotas) {
+      btnCuotas.addEventListener("click", async () => {
+        const monto = prompt("Ingrese monto de la cuota:");
+        if (!monto) return;
+
+        const clienteId = liCliente.getAttribute("data-id");
+        const clienteRef = doc(db, "clientes", clienteId);
+
+        await updateDoc(clienteRef, {
+          cuotas: arrayUnion({
+            monto: parseFloat(monto),
+            fecha: new Date().toISOString()
+          })
+        });
+
+        alert("✅ Cuota registrada correctamente.");
+        mostrarClientes(); // refrescar vista
+      });
+    }
+
+    // Mostrar todos los productos al enfocar
     buscador.addEventListener("focus", () => {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
+        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
+        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
@@ -227,187 +251,146 @@ async function inicializarBuscadoresProductos() {
       });
       menu.style.display = "block";
     });
+
     // Filtrar productos mientras se escribe
-buscador.addEventListener("input", () => {
-  const texto = buscador.value.toLowerCase();
-  menu.innerHTML = "";
-
-  productos
-    .filter(p =>
-      p.nombre.toLowerCase().includes(texto) ||
-      (p.color && p.color.toLowerCase().includes(texto)) ||
-      (p.orden && p.orden.toLowerCase().includes(texto))
-    )
-    .forEach(p => {
-      const item = document.createElement("div");
-      item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
-      item.addEventListener("click", () => {
-        buscador.value = p.nombre;
-        menu.style.display = "none";
-      });
-      menu.appendChild(item);
-    });
-
-  menu.style.display = "block";
-});
-li.querySelector(".btnCuotas").addEventListener("click", async () => {
-  const monto = prompt("Ingrese monto de la cuota:");
-  if (!monto) return;
-
-  const clienteId = li.getAttribute("data-id");
-  const clienteRef = doc(db, "clientes", clienteId);
-
-  // Guardar cuota en Firebase dentro del cliente
-  await updateDoc(clienteRef, {
-    cuotas: arrayUnion({
-      monto: parseFloat(monto),
-      fecha: new Date().toISOString()
-    })
-  });
-
-  alert("✅ Cuota registrada correctamente.");
-  mostrarClientes(); // refrescar vista para que aparezca la cuota
-});
-    // Filtrar productos
     buscador.addEventListener("input", () => {
-      const termino = buscador.value.toLowerCase();
+      const texto = buscador.value.toLowerCase();
       menu.innerHTML = "";
-      const filtrados = productos.filter(p =>
-        p.nombre.toLowerCase().includes(termino) ||
-        (p.codigo?.toLowerCase().includes(termino))
-      );
-filtrados.forEach(p => {
-  const item = document.createElement("div");
-  item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - ID: ${p.codigo || p.id}`;
-  item.addEventListener("click", () => {
-    buscador.value = p.nombre;
-    menu.style.display = "none";
-  });
-  menu.appendChild(item);
-});      menu.style.display = filtrados.length > 0 ? "block" : "none";
+      productos
+        .filter(p =>
+          p.nombre.toLowerCase().includes(texto) ||
+          (p.color && p.color.toLowerCase().includes(texto)) ||
+          (p.orden && p.orden.toLowerCase().includes(texto))
+        )
+        .forEach(p => {
+          const item = document.createElement("div");
+          item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
+          item.addEventListener("click", () => {
+            buscador.value = p.nombre;
+            menu.style.display = "none";
+          });
+          menu.appendChild(item);
+        });
+      menu.style.display = "block";
     });
 
-// Botón "+" → valida stock antes de agregar
-btnAgregar.addEventListener("click", () => {
-  const nombreProducto = buscador.value.trim();
-  const cantidad = parseInt(cantidadInput.value, 10);
-  if (!nombreProducto) return;
+    // Botón "+" → valida stock antes de agregar
+    btnAgregar.addEventListener("click", () => {
+      const nombreProducto = buscador.value.trim();
+      const cantidad = parseInt(cantidadInput.value, 10);
+      if (!nombreProducto) return;
 
-  const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
-  if (!producto) {
-    alert("Producto no encontrado.");
-    return;
-  }
-
-  // 🔹 Validar stock disponible
-  if (cantidad > (producto.stock ?? 0)) {
-    alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
-    return; // no agrega nada
-  }
-
-  // ✅ Si hay stock suficiente, agregar producto con botón de eliminar
-  const liProd = document.createElement("li");
-  liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
-  const btnEliminar = document.createElement("button");
-  btnEliminar.textContent = "❌";
-  btnEliminar.style.marginLeft = "10px";
-  btnEliminar.addEventListener("click", () => {
-    listaProductosCliente.removeChild(liProd);
-  });
-  liProd.appendChild(btnEliminar);
-  listaProductosCliente.appendChild(liProd);
-
-  // Resetear campos
-  buscador.value = "";
-  cantidadInput.value = 1;
-});
-estadoPago.addEventListener("change", async () => {
-  if (estadoPago.value === "pagado") {
-    const usuario = prompt("Ingrese usuario de caja:");
-    const password = prompt("Ingrese contraseña de caja:");
-
-    const esValido = await validarCredenciales(usuario, password);
-
-    if (!esValido) {
-      alert("Credenciales inválidas. No puede marcar como Pagado.");
-      estadoPago.value = "";
-    } else {
-      alert("Credenciales válidas. Estado marcado como Pagado.");
-    }
-  }
-});
-    // Botón "Cerrar Venta" → recién aquí descuenta stock
-btnCerrarVenta.addEventListener("click", async () => {
-  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
-    alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
-    return;
-  }
-
-  const itemsLi = listaProductosCliente.querySelectorAll("li");
-  if (itemsLi.length === 0) {
-    alert("⚠️ No se puede cerrar la venta sin productos.");
-    return;
-  }
-
-  const items = [];
-  let totalCliente = 0;
-  itemsLi.forEach(li => {
-    const [nombreProducto, cantidadTxt] = li.textContent.split(" - Cantidad: ");
-    const cantidad = parseInt(cantidadTxt, 10);
-    const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
-    items.push({ nombre: nombreProducto, cantidad, precio: producto?.precio ?? 0 });
-    totalCliente += (producto?.precio ?? 0) * cantidad;
-  });
-
-  const liCliente = btnCerrarVenta.closest("li");
-
-  const ventaData = {
-    cliente: {
-      id: liCliente.getAttribute("data-id"),
-      etiqueta: liCliente.getAttribute("data-etiqueta"),
-      nombre: liCliente.getAttribute("data-nombre"),
-      telefono: liCliente.getAttribute("data-telefono"),
-      fecha: liCliente.getAttribute("data-fecha"),
-      nemonico: liCliente.getAttribute("data-nemonico")
-    },
-    productos: items,
-    total: totalCliente,
-    estadoDespacho: estadoDespacho.value,
-    estadoPago: estadoPago.value,
-    fechaCierre: new Date().toISOString(),
-    // 🔹 Copiar cuotas si existen en el cliente
-    cuotas: data.cuotas || []
-  };
-
-  try {
-    await addDoc(collection(db, "ventasCerradas"), ventaData);
-
-    for (const item of items) {
-      const producto = productos.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
-      if (producto) {
-        if (item.cantidad > (producto.stock ?? 0)) {
-          alert(`Stock insuficiente para ${producto.nombre}. Disponible: ${producto.stock ?? 0}`);
-          return;
-        }
-        const productoRef = doc(db, "productos", producto.id);
-        await updateDoc(productoRef, {
-          stock: (producto.stock ?? 0) - item.cantidad
-        });
+      const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+      if (!producto) {
+        alert("Producto no encontrado.");
+        return;
       }
-    }
 
-    await deleteDoc(doc(db, "clientes", ventaData.cliente.id)); // eliminar cliente
+      if (cantidad > (producto.stock ?? 0)) {
+        alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
+        return;
+      }
 
-    listaProductosCliente.innerHTML = "";
-    mostrarVentasCerradas();
-    mostrarClientes();
+      const liProd = document.createElement("li");
+      liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "❌";
+      btnEliminar.style.marginLeft = "10px";
+      btnEliminar.addEventListener("click", () => {
+        listaProductosCliente.removeChild(liProd);
+      });
+      liProd.appendChild(btnEliminar);
+      listaProductosCliente.appendChild(liProd);
 
-    alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
-  } catch (error) {
-    console.error("Error al cerrar venta:", error);
-    alert("❌ Hubo un problema al cerrar la venta.");
-  }
-});
+      buscador.value = "";
+      cantidadInput.value = 1;
+    });
+
+    // Validar credenciales al marcar como pagado
+    estadoPago.addEventListener("change", async () => {
+      if (estadoPago.value === "pagado") {
+        const usuario = prompt("Ingrese usuario de caja:");
+        const password = prompt("Ingrese contraseña de caja:");
+        const esValido = await validarCredenciales(usuario, password);
+
+        if (!esValido) {
+          alert("Credenciales inválidas. No puede marcar como Pagado.");
+          estadoPago.value = "";
+        } else {
+          alert("Credenciales válidas. Estado marcado como Pagado.");
+        }
+      }
+    });
+
+    // Botón "Cerrar Venta"
+    btnCerrarVenta.addEventListener("click", async () => {
+      if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+        alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
+        return;
+      }
+
+      const itemsLi = listaProductosCliente.querySelectorAll("li");
+      if (itemsLi.length === 0) {
+        alert("⚠️ No se puede cerrar la venta sin productos.");
+        return;
+      }
+
+      const items = [];
+      let totalCliente = 0;
+      itemsLi.forEach(liProd => {
+        const [nombreProducto, cantidadTxt] = liProd.textContent.split(" - Cantidad: ");
+        const cantidad = parseInt(cantidadTxt, 10);
+        const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+        items.push({ nombre: nombreProducto, cantidad, precio: producto?.precio ?? 0 });
+        totalCliente += (producto?.precio ?? 0) * cantidad;
+      });
+
+      const ventaData = {
+        cliente: {
+          id: liCliente.getAttribute("data-id"),
+          etiqueta: liCliente.getAttribute("data-etiqueta"),
+          nombre: liCliente.getAttribute("data-nombre"),
+          telefono: liCliente.getAttribute("data-telefono"),
+          fecha: liCliente.getAttribute("data-fecha"),
+          nemonico: liCliente.getAttribute("data-nemonico")
+        },
+        productos: items,
+        total: totalCliente,
+        estadoDespacho: estadoDespacho.value,
+        estadoPago: estadoPago.value,
+        fechaCierre: new Date().toISOString(),
+        cuotas: JSON.parse(liCliente.getAttribute("data-cuotas") || "[]") // 🔹 cuotas desde atributo
+      };
+
+      try {
+        await addDoc(collection(db, "ventasCerradas"), ventaData);
+
+        for (const item of items) {
+          const producto = productos.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
+          if (producto) {
+            if (item.cantidad > (producto.stock ?? 0)) {
+              alert(`Stock insuficiente para ${producto.nombre}. Disponible: ${producto.stock ?? 0}`);
+              return;
+            }
+            const productoRef = doc(db, "productos", producto.id);
+            await updateDoc(productoRef, {
+              stock: (producto.stock ?? 0) - item.cantidad
+            });
+          }
+        }
+
+        await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
+        listaProductosCliente.innerHTML = "";
+        mostrarVentasCerradas();
+        mostrarClientes();
+
+        alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
+      } catch (error) {
+        console.error("Error al cerrar venta:", error);
+        alert("❌ Hubo un problema al cerrar la venta.");
+      }
+    });
+
     // Ocultar menú si se hace click fuera
     document.addEventListener("click", (e) => {
       if (!buscador.contains(e.target) && !menu.contains(e.target)) {
