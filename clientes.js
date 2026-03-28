@@ -105,13 +105,76 @@ async function mostrarClientes() {
       <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
       ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
       <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
+      
+      <!-- Buscador de productos por cliente -->
+      <div class="buscador-productos">
+        <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
+        <div class="menuProductos dropdown-menu"></div>
+      </div>
     `;
     lista.appendChild(li);
     count++;
   });
   contador.textContent = count;
-}
 
+  // Inicializar buscadores de productos en cada cliente
+  inicializarBuscadoresProductos();
+}
+async function inicializarBuscadoresProductos() {
+  const snap = await getDocs(collection(db, "productos"));
+  const productos = [];
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    productos.push({ id: docSnap.id, ...data });
+  });
+
+  const buscadores = document.querySelectorAll(".buscadorProductos");
+  buscadores.forEach(buscador => {
+    const menu = buscador.nextElementSibling;
+
+    // Mostrar todos los productos al hacer click
+    buscador.addEventListener("focus", () => {
+      menu.innerHTML = "";
+      productos.forEach(p => {
+        const item = document.createElement("div");
+        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
+        item.addEventListener("click", () => {
+          buscador.value = p.nombre;
+          menu.style.display = "none";
+        });
+        menu.appendChild(item);
+      });
+      menu.style.display = "block";
+    });
+
+    // Filtrar productos al escribir
+    buscador.addEventListener("input", () => {
+      const termino = buscador.value.toLowerCase();
+      menu.innerHTML = "";
+      const filtrados = productos.filter(p =>
+        p.nombre.toLowerCase().includes(termino) ||
+        (p.codigo?.toLowerCase().includes(termino))
+      );
+      filtrados.forEach(p => {
+        const item = document.createElement("div");
+        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
+        item.addEventListener("click", () => {
+          buscador.value = p.nombre;
+          menu.style.display = "none";
+        });
+        menu.appendChild(item);
+      });
+      menu.style.display = filtrados.length > 0 ? "block" : "none";
+    });
+
+    // Ocultar menú si se hace click fuera
+    document.addEventListener("click", (e) => {
+      if (!buscador.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = "none";
+      }
+    });
+  });
+}
 // 🔹 Editar cliente
 window.editarCliente = function(id, nombre, telefono, nemonico, fecha) {
   const modal = document.getElementById("modalEditarCliente");
