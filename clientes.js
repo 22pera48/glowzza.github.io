@@ -284,33 +284,68 @@ estadoPago.addEventListener("change", async () => {
   }
 });
     // Botón "Cerrar Venta" → recién aquí descuenta stock
-    btnCerrarVenta.addEventListener("click", async () => {
-      if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
-        alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
-        return;
-      }
+btnCerrarVenta.addEventListener("click", async () => {
+  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+    alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
+    return;
+  }
 
-      const items = listaProductosCliente.querySelectorAll("li");
-      for (const li of items) {
-        const [nombreProducto, cantidadTxt] = li.textContent.split(" - Cantidad: ");
-        const cantidad = parseInt(cantidadTxt, 10);
-        const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
-        if (producto) {
-          if (cantidad > (producto.stock ?? 0)) {
-            alert(`Stock insuficiente para ${producto.nombre}. Disponible: ${producto.stock ?? 0}`);
-            return;
-          }
-          const productoRef = doc(db, "productos", producto.id);
-          await updateDoc(productoRef, {
-            stock: (producto.stock ?? 0) - cantidad
-          });
-          producto.stock = (producto.stock ?? 0) - cantidad;
+  // Armar lista de productos seleccionados
+  const items = [];
+  listaProductosCliente.querySelectorAll("li").forEach(li => {
+    const [nombreProducto, cantidadTxt] = li.textContent.split(" - Cantidad: ");
+    items.push({ nombre: nombreProducto, cantidad: parseInt(cantidadTxt, 10) });
+  });
+
+  // Armar datos completos de la venta
+  const ventaData = {
+    cliente: {
+      nombre: data.nombre,
+      telefono: data.telefono,
+      fecha: data.fecha,
+      nemonico: data.nemonico || "",
+      etiqueta: data.etiqueta || ""
+    },
+    productos: items,
+    estadoDespacho: estadoDespacho.value,
+    estadoPago: estadoPago.value,
+    fechaCierre: new Date().toISOString()
+  };
+
+  try {
+    // Guardar en ventasCerradas (si no existe la colección, Firestore la crea sola)
+    await addDoc(collection(db, "ventasCerradas"), ventaData);
+
+    // Descontar stock global recién ahora
+    for (const item of items) {
+      const producto = productos.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
+      if (producto) {
+        if (item.cantidad > (producto.stock ?? 0)) {
+          alert(`Stock insuficiente para ${producto.nombre}. Disponible: ${producto.stock ?? 0}`);
+          return;
         }
+        const productoRef = doc(db, "productos", producto.id);
+        await updateDoc(productoRef, {
+          stock: (producto.stock ?? 0) - item.cantidad
+        });
+        producto.stock = (producto.stock ?? 0) - item.cantidad;
       }
+    }
 
-      alert("Venta cerrada y stock actualizado.");
-    });
+    // Limpiar lista de productos del cliente
+    listaProductosCliente.innerHTML = "";
 
+    // Refrescar vistas
+    mostrarVentasCerradas(); // refrescar tab de ventas cerradas
+    mostrarClientes();       // refrescar lista de clientes
+
+    // Mensaje final
+    alert("✅ Venta cerrada, guardada en ventasCerradas y stock actualizado.");
+  } catch (error) {
+    console.error("Error al cerrar venta:", error);
+    alert("❌ Hubo un problema al cerrar la venta.");
+  }
+});
     // Ocultar menú si se hace click fuera
     document.addEventListener("click", (e) => {
       if (!buscador.contains(e.target) && !menu.contains(e.target)) {
