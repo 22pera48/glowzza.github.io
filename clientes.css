@@ -153,3 +153,29 @@ button:hover {
   opacity: 0;
   animation: fadeIn 0.5s forwards;
 }
+.buscador-productos {
+  position: relative;
+  width: 300px;
+}
+
+#menuProductos {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none; /* oculto por defecto */
+  z-index: 1000;
+}
+
+#menuProductos div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+#menuProductos div:hover {
+  background: #f0f0f0;
+}
