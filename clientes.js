@@ -329,10 +329,15 @@ listaProductosCliente.appendChild(liProd);
   // 🔹 Guardar en Firebase
   const clienteId = liCliente.getAttribute("data-id");
   const clienteRef = doc(db, "clientes", clienteId);
-  await updateDoc(clienteRef, {
-    productos: arrayUnion({ nombre: nombreProducto, cantidad })
-  });
-
+await updateDoc(clienteRef, {
+  productos: arrayUnion({
+    nombre: producto.nombre,
+    cantidad,
+    orden: producto.orden ?? "",
+    etiqueta: producto.codigo || producto.id,
+    color: producto.color ?? ""
+  })
+});
   buscador.value = "";
   cantidadInput.value = 1;
 });
