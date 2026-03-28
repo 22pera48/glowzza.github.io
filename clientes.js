@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 🔹 Mostrar lista de clientes con ID/etiqueta
+// 🔹 Mostrar clientes con buscador de productos, cantidad y botón "+"
 async function mostrarClientes() {
   const lista = document.getElementById("listaClientes");
   const contador = document.getElementById("contadorClientes");
@@ -109,17 +109,23 @@ async function mostrarClientes() {
       <!-- Buscador de productos por cliente -->
       <div class="buscador-productos">
         <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
+        <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
+        <button class="btnAgregarProducto">+</button>
         <div class="menuProductos dropdown-menu"></div>
       </div>
+      
+      <!-- Lista de productos seleccionados -->
+      <ul class="listaProductosCliente"></ul>
     `;
     lista.appendChild(li);
     count++;
   });
   contador.textContent = count;
 
-  // Inicializar buscadores de productos en cada cliente
   inicializarBuscadoresProductos();
 }
+
+// 🔹 Inicializar buscadores de productos con verificación de stock
 async function inicializarBuscadoresProductos() {
   const snap = await getDocs(collection(db, "productos"));
   const productos = [];
@@ -130,14 +136,17 @@ async function inicializarBuscadoresProductos() {
 
   const buscadores = document.querySelectorAll(".buscadorProductos");
   buscadores.forEach(buscador => {
-    const menu = buscador.nextElementSibling;
+    const menu = buscador.parentElement.querySelector(".menuProductos");
+    const cantidadInput = buscador.parentElement.querySelector(".cantidadProducto");
+    const btnAgregar = buscador.parentElement.querySelector(".btnAgregarProducto");
+    const listaProductosCliente = buscador.parentElement.parentElement.querySelector(".listaProductosCliente");
 
     // Mostrar todos los productos al hacer click
     buscador.addEventListener("focus", () => {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
+        item.textContent = `${p.nombre} (${p.codigo || p.id}) - Stock: ${p.stock ?? 0}`;
         item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
@@ -157,7 +166,7 @@ async function inicializarBuscadoresProductos() {
       );
       filtrados.forEach(p => {
         const item = document.createElement("div");
-        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
+        item.textContent = `${p.nombre} (${p.codigo || p.id}) - Stock: ${p.stock ?? 0}`;
         item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
@@ -165,6 +174,45 @@ async function inicializarBuscadoresProductos() {
         menu.appendChild(item);
       });
       menu.style.display = filtrados.length > 0 ? "block" : "none";
+    });
+
+    // Botón "+" para agregar producto con cantidad y verificación de stock
+    btnAgregar.addEventListener("click", async () => {
+      const nombreProducto = buscador.value.trim();
+      const cantidad = parseInt(cantidadInput.value, 10);
+
+      if (!nombreProducto) return;
+
+      // Buscar producto en la lista
+      const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+
+      if (!producto) {
+        alert("Producto no encontrado en stock.");
+        return;
+      }
+
+      if (cantidad > (producto.stock ?? 0)) {
+        alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
+        return;
+      }
+
+      // ✅ Si hay stock suficiente, agregar a la lista del cliente
+      const liProd = document.createElement("li");
+      liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
+      listaProductosCliente.appendChild(liProd);
+
+      // 🔹 Descontar stock global en Firebase
+      const productoRef = doc(db, "productos", producto.id);
+      await updateDoc(productoRef, {
+        stock: (producto.stock ?? 0) - cantidad
+      });
+
+      // Actualizar stock en memoria local también
+      producto.stock = (producto.stock ?? 0) - cantidad;
+
+      // Resetear campos
+      buscador.value = "";
+      cantidadInput.value = 1;
     });
 
     // Ocultar menú si se hace click fuera
