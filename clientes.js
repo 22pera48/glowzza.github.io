@@ -116,6 +116,23 @@ async function mostrarClientes() {
       
       <!-- Lista de productos seleccionados -->
       <ul class="listaProductosCliente"></ul>
+
+      <!-- Botones de estado -->
+      <div class="estadoVenta">
+        <select class="estadoDespacho">
+          <option value="">Estado despacho</option>
+          <option value="despachado">Despachado</option>
+          <option value="deposito">En depósito</option>
+        </select>
+
+        <select class="estadoPago">
+          <option value="">Estado pago</option>
+          <option value="pagado">Pagado</option>
+          <option value="sinpagar">Sin pagar</option>
+        </select>
+
+        <button class="btnCerrarVenta">Cerrar Venta</button>
+      </div>
     `;
     lista.appendChild(li);
     count++;
@@ -125,7 +142,7 @@ async function mostrarClientes() {
   inicializarBuscadoresProductos();
 }
 
-// 🔹 Inicializar buscadores de productos con verificación de stock
+// 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
 async function inicializarBuscadoresProductos() {
   const snap = await getDocs(collection(db, "productos"));
   const productos = [];
@@ -140,8 +157,11 @@ async function inicializarBuscadoresProductos() {
     const cantidadInput = buscador.parentElement.querySelector(".cantidadProducto");
     const btnAgregar = buscador.parentElement.querySelector(".btnAgregarProducto");
     const listaProductosCliente = buscador.parentElement.parentElement.querySelector(".listaProductosCliente");
+    const estadoDespacho = buscador.parentElement.parentElement.querySelector(".estadoDespacho");
+    const estadoPago = buscador.parentElement.parentElement.querySelector(".estadoPago");
+    const btnCerrarVenta = buscador.parentElement.parentElement.querySelector(".btnCerrarVenta");
 
-    // Mostrar todos los productos al hacer click
+    // Mostrar todos los productos
     buscador.addEventListener("focus", () => {
       menu.innerHTML = "";
       productos.forEach(p => {
@@ -156,7 +176,7 @@ async function inicializarBuscadoresProductos() {
       menu.style.display = "block";
     });
 
-    // Filtrar productos al escribir
+    // Filtrar productos
     buscador.addEventListener("input", () => {
       const termino = buscador.value.toLowerCase();
       menu.innerHTML = "";
@@ -176,43 +196,71 @@ async function inicializarBuscadoresProductos() {
       menu.style.display = filtrados.length > 0 ? "block" : "none";
     });
 
-    // Botón "+" para agregar producto con cantidad y verificación de stock
-    btnAgregar.addEventListener("click", async () => {
+    // Botón "+" → solo agrega producto con botón ❌
+    btnAgregar.addEventListener("click", () => {
       const nombreProducto = buscador.value.trim();
       const cantidad = parseInt(cantidadInput.value, 10);
-
       if (!nombreProducto) return;
 
-      // Buscar producto en la lista
       const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
-
       if (!producto) {
-        alert("Producto no encontrado en stock.");
+        alert("Producto no encontrado.");
         return;
       }
 
-      if (cantidad > (producto.stock ?? 0)) {
-        alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
-        return;
-      }
-
-      // ✅ Si hay stock suficiente, agregar a la lista del cliente
       const liProd = document.createElement("li");
       liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "❌";
+      btnEliminar.style.marginLeft = "10px";
+      btnEliminar.addEventListener("click", () => {
+        listaProductosCliente.removeChild(liProd);
+      });
+      liProd.appendChild(btnEliminar);
       listaProductosCliente.appendChild(liProd);
 
-      // 🔹 Descontar stock global en Firebase
-      const productoRef = doc(db, "productos", producto.id);
-      await updateDoc(productoRef, {
-        stock: (producto.stock ?? 0) - cantidad
-      });
-
-      // Actualizar stock en memoria local también
-      producto.stock = (producto.stock ?? 0) - cantidad;
-
-      // Resetear campos
       buscador.value = "";
       cantidadInput.value = 1;
+    });
+
+    // Validar credenciales al seleccionar "Pagado"
+    estadoPago.addEventListener("change", () => {
+      if (estadoPago.value === "pagado") {
+        const usuario = prompt("Ingrese usuario de caja:");
+        const password = prompt("Ingrese contraseña de caja:");
+        if (usuario !== "cajaUser" || password !== "cajaPass") {
+          alert("Credenciales inválidas. No puede marcar como Pagado.");
+          estadoPago.value = "";
+        }
+      }
+    });
+
+    // Botón "Cerrar Venta" → recién aquí descuenta stock
+    btnCerrarVenta.addEventListener("click", async () => {
+      if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+        alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
+        return;
+      }
+
+      const items = listaProductosCliente.querySelectorAll("li");
+      for (const li of items) {
+        const [nombreProducto, cantidadTxt] = li.textContent.split(" - Cantidad: ");
+        const cantidad = parseInt(cantidadTxt, 10);
+        const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+        if (producto) {
+          if (cantidad > (producto.stock ?? 0)) {
+            alert(`Stock insuficiente para ${producto.nombre}. Disponible: ${producto.stock ?? 0}`);
+            return;
+          }
+          const productoRef = doc(db, "productos", producto.id);
+          await updateDoc(productoRef, {
+            stock: (producto.stock ?? 0) - cantidad
+          });
+          producto.stock = (producto.stock ?? 0) - cantidad;
+        }
+      }
+
+      alert("Venta cerrada y stock actualizado.");
     });
 
     // Ocultar menú si se hace click fuera
@@ -320,7 +368,6 @@ async function buscarParaEliminar() {
   });
 }
 
-// 🔹 Variables globales para eliminación
 // 🔹 Variables globales para eliminación
 let itemAEliminar = null;
 let coleccionAEliminar = null;
