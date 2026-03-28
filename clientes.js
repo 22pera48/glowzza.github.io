@@ -324,6 +324,67 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+// 🔹 Cargar productos desde Firebase y armar menú dinámico
+async function cargarProductos() {
+  const snap = await getDocs(collection(db, "productos"));
+  const productos = [];
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    productos.push({ id: docSnap.id, ...data });
+  });
+  return productos;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const buscador = document.getElementById("buscadorProductos");
+  const menu = document.getElementById("menuProductos");
+
+  if (buscador && menu) {
+    const productos = await cargarProductos();
+
+    // Mostrar todos los productos al hacer click
+    buscador.addEventListener("focus", () => {
+      menu.innerHTML = "";
+      productos.forEach(p => {
+        const item = document.createElement("div");
+        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
+        item.addEventListener("click", () => {
+          buscador.value = p.nombre;
+          menu.style.display = "none";
+        });
+        menu.appendChild(item);
+      });
+      menu.style.display = "block";
+    });
+
+    // Filtrar productos al escribir
+    buscador.addEventListener("input", () => {
+      const termino = buscador.value.toLowerCase();
+      menu.innerHTML = "";
+      const filtrados = productos.filter(p => 
+        p.nombre.toLowerCase().includes(termino) || 
+        (p.codigo?.toLowerCase().includes(termino))
+      );
+      filtrados.forEach(p => {
+        const item = document.createElement("div");
+        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
+        item.addEventListener("click", () => {
+          buscador.value = p.nombre;
+          menu.style.display = "none";
+        });
+        menu.appendChild(item);
+      });
+      menu.style.display = filtrados.length > 0 ? "block" : "none";
+    });
+
+    // Ocultar menú si se hace click fuera
+    document.addEventListener("click", (e) => {
+      if (!buscador.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = "none";
+      }
+    });
+  }
+});
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
