@@ -577,8 +577,7 @@ buscador.addEventListener("focus", () => {
       );
       filtrados.forEach(p => {
         const item = document.createElement("div");
-        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
-        item.addEventListener("click", () => {
+        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
