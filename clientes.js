@@ -184,8 +184,7 @@ async function inicializarBuscadoresProductos() {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-        item.textContent = `${p.nombre} (${p.codigo || p.id}) - Stock: ${p.stock ?? 0}`;
-        item.addEventListener("click", () => {
+        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
@@ -224,16 +223,15 @@ buscador.addEventListener("input", () => {
         p.nombre.toLowerCase().includes(termino) ||
         (p.codigo?.toLowerCase().includes(termino))
       );
-      filtrados.forEach(p => {
-        const item = document.createElement("div");
-        item.textContent = `${p.nombre} (${p.codigo || p.id}) - Stock: ${p.stock ?? 0}`;
-        item.addEventListener("click", () => {
-          buscador.value = p.nombre;
-          menu.style.display = "none";
-        });
-        menu.appendChild(item);
-      });
-      menu.style.display = filtrados.length > 0 ? "block" : "none";
+filtrados.forEach(p => {
+  const item = document.createElement("div");
+  item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - ID: ${p.codigo || p.id}`;
+  item.addEventListener("click", () => {
+    buscador.value = p.nombre;
+    menu.style.display = "none";
+  });
+  menu.appendChild(item);
+});      menu.style.display = filtrados.length > 0 ? "block" : "none";
     });
 
 // Botón "+" → valida stock antes de agregar
@@ -575,15 +573,15 @@ buscador.addEventListener("focus", () => {
         p.nombre.toLowerCase().includes(termino) || 
         (p.codigo?.toLowerCase().includes(termino))
       );
-      filtrados.forEach(p => {
-        const item = document.createElement("div");
-        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
-          buscador.value = p.nombre;
-          menu.style.display = "none";
-        });
-        menu.appendChild(item);
-      });
-      menu.style.display = filtrados.length > 0 ? "block" : "none";
+filtrados.forEach(p => {
+  const item = document.createElement("div");
+  item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - ID: ${p.codigo || p.id}`;
+  item.addEventListener("click", () => {
+    buscador.value = p.nombre;
+    menu.style.display = "none";
+  });
+  menu.appendChild(item);
+});      menu.style.display = filtrados.length > 0 ? "block" : "none";
     });
 
     // Ocultar menú si se hace click fuera
