@@ -88,7 +88,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+async function validarCredenciales(usuarioIngresado, passwordIngresado) {
+  const snap = await getDocs(collection(db, "cajaCredenciales"));
+  let valido = false;
 
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    const usuarioDB = (data.usuario || "").trim();
+    const passwordDB = (data.password || "").trim();
+
+    if (
+      usuarioIngresado.trim().toLowerCase() === usuarioDB.toLowerCase() &&
+      passwordIngresado.trim() === passwordDB
+    ) {
+      valido = true;
+    }
+  });
+
+  return valido;
+}
 // 🔹 Mostrar clientes con buscador de productos, cantidad y botón "+"
 async function mostrarClientes() {
   const lista = document.getElementById("listaClientes");
@@ -230,18 +248,21 @@ btnAgregar.addEventListener("click", () => {
   buscador.value = "";
   cantidadInput.value = 1;
 });
-    // Validar credenciales al seleccionar "Pagado"
-    estadoPago.addEventListener("change", () => {
-      if (estadoPago.value === "pagado") {
-        const usuario = prompt("Ingrese usuario de caja:");
-        const password = prompt("Ingrese contraseña de caja:");
-        if (usuario !== "cajaUser" || password !== "cajaPass") {
-          alert("Credenciales inválidas. No puede marcar como Pagado.");
-          estadoPago.value = "";
-        }
-      }
-    });
+estadoPago.addEventListener("change", async () => {
+  if (estadoPago.value === "pagado") {
+    const usuario = prompt("Ingrese usuario de caja:");
+    const password = prompt("Ingrese contraseña de caja:");
 
+    const esValido = await validarCredenciales(usuario, password);
+
+    if (!esValido) {
+      alert("Credenciales inválidas. No puede marcar como Pagado.");
+      estadoPago.value = "";
+    } else {
+      alert("Credenciales válidas. Estado marcado como Pagado.");
+    }
+  }
+});
     // Botón "Cerrar Venta" → recién aquí descuenta stock
     btnCerrarVenta.addEventListener("click", async () => {
       if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
