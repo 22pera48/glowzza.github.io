@@ -280,8 +280,7 @@ async function inicializarBuscadoresProductos() {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
-        item.addEventListener("click", () => {
+item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
@@ -765,8 +764,7 @@ buscador.addEventListener("focus", () => {
       );
 filtrados.forEach(p => {
   const item = document.createElement("div");
-  item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - ID: ${p.codigo || p.id}`;
-  item.addEventListener("click", () => {
+item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;  item.addEventListener("click", () => {
     buscador.value = p.nombre;
     menu.style.display = "none";
   });
