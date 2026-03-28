@@ -508,8 +508,12 @@ document.addEventListener("DOMContentLoaded", () => {
         items[i].style.display = match ? "" : "none";
         if (match) visible++;
       }
-      if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
-    });
+if (visible === 0) {
+  const mensaje = document.createElement("li");
+  mensaje.style.color = "#c0392b";
+  mensaje.textContent = "No hay resultados ❌";
+  lista.appendChild(mensaje);
+}    });
   }
 
   // 🔹 Buscador dinámico de ventas cerradas
@@ -526,8 +530,12 @@ document.addEventListener("DOMContentLoaded", () => {
         items[i].style.display = match ? "" : "none";
         if (match) visible++;
       }
-      if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
-    });
+if (visible === 0) {
+  const mensaje = document.createElement("li");
+  mensaje.style.color = "#c0392b";
+  mensaje.textContent = "No hay resultados ❌";
+  lista.appendChild(mensaje);
+}    });
   }
 });
 // 🔹 Cargar productos desde Firebase y armar menú dinámico
