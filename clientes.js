@@ -186,7 +186,15 @@ async function mostrarClientes() {
       resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
       cuotasContainer.appendChild(resumen);
     }
-
+    // 🔹 Mostrar productos persistentes si existen
+if (data.productos && Array.isArray(data.productos)) {
+  const listaProductosCliente = li.querySelector(".listaProductosCliente");
+  data.productos.forEach(prod => {
+    const liProd = document.createElement("li");
+    liProd.textContent = `${prod.nombre} - Cantidad: ${prod.cantidad}`;
+    listaProductosCliente.appendChild(liProd);
+  });
+}
     lista.appendChild(li);
     count++;
   });
@@ -275,37 +283,51 @@ async function inicializarBuscadoresProductos() {
     });
 
     // Botón "+" → valida stock antes de agregar
-    btnAgregar.addEventListener("click", () => {
-      const nombreProducto = buscador.value.trim();
-      const cantidad = parseInt(cantidadInput.value, 10);
-      if (!nombreProducto) return;
+btnAgregar.addEventListener("click", async () => {
+  const nombreProducto = buscador.value.trim();
+  const cantidad = parseInt(cantidadInput.value, 10);
+  if (!nombreProducto) return;
 
-      const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
-      if (!producto) {
-        alert("Producto no encontrado.");
-        return;
-      }
+  const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+  if (!producto) {
+    alert("Producto no encontrado.");
+    return;
+  }
 
-      if (cantidad > (producto.stock ?? 0)) {
-        alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
-        return;
-      }
+  if (cantidad > (producto.stock ?? 0)) {
+    alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
+    return;
+  }
 
-      const liProd = document.createElement("li");
-      liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
-      const btnEliminar = document.createElement("button");
-      btnEliminar.textContent = "❌";
-      btnEliminar.style.marginLeft = "10px";
-      btnEliminar.addEventListener("click", () => {
-        listaProductosCliente.removeChild(liProd);
-      });
-      liProd.appendChild(btnEliminar);
-      listaProductosCliente.appendChild(liProd);
+  // Agregar al DOM
+  const liProd = document.createElement("li");
+  liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
+  const btnEliminar = document.createElement("button");
+  btnEliminar.textContent = "❌";
+  btnEliminar.style.marginLeft = "10px";
+  btnEliminar.addEventListener("click", async () => {
+    listaProductosCliente.removeChild(liProd);
 
-      buscador.value = "";
-      cantidadInput.value = 1;
+    // 🔹 Eliminar también de Firebase
+    const clienteId = liCliente.getAttribute("data-id");
+    const clienteRef = doc(db, "clientes", clienteId);
+    await updateDoc(clienteRef, {
+      productos: arrayRemove({ nombre: nombreProducto, cantidad })
     });
+  });
+  liProd.appendChild(btnEliminar);
+  listaProductosCliente.appendChild(liProd);
 
+  // 🔹 Guardar en Firebase
+  const clienteId = liCliente.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+  await updateDoc(clienteRef, {
+    productos: arrayUnion({ nombre: nombreProducto, cantidad })
+  });
+
+  buscador.value = "";
+  cantidadInput.value = 1;
+});
     // Validar credenciales al marcar como pagado
     estadoPago.addEventListener("change", async () => {
       if (estadoPago.value === "pagado") {
