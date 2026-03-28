@@ -187,18 +187,47 @@ async function mostrarClientes() {
       resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
       cuotasContainer.appendChild(resumen);
     }
-    // 🔹 Mostrar productos persistentes si existen
+// 🔹 Mostrar productos persistentes si existen
 if (data.productos && Array.isArray(data.productos)) {
   const listaProductosCliente = li.querySelector(".listaProductosCliente");
+  let totalCliente = 0;
+
   data.productos.forEach(prod => {
     const liProd = document.createElement("li");
-    liProd.textContent = `${prod.nombre} - Cantidad: ${prod.cantidad}`;
+    liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta}`;
+
+    // 🔹 Botón eliminar también al recargar
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "❌";
+    btnEliminar.style.marginLeft = "10px";
+    btnEliminar.addEventListener("click", async () => {
+      listaProductosCliente.removeChild(liProd);
+      const clienteId = li.getAttribute("data-id");
+      const clienteRef = doc(db, "clientes", clienteId);
+      await updateDoc(clienteRef, {
+        productos: arrayRemove(prod) // usa el mismo objeto que guardaste
+      });
+    });
+
+    liProd.appendChild(btnEliminar);
     listaProductosCliente.appendChild(liProd);
+
+    // 🔹 calcular total
+    const producto = window.productosGlobal?.find(
+      p => p.nombre.toLowerCase() === prod.nombre.toLowerCase()
+    );
+    if (producto) {
+      totalCliente += (producto.precio ?? 0) * prod.cantidad;
+    }
   });
+
+  const resumenTotal = document.createElement("div");
+  resumenTotal.innerHTML = `<strong>Total productos:</strong> $${totalCliente}`;
+  listaProductosCliente.appendChild(resumenTotal);
 }
-    lista.appendChild(li);
-    count++;
-  });
+
+lista.appendChild(li);
+count++;  });
 
   contador.textContent = count;
 
