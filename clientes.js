@@ -300,25 +300,32 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
-  // Agregar al DOM
-  const liProd = document.createElement("li");
-  liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
-  const btnEliminar = document.createElement("button");
-  btnEliminar.textContent = "❌";
-  btnEliminar.style.marginLeft = "10px";
-  btnEliminar.addEventListener("click", async () => {
-    listaProductosCliente.removeChild(liProd);
+// Agregar al DOM
+const liProd = document.createElement("li");
+liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
 
-    // 🔹 Eliminar también de Firebase
-    const clienteId = liCliente.getAttribute("data-id");
-    const clienteRef = doc(db, "clientes", clienteId);
-    await updateDoc(clienteRef, {
-      productos: arrayRemove({ nombre: nombreProducto, cantidad })
-    });
+// 🔹 Botón eliminar
+const btnEliminar = document.createElement("button");
+btnEliminar.textContent = "❌";
+btnEliminar.style.marginLeft = "10px";
+
+// Acción al eliminar
+btnEliminar.addEventListener("click", async () => {
+  listaProductosCliente.removeChild(liProd);
+
+  // Eliminar también de Firebase
+  const clienteId = liCliente.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+  await updateDoc(clienteRef, {
+    productos: arrayRemove({ nombre: nombreProducto, cantidad })
   });
-  liProd.appendChild(btnEliminar);
-  listaProductosCliente.appendChild(liProd);
+});
 
+// Adjuntar el botón al <li>
+liProd.appendChild(btnEliminar);
+
+// Finalmente, agregar el <li> completo a la lista
+listaProductosCliente.appendChild(liProd);
   // 🔹 Guardar en Firebase
   const clienteId = liCliente.getAttribute("data-id");
   const clienteRef = doc(db, "clientes", clienteId);
