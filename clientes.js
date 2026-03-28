@@ -1,8 +1,9 @@
 // clientes.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
-  getFirestore, getDocs, collection, deleteDoc, doc, addDoc, updateDoc 
+  getFirestore, getDocs, collection, deleteDoc, doc, addDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // 🔹 Configuración de Firebase
 const firebaseConfig = {
