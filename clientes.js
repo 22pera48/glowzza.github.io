@@ -116,9 +116,12 @@ async function mostrarClientes() {
   lista.innerHTML = "";
   const snap = await getDocs(collection(db, "clientes"));
   let count = 0;
+
   snap.forEach(docSnap => {
     const data = docSnap.data();
     const li = document.createElement("li");
+
+    // Renderizado visual del cliente
     li.innerHTML = `
       <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
       ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
@@ -149,17 +152,49 @@ async function mostrarClientes() {
           <option value="sinpagar">Sin pagar</option>
         </select>
 
+        <!-- Botón de cierre de venta -->
         <button class="btnCerrarVenta">Cerrar Venta</button>
+
+        <!-- Botón de cuotas -->
+        <button class="btnCuotas">Cuotas</button>
       </div>
+
+      <!-- Contenedor donde se mostrarán las cuotas -->
+      <div class="cuotasContainer"></div>
     `;
+
+    // 🔹 Guardar datos como atributos en el <li>
+    li.setAttribute("data-id", docSnap.id);
+    li.setAttribute("data-etiqueta", data.etiqueta || docSnap.id);
+    li.setAttribute("data-nombre", data.nombre);
+    li.setAttribute("data-telefono", data.telefono);
+    li.setAttribute("data-fecha", data.fecha);
+    li.setAttribute("data-nemonico", data.nemonico || "");
+
+    // 🔹 Paso 2: Mostrar cuotas si existen
+    if (data.cuotas && Array.isArray(data.cuotas)) {
+      const cuotasContainer = li.querySelector(".cuotasContainer");
+      let pagado = 0;
+      data.cuotas.forEach(cuota => {
+        const cuotaItem = document.createElement("div");
+        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+        cuotasContainer.appendChild(cuotaItem);
+        pagado += cuota.monto;
+      });
+      const saldo = (data.total || 0) - pagado;
+      const resumen = document.createElement("div");
+      resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
+      cuotasContainer.appendChild(resumen);
+    }
+
     lista.appendChild(li);
     count++;
   });
+
   contador.textContent = count;
 
   inicializarBuscadoresProductos();
 }
-
 // 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
 async function inicializarBuscadoresProductos() {
   const snap = await getDocs(collection(db, "productos"));
@@ -214,6 +249,24 @@ buscador.addEventListener("input", () => {
     });
 
   menu.style.display = "block";
+});
+li.querySelector(".btnCuotas").addEventListener("click", async () => {
+  const monto = prompt("Ingrese monto de la cuota:");
+  if (!monto) return;
+
+  const clienteId = li.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+
+  // Guardar cuota en Firebase dentro del cliente
+  await updateDoc(clienteRef, {
+    cuotas: arrayUnion({
+      monto: parseFloat(monto),
+      fecha: new Date().toISOString()
+    })
+  });
+
+  alert("✅ Cuota registrada correctamente.");
+  mostrarClientes(); // refrescar vista para que aparezca la cuota
 });
     // Filtrar productos
     buscador.addEventListener("input", () => {
@@ -290,39 +343,45 @@ btnCerrarVenta.addEventListener("click", async () => {
     return;
   }
 
-  // Verificar que haya al menos un producto
   const itemsLi = listaProductosCliente.querySelectorAll("li");
   if (itemsLi.length === 0) {
     alert("⚠️ No se puede cerrar la venta sin productos.");
     return;
   }
 
-  // Armar lista de productos seleccionados
   const items = [];
+  let totalCliente = 0;
   itemsLi.forEach(li => {
     const [nombreProducto, cantidadTxt] = li.textContent.split(" - Cantidad: ");
-    items.push({ nombre: nombreProducto, cantidad: parseInt(cantidadTxt, 10) });
+    const cantidad = parseInt(cantidadTxt, 10);
+    const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+    items.push({ nombre: nombreProducto, cantidad, precio: producto?.precio ?? 0 });
+    totalCliente += (producto?.precio ?? 0) * cantidad;
   });
 
-  // Armar datos completos de la venta (cliente + productos)
+  const liCliente = btnCerrarVenta.closest("li");
+
   const ventaData = {
     cliente: {
-      // ⚠️ Usamos lo que tenemos en la interfaz, no la variable 'data'
-      etiqueta: buscador.closest("li").querySelector("strong").textContent.replace("ID:", "").trim(),
-      nombre: buscador.closest("li").textContent.split(" - Tel:")[0].trim(),
-      telefono: "", // si querés, podés parsear el teléfono desde el texto del cliente
+      id: liCliente.getAttribute("data-id"),
+      etiqueta: liCliente.getAttribute("data-etiqueta"),
+      nombre: liCliente.getAttribute("data-nombre"),
+      telefono: liCliente.getAttribute("data-telefono"),
+      fecha: liCliente.getAttribute("data-fecha"),
+      nemonico: liCliente.getAttribute("data-nemonico")
     },
     productos: items,
+    total: totalCliente,
     estadoDespacho: estadoDespacho.value,
     estadoPago: estadoPago.value,
-    fechaCierre: new Date().toISOString()
+    fechaCierre: new Date().toISOString(),
+    // 🔹 Copiar cuotas si existen en el cliente
+    cuotas: data.cuotas || []
   };
 
   try {
-    // Guardar en ventasCerradas (Firestore crea la colección si no existe)
     await addDoc(collection(db, "ventasCerradas"), ventaData);
 
-    // Descontar stock global recién ahora
     for (const item of items) {
       const producto = productos.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
       if (producto) {
@@ -334,19 +393,16 @@ btnCerrarVenta.addEventListener("click", async () => {
         await updateDoc(productoRef, {
           stock: (producto.stock ?? 0) - item.cantidad
         });
-        producto.stock = (producto.stock ?? 0) - item.cantidad;
       }
     }
 
-    // Limpiar lista de productos del cliente
-    listaProductosCliente.innerHTML = "";
+    await deleteDoc(doc(db, "clientes", ventaData.cliente.id)); // eliminar cliente
 
-    // Refrescar vistas
+    listaProductosCliente.innerHTML = "";
     mostrarVentasCerradas();
     mostrarClientes();
 
-    // Mensaje final
-    alert("✅ Venta cerrada, guardada en ventasCerradas y stock actualizado.");
+    alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
   } catch (error) {
     console.error("Error al cerrar venta:", error);
     alert("❌ Hubo un problema al cerrar la venta.");
@@ -409,22 +465,60 @@ document.addEventListener("DOMContentLoaded", () => {
 // 🔹 Mostrar lista de ventas cerradas
 async function mostrarVentasCerradas() {
   const lista = document.getElementById("listaVentasCerradas");
-  const contador = document.getElementById("contadorVentas");
+  const contador = document.getElementById("contadorVentasCerradas");
   if (!lista || !contador) return;
 
   lista.innerHTML = "";
   const snap = await getDocs(collection(db, "ventasCerradas"));
   let count = 0;
+
   snap.forEach(docSnap => {
     const data = docSnap.data();
     const li = document.createElement("li");
-    li.textContent = `Venta ${data.codigo} - Total: $${data.total}`;
+
+    // Mostrar datos del cliente
+    li.innerHTML = `
+      <strong>ID:</strong> ${data.cliente.etiqueta || data.cliente.id} <br>
+      Cliente: ${data.cliente.nombre} - Tel: ${data.cliente.telefono} - Fecha: ${data.cliente.fecha} <br>
+      Estado: Pago ${data.estadoPago}, Despacho ${data.estadoDespacho} <br>
+      <strong>Total:</strong> $${data.total || 0}
+    `;
+
+    // Mostrar lista de productos
+    const ulProductos = document.createElement("ul");
+    if (data.productos && Array.isArray(data.productos)) {
+      data.productos.forEach(prod => {
+        const liProd = document.createElement("li");
+        liProd.textContent = `${prod.nombre} - Cantidad: ${prod.cantidad} - Precio: $${prod.precio ?? 0}`;
+        ulProductos.appendChild(liProd);
+      });
+    }
+    li.appendChild(ulProductos);
+
+    // Mostrar cuotas si existen
+    if (data.cuotas && Array.isArray(data.cuotas)) {
+      const divCuotas = document.createElement("div");
+      divCuotas.innerHTML = "<strong>Cuotas:</strong>";
+      let pagado = 0;
+      data.cuotas.forEach(cuota => {
+        const cuotaItem = document.createElement("div");
+        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${cuota.fecha}`;
+        divCuotas.appendChild(cuotaItem);
+        pagado += cuota.monto;
+      });
+      const saldo = (data.total || 0) - pagado;
+      const resumen = document.createElement("div");
+      resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
+      divCuotas.appendChild(resumen);
+      li.appendChild(divCuotas);
+    }
+
     lista.appendChild(li);
     count++;
   });
+
   contador.textContent = count;
 }
-
 // 🔹 Buscar para eliminar
 async function buscarParaEliminar() {
   const termino = document.getElementById("buscadorEliminar").value.toLowerCase();
