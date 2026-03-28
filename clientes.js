@@ -4,12 +4,12 @@ import {
   getFirestore, getDocs, collection, deleteDoc, doc, addDoc, updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 🔹 Configuración de Firebase (tus datos)
+// 🔹 Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
   authDomain: "glowzzainventario.firebaseapp.com",
   projectId: "glowzzainventario",
-  storageBucket: "glowzzainventario.appspot.com",   // corregido
+  storageBucket: "glowzzainventario.appspot.com",
   messagingSenderId: "159721581844",
   appId: "1:159721581844:web:f62cdb303258dc847b6601",
   measurementId: "G-0FR3Q6P3L2"
@@ -18,7 +18,6 @@ const firebaseConfig = {
 // 🔹 Inicializar Firebase y Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 
 // 🔹 Manejo de pestañas
 function mostrarTab(tab) {
@@ -43,9 +42,9 @@ function mostrarToast(mensaje, tipo = "info") {
   toast.className = "toast";
   toast.textContent = mensaje;
 
-  if (tipo === "success") toast.style.background = "#2ecc71"; // verde
-  else if (tipo === "error") toast.style.background = "#e74c3c"; // rojo
-  else toast.style.background = "#c62828"; // rojo oscuro
+  if (tipo === "success") toast.style.background = "#2ecc71";
+  else if (tipo === "error") toast.style.background = "#e74c3c";
+  else toast.style.background = "#c62828";
 
   document.body.appendChild(toast);
 
@@ -57,7 +56,7 @@ function mostrarToast(mensaje, tipo = "info") {
   }, 3000);
 }
 
-// 🔹 Registrar cliente
+// 🔹 Registrar cliente con etiqueta
 document.addEventListener("DOMContentLoaded", () => {
   const clienteForm = document.getElementById("clienteForm");
   if (clienteForm) {
@@ -74,8 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // 🔹 Generar etiqueta única
+      const etiqueta = "CL-" + Date.now();
+
       try {
-        await addDoc(collection(db, "clientes"), { nombre, telefono, nemonico, fecha });
+        await addDoc(collection(db, "clientes"), { nombre, telefono, nemonico, fecha, etiqueta });
         mostrarToast("✅ Cliente registrado correctamente", "success");
         clienteForm.reset();
         mostrarClientes();
@@ -87,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 🔹 Mostrar lista de clientes con botón de edición
+// 🔹 Mostrar lista de clientes con ID/etiqueta
 async function mostrarClientes() {
   const lista = document.getElementById("listaClientes");
   const contador = document.getElementById("contadorClientes");
@@ -100,6 +102,7 @@ async function mostrarClientes() {
     const data = docSnap.data();
     const li = document.createElement("li");
     li.innerHTML = `
+      <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
       ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
       <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
     `;
@@ -109,7 +112,7 @@ async function mostrarClientes() {
   contador.textContent = count;
 }
 
-// 🔹 Editar cliente (abre modal con datos)
+// 🔹 Editar cliente
 window.editarCliente = function(id, nombre, telefono, nemonico, fecha) {
   const modal = document.getElementById("modalEditarCliente");
   if (!modal) return;
@@ -184,10 +187,10 @@ async function buscarParaEliminar() {
   const clientesSnap = await getDocs(collection(db, "clientes"));
   clientesSnap.forEach(docSnap => {
     const data = docSnap.data();
-    if (data.nombre.toLowerCase().includes(termino) || (data.codigo?.toLowerCase().includes(termino))) {
+    if (data.nombre.toLowerCase().includes(termino) || (data.etiqueta?.toLowerCase().includes(termino))) {
       resultadoDiv.innerHTML += `
         <div>
-          Cliente: ${data.nombre} - Tel: ${data.telefono}
+          <strong>ID:</strong> ${data.etiqueta} - Cliente: ${data.nombre} - Tel: ${data.telefono}
           <button onclick="pedirCredenciales('${docSnap.id}', 'clientes')">🗑️ Eliminar</button>
         </div>`;
     }
@@ -207,6 +210,7 @@ async function buscarParaEliminar() {
 }
 
 // 🔹 Variables globales para eliminación
+// 🔹 Variables globales para eliminación
 let itemAEliminar = null;
 let coleccionAEliminar = null;
 
@@ -217,13 +221,109 @@ window.pedirCredenciales = function(id, coleccion) {
   if (modal) modal.style.display = "block";
 };
 
+// 🔹 Confirmar eliminación
+document.addEventListener("DOMContentLoaded", () => {
+  const btnConfirmar = document.getElementById("btnConfirmarEliminar");
+  if (btnConfirmar) {
+    btnConfirmar.addEventListener("click", async () => {
+      const usuario = document.getElementById("usuarioCheck").value.trim();
+      const password = document.getElementById("passwordCheck").value.trim();
+
+      // 🔹 Validación simple de credenciales
+      if (usuario === "admin" && password === "1234") {
+        try {
+          await deleteDoc(doc(db, coleccionAEliminar, itemAEliminar));
+          mostrarToast("✅ Eliminado correctamente", "success");
+          document.getElementById("modalCredenciales").style.display = "none";
+          mostrarClientes();
+          mostrarVentasCerradas();
+        } catch (error) {
+          console.error("Error al eliminar:", error);
+          mostrarToast("❌ No se pudo eliminar", "error");
+        }
+      } else {
+        mostrarToast("⚠️ Credenciales incorrectas", "error");
+      }
+    });
+  }
+
+  // 🔹 Eliminar por ID directo
+  const btnEliminarCliente = document.getElementById("btnEliminarCliente");
+  if (btnEliminarCliente) {
+    btnEliminarCliente.addEventListener("click", async () => {
+      const id = document.getElementById("clienteIdEliminar").value.trim();
+      if (!id) return;
+      try {
+        await deleteDoc(doc(db, "clientes", id));
+        mostrarToast("✅ Cliente eliminado por ID", "success");
+        mostrarClientes();
+      } catch (error) {
+        console.error("Error al eliminar cliente:", error);
+        mostrarToast("❌ No se pudo eliminar el cliente", "error");
+      }
+    });
+  }
+
+  const btnEliminarVenta = document.getElementById("btnEliminarVenta");
+  if (btnEliminarVenta) {
+    btnEliminarVenta.addEventListener("click", async () => {
+      const id = document.getElementById("ventaIdEliminar").value.trim();
+      if (!id) return;
+      try {
+        await deleteDoc(doc(db, "ventasCerradas", id));
+        mostrarToast("✅ Venta eliminada por ID", "success");
+        mostrarVentasCerradas();
+      } catch (error) {
+        console.error("Error al eliminar venta:", error);
+        mostrarToast("❌ No se pudo eliminar la venta", "error");
+      }
+    });
+  }
+});
+
 // 🔹 Inicialización
 document.addEventListener("DOMContentLoaded", async () => {
   await mostrarClientes();
   await mostrarVentasCerradas();
   mostrarTab("clientes");
 });
+// 🔹 Buscador dinámico de clientes
+document.addEventListener("DOMContentLoaded", () => {
+  const buscadorClientes = document.getElementById("buscadorClientes");
+  if (buscadorClientes) {
+    buscadorClientes.addEventListener("input", () => {
+      const termino = buscadorClientes.value.toLowerCase();
+      const lista = document.getElementById("listaClientes");
+      const items = lista.getElementsByTagName("li");
+      let visible = 0;
+      for (let i = 0; i < items.length; i++) {
+        const texto = items[i].textContent.toLowerCase();
+        const match = texto.includes(termino);
+        items[i].style.display = match ? "" : "none";
+        if (match) visible++;
+      }
+      if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
+    });
+  }
 
+  // 🔹 Buscador dinámico de ventas cerradas
+  const buscadorVentas = document.getElementById("buscadorVentas");
+  if (buscadorVentas) {
+    buscadorVentas.addEventListener("input", () => {
+      const termino = buscadorVentas.value.toLowerCase();
+      const lista = document.getElementById("listaVentasCerradas");
+      const items = lista.getElementsByTagName("li");
+      let visible = 0;
+      for (let i = 0; i < items.length; i++) {
+        const texto = items[i].textContent.toLowerCase();
+        const match = texto.includes(termino);
+        items[i].style.display = match ? "" : "none";
+        if (match) visible++;
+      }
+      if (visible === 0) lista.innerHTML = "<li style='color:#c0392b'>No hay resultados ❌</li>";
+    });
+  }
+});
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
