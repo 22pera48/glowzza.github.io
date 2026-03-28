@@ -193,7 +193,29 @@ async function inicializarBuscadoresProductos() {
       });
       menu.style.display = "block";
     });
+    // Filtrar productos mientras se escribe
+buscador.addEventListener("input", () => {
+  const texto = buscador.value.toLowerCase();
+  menu.innerHTML = "";
 
+  productos
+    .filter(p =>
+      p.nombre.toLowerCase().includes(texto) ||
+      (p.color && p.color.toLowerCase().includes(texto)) ||
+      (p.orden && p.orden.toLowerCase().includes(texto))
+    )
+    .forEach(p => {
+      const item = document.createElement("div");
+      item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
+      item.addEventListener("click", () => {
+        buscador.value = p.nombre;
+        menu.style.display = "none";
+      });
+      menu.appendChild(item);
+    });
+
+  menu.style.display = "block";
+});
     // Filtrar productos
     buscador.addEventListener("input", () => {
       const termino = buscador.value.toLowerCase();
@@ -526,23 +548,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   const menu = document.getElementById("menuProductos");
 
   if (buscador && menu) {
-    const productos = await cargarProductos();
+const productos = await cargarProductos();
 
-    // Mostrar todos los productos al hacer click
-    buscador.addEventListener("focus", () => {
-      menu.innerHTML = "";
-      productos.forEach(p => {
-        const item = document.createElement("div");
-        item.textContent = `${p.nombre} (${p.codigo || p.id})`;
-        item.addEventListener("click", () => {
-          buscador.value = p.nombre;
-          menu.style.display = "none";
-        });
-        menu.appendChild(item);
-      });
-      menu.style.display = "block";
+// Mostrar todos los productos al hacer click
+buscador.addEventListener("focus", () => {
+  menu.innerHTML = "";
+  productos.forEach(p => {
+    const item = document.createElement("div");
+    // 🔹 Ahora mostramos orden, nombre, color, stock e ID/código
+    item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
+    
+    item.addEventListener("click", () => {
+      buscador.value = p.nombre;
+      menu.style.display = "none";
     });
-
+    
+    menu.appendChild(item);
+  });
+  menu.style.display = "block";
+});
     // Filtrar productos al escribir
     buscador.addEventListener("input", () => {
       const termino = buscador.value.toLowerCase();
