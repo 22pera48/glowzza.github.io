@@ -290,21 +290,27 @@ btnCerrarVenta.addEventListener("click", async () => {
     return;
   }
 
+  // Verificar que haya al menos un producto
+  const itemsLi = listaProductosCliente.querySelectorAll("li");
+  if (itemsLi.length === 0) {
+    alert("⚠️ No se puede cerrar la venta sin productos.");
+    return;
+  }
+
   // Armar lista de productos seleccionados
   const items = [];
-  listaProductosCliente.querySelectorAll("li").forEach(li => {
+  itemsLi.forEach(li => {
     const [nombreProducto, cantidadTxt] = li.textContent.split(" - Cantidad: ");
     items.push({ nombre: nombreProducto, cantidad: parseInt(cantidadTxt, 10) });
   });
 
-  // Armar datos completos de la venta
+  // Armar datos completos de la venta (cliente + productos)
   const ventaData = {
     cliente: {
-      nombre: data.nombre,
-      telefono: data.telefono,
-      fecha: data.fecha,
-      nemonico: data.nemonico || "",
-      etiqueta: data.etiqueta || ""
+      // ⚠️ Usamos lo que tenemos en la interfaz, no la variable 'data'
+      etiqueta: buscador.closest("li").querySelector("strong").textContent.replace("ID:", "").trim(),
+      nombre: buscador.closest("li").textContent.split(" - Tel:")[0].trim(),
+      telefono: "", // si querés, podés parsear el teléfono desde el texto del cliente
     },
     productos: items,
     estadoDespacho: estadoDespacho.value,
@@ -313,7 +319,7 @@ btnCerrarVenta.addEventListener("click", async () => {
   };
 
   try {
-    // Guardar en ventasCerradas (si no existe la colección, Firestore la crea sola)
+    // Guardar en ventasCerradas (Firestore crea la colección si no existe)
     await addDoc(collection(db, "ventasCerradas"), ventaData);
 
     // Descontar stock global recién ahora
@@ -336,8 +342,8 @@ btnCerrarVenta.addEventListener("click", async () => {
     listaProductosCliente.innerHTML = "";
 
     // Refrescar vistas
-    mostrarVentasCerradas(); // refrescar tab de ventas cerradas
-    mostrarClientes();       // refrescar lista de clientes
+    mostrarVentasCerradas();
+    mostrarClientes();
 
     // Mensaje final
     alert("✅ Venta cerrada, guardada en ventasCerradas y stock actualizado.");
