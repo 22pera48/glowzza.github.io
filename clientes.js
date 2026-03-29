@@ -128,7 +128,6 @@ async function mostrarClientes() {
       ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
       <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
       
-      <!-- Buscador de productos por cliente -->
       <div class="buscador-productos">
         <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
         <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
@@ -136,10 +135,8 @@ async function mostrarClientes() {
         <div class="menuProductos dropdown-menu"></div>
       </div>
       
-      <!-- Lista de productos seleccionados -->
       <ul class="listaProductosCliente"></ul>
 
-      <!-- Botones de estado -->
       <div class="estadoVenta">
         <select class="estadoDespacho">
           <option value="">Estado</option>
@@ -153,18 +150,14 @@ async function mostrarClientes() {
           <option value="sinpagar">Sin pagar</option>
         </select>
 
-        <!-- Botón de cierre de venta -->
         <button class="btnCerrarVenta">Cerrar Venta</button>
-
-        <!-- Botón de cuotas -->
         <button class="btnCuotas">Cuotas</button>
       </div>
 
-      <!-- Contenedor donde se mostrarán las cuotas -->
       <div class="cuotasContainer"></div>
     `;
 
-    // 🔹 Guardar datos como atributos en el <li>
+    // Atributos
     li.setAttribute("data-id", docSnap.id);
     li.setAttribute("data-etiqueta", data.etiqueta || docSnap.id);
     li.setAttribute("data-nombre", data.nombre);
@@ -172,90 +165,79 @@ async function mostrarClientes() {
     li.setAttribute("data-fecha", data.fecha);
     li.setAttribute("data-nemonico", data.nemonico || "");
 
-    // 🔹 Mostrar cuotas si existen
+    // Productos persistentes
+    if (data.productos && Array.isArray(data.productos)) {
+      const listaProductosCliente = li.querySelector(".listaProductosCliente");
+
+      data.productos.forEach(prod => {
+        const liProd = document.createElement("li");
+        liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
+
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "❌";
+        btnEliminar.style.marginLeft = "10px";
+        btnEliminar.addEventListener("click", async () => {
+          listaProductosCliente.removeChild(liProd);
+          const clienteId = li.getAttribute("data-id");
+          const clienteRef = doc(db, "clientes", clienteId);
+          await updateDoc(clienteRef, { productos: arrayRemove(prod) });
+          actualizarTotal(listaProductosCliente, data);
+        });
+
+        liProd.appendChild(btnEliminar);
+        listaProductosCliente.appendChild(liProd);
+      });
+
+      actualizarTotal(listaProductosCliente, data);
+    }
+
+    // Cuotas
     if (data.cuotas && Array.isArray(data.cuotas)) {
       const cuotasContainer = li.querySelector(".cuotasContainer");
       let pagado = 0;
 
-data.cuotas.forEach(cuota => {
-  const cuotaItem = document.createElement("div");
-  cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+      data.cuotas.forEach(cuota => {
+        const cuotaItem = document.createElement("div");
+        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
 
-  // Botón eliminar cuota con credenciales
-  const btnEliminarCuota = document.createElement("button");
-  btnEliminarCuota.textContent = "❌";
-  btnEliminarCuota.style.marginLeft = "10px";
+        const btnEliminarCuota = document.createElement("button");
+        btnEliminarCuota.textContent = "❌";
+        btnEliminarCuota.style.marginLeft = "10px";
 
-  btnEliminarCuota.addEventListener("click", async () => {
-    const usuario = prompt("Ingrese usuario cajero:");
-    const clave = prompt("Ingrese clave cajero:");
+        btnEliminarCuota.addEventListener("click", async () => {
+          const usuario = prompt("Ingrese usuario cajero:");
+          const clave = prompt("Ingrese clave cajero:");
+          const valido = await validarCredenciales(usuario, clave);
 
-    const valido = await validarCredenciales(usuario, clave);
+          if (valido) {
+            const clienteId = li.getAttribute("data-id");
+            const clienteRef = doc(db, "clientes", clienteId);
+            await updateDoc(clienteRef, { cuotas: arrayRemove(cuota) });
+            cuotaItem.remove();
+            alert("Cuota eliminada correctamente.");
+          } else {
+            alert("Credenciales inválidas. No se eliminó la cuota.");
+          }
+        });
 
-    if (valido) {
-      const clienteId = li.getAttribute("data-id");
-      const clienteRef = doc(db, "clientes", clienteId);
-
-      await updateDoc(clienteRef, {
-        cuotas: arrayRemove(cuota)
+        cuotaItem.appendChild(btnEliminarCuota);
+        cuotasContainer.appendChild(cuotaItem);
+        pagado += cuota.monto;
       });
 
-      cuotaItem.remove();
-      alert("Cuota eliminada correctamente.");
-    } else {
-      alert("Credenciales inválidas. No se eliminó la cuota.");
-    }
-  });
-
-  cuotaItem.appendChild(btnEliminarCuota);
-  cuotasContainer.appendChild(cuotaItem);
-  pagado += cuota.monto;
-});
-// tomar el total real de productos desde el resumen
-const totalCliente = parseFloat(
-  li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-) || 0;
-
-const saldo = Math.max(totalCliente - pagado, 0);      const resumen = document.createElement("div");
+      const saldo = Math.max((data.totalCliente || 0) - pagado, 0);
+      const resumen = document.createElement("div");
       resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
       cuotasContainer.appendChild(resumen);
     }
 
-    // 🔹 Mostrar productos persistentes si existen
-if (data.productos && Array.isArray(data.productos)) {
-  const listaProductosCliente = li.querySelector(".listaProductosCliente");
-
-  data.productos.forEach(prod => {
-    const liProd = document.createElement("li");
-    liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
-
-    // Botón eliminar producto
-    const btnEliminar = document.createElement("button");
-    btnEliminar.textContent = "❌";
-    btnEliminar.style.marginLeft = "10px";
-    btnEliminar.addEventListener("click", async () => {
-      listaProductosCliente.removeChild(liProd);
-      const clienteId = li.getAttribute("data-id");
-      const clienteRef = doc(db, "clientes", clienteId);
-      await updateDoc(clienteRef, {
-        productos: arrayRemove(prod)
-      });
-      // 🔹 Recalcular total al eliminar
-      actualizarTotal(listaProductosCliente);
-    });
-
-    liProd.appendChild(btnEliminar);
-    listaProductosCliente.appendChild(liProd);
-  });
-
-  // 🔹 Recalcular total al cargar productos (con estilos inline)
-  actualizarTotal(listaProductosCliente);
-}
     lista.appendChild(li);
     count++;
   });
 
-  contador.textContent = count;
+  contador.textContent = `Clientes: ${count}`;
+
+  // 🔹 Inicializar buscadores de productos
   inicializarBuscadoresProductos();
 }
 // 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
@@ -822,7 +804,7 @@ item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.st
     });
   }
 });
-function actualizarTotal(listaProductosCliente) {
+function actualizarTotal(listaProductosCliente, data) {
   let totalCliente = 0;
 
   // Recorremos todos los <li> actuales
@@ -837,6 +819,9 @@ function actualizarTotal(listaProductosCliente) {
     totalCliente += precio * cantidad;
   });
 
+  // 🔹 Guardar el total en el objeto del cliente
+  data.totalCliente = totalCliente;
+
   // Actualizar o crear el resumen
   let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
   if (!resumenTotal) {
@@ -845,7 +830,16 @@ function actualizarTotal(listaProductosCliente) {
     listaProductosCliente.appendChild(resumenTotal);
   }
 
-  resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display:inline-block;">Total productos: $${totalCliente}</strong>`;
+  resumenTotal.innerHTML = `
+    <strong style="
+      font-size: 1.5em;
+      color: #2c3e50;
+      background: #f1c40f;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display:inline-block;">
+      Total productos: $${totalCliente}
+    </strong>`;
 }
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
