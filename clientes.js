@@ -567,24 +567,44 @@ liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Ca
     }
     li.appendChild(ulProductos);
 
-    // Mostrar cuotas si existen
-    if (data.cuotas && Array.isArray(data.cuotas)) {
-      const divCuotas = document.createElement("div");
-      divCuotas.innerHTML = "<strong>Cuotas:</strong>";
-      let pagado = 0;
-      data.cuotas.forEach(cuota => {
-        const cuotaItem = document.createElement("div");
-        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${cuota.fecha}`;
-        divCuotas.appendChild(cuotaItem);
-        pagado += cuota.monto;
-      });
-      const saldo = (data.total || 0) - pagado;
-      const resumen = document.createElement("div");
-      resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
-      divCuotas.appendChild(resumen);
-      li.appendChild(divCuotas);
-    }
+// Mostrar cuotas si existen
+if (data.cuotas && Array.isArray(data.cuotas)) {
+  const divCuotas = document.createElement("div");
+  divCuotas.innerHTML = "<strong>Cuotas:</strong>";
 
+  // Mostrar cada cuota
+  data.cuotas.forEach(cuota => {
+    const cuotaItem = document.createElement("div");
+    cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+    divCuotas.appendChild(cuotaItem);
+  });
+
+  // 🔹 Calcular pagado y falta correctamente
+  const pagado = data.cuotas.reduce((acc, cuota) => acc + cuota.monto, 0);
+
+  // Usar el total real de productos (calculado con actualizarTotal)
+  const totalCliente = parseFloat(
+    li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+  ) || 0;
+
+  const falta = Math.max(totalCliente - pagado, 0);
+
+  // Mostrar resumen con estilos inline
+  const resumen = document.createElement("div");
+  resumen.innerHTML = `
+    <strong style="
+      font-size: 1.2em;
+      color: #2c3e50;
+      background: #f1c40f;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display:inline-block;">
+      Pagado: $${pagado} - Falta: $${falta}
+    </strong>`;
+
+  divCuotas.appendChild(resumen);
+  li.appendChild(divCuotas);
+}
     lista.appendChild(li);
     count++;
   });
