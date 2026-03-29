@@ -822,7 +822,7 @@ item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.st
     });
   }
 });
-function actualizarTotal(listaProductosCliente, data) {
+function actualizarTotal(listaProductosCliente) {
   let totalCliente = 0;
 
   // Recorremos todos los <li> actuales
@@ -837,9 +837,6 @@ function actualizarTotal(listaProductosCliente, data) {
     totalCliente += precio * cantidad;
   });
 
-  // 🔹 Guardar el total en el objeto del cliente
-  data.totalCliente = totalCliente;
-
   // Actualizar o crear el resumen
   let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
   if (!resumenTotal) {
@@ -848,16 +845,7 @@ function actualizarTotal(listaProductosCliente, data) {
     listaProductosCliente.appendChild(resumenTotal);
   }
 
-  resumenTotal.innerHTML = `
-    <strong style="
-      font-size: 1.5em;
-      color: #2c3e50;
-      background: #f1c40f;
-      padding: 5px 10px;
-      border-radius: 5px;
-      display:inline-block;">
-      Total productos: $${totalCliente}
-    </strong>`;
+  resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display:inline-block;">Total productos: $${totalCliente}</strong>`;
 }
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
