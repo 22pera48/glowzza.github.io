@@ -418,79 +418,74 @@ btnAgregar.addEventListener("click", async () => {
     });
 
     // Botón "Cerrar Venta"
-btnCerrarVenta.addEventListener("click", async () => {
-  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
-    alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
-    return;
-  }
+    btnCerrarVenta.addEventListener("click", async () => {
+      if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+        alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
+        return;
+      }
 
-  const itemsLi = listaProductosCliente.querySelectorAll("li");
-  if (itemsLi.length === 0) {
-    alert("⚠️ No se puede cerrar la venta sin productos.");
-    return;
-  }
+      const itemsLi = listaProductosCliente.querySelectorAll("li");
+      if (itemsLi.length === 0) {
+        alert("⚠️ No se puede cerrar la venta sin productos.");
+        return;
+      }
 
-  const items = [];
-  let totalCliente = 0;
-
-itemsLi.forEach(liProd => {
-  const texto = liProd.textContent;
-
-  const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
-  const matchCantidad = texto.match(/Cantidad: (\d+)/);
-  const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
-
-  const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
-  const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
-  const productoId = matchId ? matchId[1] : null;
-
-  totalCliente += precio * cantidad;
-
-  items.push({
-    id: productoId,   // ✅ ID real del producto
-    nombre: texto,
-    cantidad,
-    precio
-  });
-});
-const ventaData = {
-  cliente: {
-    id: liCliente.getAttribute("data-id"),
-    etiqueta: liCliente.getAttribute("data-etiqueta"),
-    nombre: liCliente.getAttribute("data-nombre"),
-    telefono: liCliente.getAttribute("data-telefono"),
-    fecha: liCliente.getAttribute("data-fecha"),
-    nemonico: liCliente.getAttribute("data-nemonico")
-  },
-  productos: items,
-  total: totalCliente, // ✅ ahora guarda el total real
-  estadoDespacho: estadoDespacho.value,
-  estadoPago: estadoPago.value,
-  fechaCierre: new Date().toISOString(),
-  cuotas: JSON.parse(liCliente.getAttribute("data-cuotas") || "[]")
-};
-  try {
-    await addDoc(collection(db, "ventasCerradas"), ventaData);
-
-    // actualizar stock
-    for (const item of items) {
-      const productoRef = doc(db, "productos", item.nombre); // ajustá si tu ID es distinto
-      await updateDoc(productoRef, {
-        stock: (item.stock ?? 0) - item.cantidad
+      const items = [];
+      let totalCliente = 0;
+      itemsLi.forEach(liProd => {
+        const [nombreProducto, cantidadTxt] = liProd.textContent.split(" - Cantidad: ");
+        const cantidad = parseInt(cantidadTxt, 10);
+        const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+        items.push({ nombre: nombreProducto, cantidad, precio: producto?.precio ?? 0 });
+        totalCliente += (producto?.precio ?? 0) * cantidad;
       });
-    }
 
-    await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
-    listaProductosCliente.innerHTML = "";
-    mostrarVentasCerradas();
-    mostrarClientes();
+      const ventaData = {
+        cliente: {
+          id: liCliente.getAttribute("data-id"),
+          etiqueta: liCliente.getAttribute("data-etiqueta"),
+          nombre: liCliente.getAttribute("data-nombre"),
+          telefono: liCliente.getAttribute("data-telefono"),
+          fecha: liCliente.getAttribute("data-fecha"),
+          nemonico: liCliente.getAttribute("data-nemonico")
+        },
+        productos: items,
+        total: totalCliente,
+        estadoDespacho: estadoDespacho.value,
+        estadoPago: estadoPago.value,
+        fechaCierre: new Date().toISOString(),
+        cuotas: JSON.parse(liCliente.getAttribute("data-cuotas") || "[]") // 🔹 cuotas desde atributo
+      };
 
-    alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
-  } catch (error) {
-    console.error("Error al cerrar venta:", error);
-    alert("❌ Hubo un problema al cerrar la venta.");
-  }
-});
+      try {
+        await addDoc(collection(db, "ventasCerradas"), ventaData);
+
+        for (const item of items) {
+          const producto = productos.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
+          if (producto) {
+            if (item.cantidad > (producto.stock ?? 0)) {
+              alert(`Stock insuficiente para ${producto.nombre}. Disponible: ${producto.stock ?? 0}`);
+              return;
+            }
+            const productoRef = doc(db, "productos", producto.id);
+            await updateDoc(productoRef, {
+              stock: (producto.stock ?? 0) - item.cantidad
+            });
+          }
+        }
+
+        await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
+        listaProductosCliente.innerHTML = "";
+        mostrarVentasCerradas();
+        mostrarClientes();
+
+        alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
+      } catch (error) {
+        console.error("Error al cerrar venta:", error);
+        alert("❌ Hubo un problema al cerrar la venta.");
+      }
+    });
+
     // Ocultar menú si se hace click fuera
     document.addEventListener("click", (e) => {
       if (!buscador.contains(e.target) && !menu.contains(e.target)) {
