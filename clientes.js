@@ -363,69 +363,39 @@ btnAgregar.addEventListener("click", async () => {
   const liProd = document.createElement("li");
   liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
 
+  // Botón eliminar
   const btnEliminar = document.createElement("button");
   btnEliminar.textContent = "❌";
   btnEliminar.style.marginLeft = "10px";
 
-btnEliminar.addEventListener("click", async () => {
-  listaProductosCliente.removeChild(liProd);
+  btnEliminar.addEventListener("click", async () => {
+    listaProductosCliente.removeChild(liProd);
 
-  const subtotal = prodCliente.precio * prodCliente.cantidad;
-  let resumenTotal = document.querySelector(".resumenTotal");
+    const clienteId = liCliente.getAttribute("data-id");
+    const clienteRef = doc(db, "clientes", clienteId);
+    await updateDoc(clienteRef, {
+      productos: arrayRemove(prodCliente)
+    });
 
-  if (resumenTotal) {
-    const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
-    const nuevoTotal = valorActual - subtotal;
-    resumenTotal.setAttribute("data-total", nuevoTotal);
-    resumenTotal.innerHTML = `
-      <strong style="
-        font-size: 1.5em;
-        color: #2c3e50;
-        background: #f1c40f;
-        padding: 5px 10px;
-        border-radius: 5px;
-        display:inline-block;">
-        Total productos: $${nuevoTotal}
-      </strong>`;
-  }
-
-  const clienteId = liCliente.getAttribute("data-id");
-  const clienteRef = doc(db, "clientes", clienteId);
-  await updateDoc(clienteRef, {
-    productos: arrayRemove(prodCliente)
+    // 🔹 Recalcular total al eliminar
+    actualizarTotal(listaProductosCliente);
   });
-});
+
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
 
-  // 🔹 Actualizar total dinámicamente (solo actualizar, no crear otro div)
-// Al agregar producto
-const subtotal = prodCliente.precio * prodCliente.cantidad;
-let resumenTotal = document.querySelector(".resumenTotal");
+  // 🔹 Guardar en Firebase
+  const clienteId = liCliente.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+  await updateDoc(clienteRef, {
+    productos: arrayUnion(prodCliente)
+  });
 
-if (resumenTotal) {
-  const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
-  const nuevoTotal = valorActual + subtotal;
-  resumenTotal.setAttribute("data-total", nuevoTotal);
-  resumenTotal.innerHTML = `
-    <strong style="
-      font-size: 1.5em;
-      color: #2c3e50;
-      background: #f1c40f;
-      padding: 5px 10px;
-      border-radius: 5px;
-      display:inline-block;">
-      Total productos: $${nuevoTotal}
-    </strong>`;
-}
-const clienteId = liCliente.getAttribute("data-id");
-const clienteRef = doc(db, "clientes", clienteId);
-await updateDoc(clienteRef, {
-  productos: arrayUnion(prodCliente)
-});
+  // 🔹 Recalcular total al agregar
+  actualizarTotal(listaProductosCliente);
 
-buscador.value = "";
-cantidadInput.value = 1;
+  buscador.value = "";
+  cantidadInput.value = 1;
 });
     // Validar credenciales al marcar como pagado
     estadoPago.addEventListener("change", async () => {
@@ -838,6 +808,31 @@ item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.st
     });
   }
 });
+function actualizarTotal(listaProductosCliente) {
+  let totalCliente = 0;
+
+  // Recorremos todos los <li> actuales
+  listaProductosCliente.querySelectorAll("li").forEach(liProd => {
+    const texto = liProd.textContent;
+    const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
+    const matchCantidad = texto.match(/Cantidad: (\d+)/);
+
+    const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
+    const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+
+    totalCliente += precio * cantidad;
+  });
+
+  // Actualizar o crear el resumen
+  let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
+  if (!resumenTotal) {
+    resumenTotal = document.createElement("div");
+    resumenTotal.classList.add("resumenTotal");
+    listaProductosCliente.appendChild(resumenTotal);
+  }
+
+  resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display:inline-block;">Total productos: $${totalCliente}</strong>`;
+}
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
