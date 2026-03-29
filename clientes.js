@@ -218,38 +218,35 @@ data.cuotas.forEach(cuota => {
     }
 
     // 🔹 Mostrar productos persistentes si existen
-    if (data.productos && Array.isArray(data.productos)) {
-      const listaProductosCliente = li.querySelector(".listaProductosCliente");
-      let totalCliente = 0;
+if (data.productos && Array.isArray(data.productos)) {
+  const listaProductosCliente = li.querySelector(".listaProductosCliente");
 
-      data.productos.forEach(prod => {
-        const liProd = document.createElement("li");
-        liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
+  data.productos.forEach(prod => {
+    const liProd = document.createElement("li");
+    liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
 
-        // Botón eliminar producto
-        const btnEliminar = document.createElement("button");
-        btnEliminar.textContent = "❌";
-        btnEliminar.style.marginLeft = "10px";
-        btnEliminar.addEventListener("click", async () => {
-          listaProductosCliente.removeChild(liProd);
-          const clienteId = li.getAttribute("data-id");
-          const clienteRef = doc(db, "clientes", clienteId);
-          await updateDoc(clienteRef, {
-            productos: arrayRemove(prod)
-          });
-        });
-
-        liProd.appendChild(btnEliminar);
-        listaProductosCliente.appendChild(liProd);
-
-        totalCliente += (prod.precio ?? 0) * prod.cantidad;
+    // Botón eliminar producto
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "❌";
+    btnEliminar.style.marginLeft = "10px";
+    btnEliminar.addEventListener("click", async () => {
+      listaProductosCliente.removeChild(liProd);
+      const clienteId = li.getAttribute("data-id");
+      const clienteRef = doc(db, "clientes", clienteId);
+      await updateDoc(clienteRef, {
+        productos: arrayRemove(prod)
       });
+      // 🔹 Recalcular total al eliminar
+      actualizarTotal(listaProductosCliente);
+    });
 
-      const resumenTotal = document.createElement("div");
-      resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display: inline-block;">Total productos: $${totalCliente}</strong>`;
-      listaProductosCliente.appendChild(resumenTotal);
-    }
+    liProd.appendChild(btnEliminar);
+    listaProductosCliente.appendChild(liProd);
+  });
 
+  // 🔹 Recalcular total al cargar productos (con estilos inline)
+  actualizarTotal(listaProductosCliente);
+}
     lista.appendChild(li);
     count++;
   });
