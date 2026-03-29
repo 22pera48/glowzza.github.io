@@ -212,13 +212,9 @@ if (data.productos && Array.isArray(data.productos)) {
     liProd.appendChild(btnEliminar);
     listaProductosCliente.appendChild(liProd);
 
-    // 🔹 calcular total
-    const producto = window.productosGlobal?.find(
-      p => p.nombre.toLowerCase() === prod.nombre.toLowerCase()
-    );
-    if (producto) {
-      totalCliente += (producto.precio ?? 0) * prod.cantidad;
-    }
+  // 🔹 Calcular total directamente desde Firebase
+  totalCliente += (prod.precio ?? 0) * prod.cantidad;
+
   });
 
   const resumenTotal = document.createElement("div");
@@ -355,7 +351,25 @@ btnAgregar.addEventListener("click", async () => {
 
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
+  // 🔹 Actualizar total dinámicamente
+let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
+const subtotal = prodCliente.precio * prodCliente.cantidad;
 
+if (resumenTotal) {
+  // Ya existe el div de total → sumamos
+  const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
+  const nuevoTotal = valorActual + subtotal;
+  resumenTotal.setAttribute("data-total", nuevoTotal);
+  resumenTotal.innerHTML = `<strong>Total productos:</strong> $${nuevoTotal}`;
+} else {
+  // No existe → lo creamos
+  const nuevoTotal = subtotal;
+  resumenTotal = document.createElement("div");
+  resumenTotal.classList.add("resumenTotal");
+  resumenTotal.setAttribute("data-total", nuevoTotal);
+  resumenTotal.innerHTML = `<strong>Total productos:</strong> $${nuevoTotal}`;
+  listaProductosCliente.appendChild(resumenTotal);
+}
   const clienteId = liCliente.getAttribute("data-id");
   const clienteRef = doc(db, "clientes", clienteId);
   await updateDoc(clienteRef, {
