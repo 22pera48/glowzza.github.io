@@ -345,35 +345,28 @@ btnAgregar.addEventListener("click", async () => {
     const clienteId = liCliente.getAttribute("data-id");
     const clienteRef = doc(db, "clientes", clienteId);
     await updateDoc(clienteRef, {
-      productos: arrayRemove(prodCliente) // mismo objeto que guardaste
+      productos: arrayRemove(prodCliente)
     });
   });
 
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
-  // 🔹 Actualizar total dinámicamente
-let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
-const subtotal = prodCliente.precio * prodCliente.cantidad;
 
-if (resumenTotal) {
-  // Ya existe el div de total → sumamos
-  const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
-  const nuevoTotal = valorActual + subtotal;
-  resumenTotal.setAttribute("data-total", nuevoTotal);
-  resumenTotal.innerHTML = `<strong>Total productos:</strong> $${nuevoTotal}`;
-} else {
-  // No existe → lo creamos
-  const nuevoTotal = subtotal;
-  resumenTotal = document.createElement("div");
-  resumenTotal.classList.add("resumenTotal");
-  resumenTotal.setAttribute("data-total", nuevoTotal);
-  resumenTotal.innerHTML = `<strong>Total productos:</strong> $${nuevoTotal}`;
-  listaProductosCliente.appendChild(resumenTotal);
-}
+  // 🔹 Actualizar total dinámicamente (solo actualizar, no crear otro div)
+  let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
+  const subtotal = prodCliente.precio * prodCliente.cantidad;
+
+  if (resumenTotal) {
+    const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
+    const nuevoTotal = valorActual + subtotal;
+    resumenTotal.setAttribute("data-total", nuevoTotal);
+    resumenTotal.innerHTML = `<strong>Total productos:</strong> $${nuevoTotal}`;
+  }
+
   const clienteId = liCliente.getAttribute("data-id");
   const clienteRef = doc(db, "clientes", clienteId);
   await updateDoc(clienteRef, {
-    productos: arrayUnion(prodCliente) // mismo objeto que se muestra
+    productos: arrayUnion(prodCliente)
   });
 
   buscador.value = "";
