@@ -815,7 +815,6 @@ item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.st
 function actualizarTotal(listaProductosCliente) {
   let totalCliente = 0;
 
-  // Recorremos todos los <li> actuales
   listaProductosCliente.querySelectorAll("li").forEach(liProd => {
     const texto = liProd.textContent;
     const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
@@ -827,15 +826,25 @@ function actualizarTotal(listaProductosCliente) {
     totalCliente += precio * cantidad;
   });
 
-  // Actualizar o crear el resumen
   let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
   if (!resumenTotal) {
     resumenTotal = document.createElement("div");
     resumenTotal.classList.add("resumenTotal");
-    listaProductosCliente.appendChild(resumenTotal);
   }
 
-  resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display:inline-block;">Total productos: $${totalCliente}</strong>`;
+  resumenTotal.innerHTML = `
+    <strong style="
+      font-size: 1.5em;
+      color: #2c3e50;
+      background: #f1c40f;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display:inline-block;">
+      Total productos: $${totalCliente}
+    </strong>`;
+
+  // 🔹 Insertar siempre al inicio
+  listaProductosCliente.insertBefore(resumenTotal, listaProductosCliente.firstChild);
 }
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
