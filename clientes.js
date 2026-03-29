@@ -352,23 +352,34 @@ btnAgregar.addEventListener("click", async () => {
   listaProductosCliente.appendChild(liProd);
 
   // 🔹 Actualizar total dinámicamente (solo actualizar, no crear otro div)
-  let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
-  const subtotal = prodCliente.precio * prodCliente.cantidad;
+let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
+const subtotal = prodCliente.precio * prodCliente.cantidad;
 
-  if (resumenTotal) {
-    const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
-    const nuevoTotal = valorActual + subtotal;
-    resumenTotal.setAttribute("data-total", nuevoTotal);
-resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display: inline-block;">Total productos: $${nuevoTotal}</strong>`;  }
+if (resumenTotal) {
+  const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
+  const nuevoTotal = valorActual + subtotal;
+  resumenTotal.setAttribute("data-total", nuevoTotal);
+  resumenTotal.innerHTML = `
+    <strong style="
+      font-size: 1.5em;
+      color: #2c3e50;
+      background: #f1c40f;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: inline-block;
+    ">
+      Total productos: $${nuevoTotal}
+    </strong>`;
+}
 
-  const clienteId = liCliente.getAttribute("data-id");
-  const clienteRef = doc(db, "clientes", clienteId);
-  await updateDoc(clienteRef, {
-    productos: arrayUnion(prodCliente)
-  });
+const clienteId = liCliente.getAttribute("data-id");
+const clienteRef = doc(db, "clientes", clienteId);
+await updateDoc(clienteRef, {
+  productos: arrayUnion(prodCliente)
+});
 
-  buscador.value = "";
-  cantidadInput.value = 1;
+buscador.value = "";
+cantidadInput.value = 1;
 });
     // Validar credenciales al marcar como pagado
     estadoPago.addEventListener("change", async () => {
