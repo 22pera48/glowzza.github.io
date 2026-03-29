@@ -576,24 +576,16 @@ if (data.cuotas && Array.isArray(data.cuotas)) {
   const divCuotas = document.createElement("div");
   divCuotas.innerHTML = "<strong>Cuotas:</strong>";
 
-  // Mostrar cada cuota
   data.cuotas.forEach(cuota => {
     const cuotaItem = document.createElement("div");
     cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
     divCuotas.appendChild(cuotaItem);
   });
 
-  // 🔹 Calcular pagado y falta correctamente
+  // 🔹 Calcular pagado y falta usando el total guardado
   const pagado = data.cuotas.reduce((acc, cuota) => acc + cuota.monto, 0);
+  const falta = Math.max((data.totalCliente || 0) - pagado, 0);
 
-  // Usar el total real de productos (calculado con actualizarTotal)
-  const totalCliente = parseFloat(
-    li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-  ) || 0;
-
-  const falta = Math.max(totalCliente - pagado, 0);
-
-  // Mostrar resumen con estilos inline
   const resumen = document.createElement("div");
   resumen.innerHTML = `
     <strong style="
