@@ -338,21 +338,41 @@ btnAgregar.addEventListener("click", async () => {
   btnEliminar.textContent = "❌";
   btnEliminar.style.marginLeft = "10px";
 
-  btnEliminar.addEventListener("click", async () => {
-    listaProductosCliente.removeChild(liProd);
-    const clienteId = liCliente.getAttribute("data-id");
-    const clienteRef = doc(db, "clientes", clienteId);
-    await updateDoc(clienteRef, {
-      productos: arrayRemove(prodCliente)
-    });
-  });
+btnEliminar.addEventListener("click", async () => {
+  listaProductosCliente.removeChild(liProd);
 
+  const subtotal = prodCliente.precio * prodCliente.cantidad;
+  let resumenTotal = document.querySelector(".resumenTotal");
+
+  if (resumenTotal) {
+    const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
+    const nuevoTotal = valorActual - subtotal;
+    resumenTotal.setAttribute("data-total", nuevoTotal);
+    resumenTotal.innerHTML = `
+      <strong style="
+        font-size: 1.5em;
+        color: #2c3e50;
+        background: #f1c40f;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display:inline-block;">
+        Total productos: $${nuevoTotal}
+      </strong>`;
+  }
+
+  const clienteId = liCliente.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+  await updateDoc(clienteRef, {
+    productos: arrayRemove(prodCliente)
+  });
+});
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
 
   // 🔹 Actualizar total dinámicamente (solo actualizar, no crear otro div)
-let resumenTotal = listaProductosCliente.querySelector(".resumenTotal");
+// Al agregar producto
 const subtotal = prodCliente.precio * prodCliente.cantidad;
+let resumenTotal = document.querySelector(".resumenTotal");
 
 if (resumenTotal) {
   const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
@@ -365,12 +385,10 @@ if (resumenTotal) {
       background: #f1c40f;
       padding: 5px 10px;
       border-radius: 5px;
-      display: inline-block;
-    ">
+      display:inline-block;">
       Total productos: $${nuevoTotal}
     </strong>`;
 }
-
 const clienteId = liCliente.getAttribute("data-id");
 const clienteRef = doc(db, "clientes", clienteId);
 await updateDoc(clienteRef, {
