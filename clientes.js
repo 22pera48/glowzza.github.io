@@ -194,53 +194,65 @@ async function mostrarClientes() {
       actualizarTotal(listaProductosCliente);
     }
 
-    // 🔹 Mostrar cuotas si existen
-    if (data.cuotas && Array.isArray(data.cuotas)) {
-      const cuotasContainer = li.querySelector(".cuotasContainer");
-      let pagado = 0;
+// 🔹 Mostrar cuotas si existen
+if (data.cuotas && Array.isArray(data.cuotas)) {
+  const cuotasContainer = li.querySelector(".cuotasContainer");
+  let pagado = 0;
 
-      data.cuotas.forEach(cuota => {
-        const cuotaItem = document.createElement("div");
-        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+  data.cuotas.forEach(cuota => {
+    const cuotaItem = document.createElement("div");
+    cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
 
-        // Botón eliminar cuota con credenciales
-        const btnEliminarCuota = document.createElement("button");
-        btnEliminarCuota.textContent = "❌";
-        btnEliminarCuota.style.marginLeft = "10px";
+    // Botón eliminar cuota con credenciales
+    const btnEliminarCuota = document.createElement("button");
+    btnEliminarCuota.textContent = "❌";
+    btnEliminarCuota.style.marginLeft = "10px";
 
-        btnEliminarCuota.addEventListener("click", async () => {
-          const usuario = prompt("Ingrese usuario cajero:");
-          const clave = prompt("Ingrese clave cajero:");
-          const valido = await validarCredenciales(usuario, clave);
+    btnEliminarCuota.addEventListener("click", async () => {
+      const usuario = prompt("Ingrese usuario cajero:");
+      const clave = prompt("Ingrese clave cajero:");
+      const valido = await validarCredenciales(usuario, clave);
 
-          if (valido) {
-            const clienteId = li.getAttribute("data-id");
-            const clienteRef = doc(db, "clientes", clienteId);
-            await updateDoc(clienteRef, { cuotas: arrayRemove(cuota) });
-            cuotaItem.remove();
-            alert("Cuota eliminada correctamente.");
-          } else {
-            alert("Credenciales inválidas. No se eliminó la cuota.");
-          }
-        });
+      if (valido) {
+        const clienteId = li.getAttribute("data-id");
+        const clienteRef = doc(db, "clientes", clienteId);
+        await updateDoc(clienteRef, { cuotas: arrayRemove(cuota) });
 
-        cuotaItem.appendChild(btnEliminarCuota);
-        cuotasContainer.appendChild(cuotaItem);
-        pagado += cuota.monto;
-      });
+        cuotaItem.remove();
+        alert("Cuota eliminada correctamente.");
 
-      // 🔹 Leer el total dinámico desde el DOM y restar
-      const totalCliente = parseFloat(
-        li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-      ) || 0;
+        // 🔹 Recalcular resumen después de eliminar
+        const totalCliente = parseFloat(
+          li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+        ) || 0;
+        pagado -= cuota.monto;
+        const falta = Math.max(totalCliente - pagado, 0);
 
-      const saldo = Math.max(totalCliente - pagado, 0);
+        const resumen = cuotasContainer.querySelector(".resumenCuotas");
+        if (resumen) {
+          resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
+        }
+      } else {
+        alert("Credenciales inválidas. No se eliminó la cuota.");
+      }
+    });
 
-      const resumen = document.createElement("div");
-      resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
-      cuotasContainer.appendChild(resumen);
-    }
+    cuotaItem.appendChild(btnEliminarCuota);
+    cuotasContainer.appendChild(cuotaItem);
+    pagado += cuota.monto;
+  });
 
+  // 🔹 Cálculo inicial de Pagado y Falta
+  const totalCliente = parseFloat(
+    li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+  ) || 0;
+  const falta = Math.max(totalCliente - pagado, 0);
+
+  const resumen = document.createElement("div");
+  resumen.classList.add("resumenCuotas");
+  resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
+  cuotasContainer.appendChild(resumen);
+}
     lista.appendChild(li);
     count++;
   });
