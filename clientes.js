@@ -433,41 +433,42 @@ btnCerrarVenta.addEventListener("click", async () => {
   const items = [];
   let totalCliente = 0;
 
-  itemsLi.forEach(liProd => {
-    const texto = liProd.textContent;
+itemsLi.forEach(liProd => {
+  const texto = liProd.textContent;
 
-    const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
-    const matchCantidad = texto.match(/Cantidad: (\d+)/);
+  const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
+  const matchCantidad = texto.match(/Cantidad: (\d+)/);
+  const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
 
-    const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
-    const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+  const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
+  const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+  const productoId = matchId ? matchId[1] : null;
 
-    totalCliente += precio * cantidad;
+  totalCliente += precio * cantidad;
 
-    items.push({
-      nombre: texto,   // o podés parsear solo el nombre si querés
-      cantidad,
-      precio
-    });
+  items.push({
+    id: productoId,   // ✅ ID real del producto
+    nombre: texto,
+    cantidad,
+    precio
   });
-
-  const ventaData = {
-    cliente: {
-      id: liCliente.getAttribute("data-id"),
-      etiqueta: liCliente.getAttribute("data-etiqueta"),
-      nombre: liCliente.getAttribute("data-nombre"),
-      telefono: liCliente.getAttribute("data-telefono"),
-      fecha: liCliente.getAttribute("data-fecha"),
-      nemonico: liCliente.getAttribute("data-nemonico")
-    },
-    productos: items,
-    total: totalCliente, // ✅ ahora guarda el total real
-    estadoDespacho: estadoDespacho.value,
-    estadoPago: estadoPago.value,
-    fechaCierre: new Date().toISOString(),
-    cuotas: JSON.parse(liCliente.getAttribute("data-cuotas") || "[]")
-  };
-
+});
+const ventaData = {
+  cliente: {
+    id: liCliente.getAttribute("data-id"),
+    etiqueta: liCliente.getAttribute("data-etiqueta"),
+    nombre: liCliente.getAttribute("data-nombre"),
+    telefono: liCliente.getAttribute("data-telefono"),
+    fecha: liCliente.getAttribute("data-fecha"),
+    nemonico: liCliente.getAttribute("data-nemonico")
+  },
+  productos: items,
+  total: totalCliente, // ✅ ahora guarda el total real
+  estadoDespacho: estadoDespacho.value,
+  estadoPago: estadoPago.value,
+  fechaCierre: new Date().toISOString(),
+  cuotas: JSON.parse(liCliente.getAttribute("data-cuotas") || "[]")
+};
   try {
     await addDoc(collection(db, "ventasCerradas"), ventaData);
 
