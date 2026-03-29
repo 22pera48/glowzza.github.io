@@ -211,8 +211,12 @@ data.cuotas.forEach(cuota => {
   cuotasContainer.appendChild(cuotaItem);
   pagado += cuota.monto;
 });
-      const saldo = (data.total || 0) - pagado;
-      const resumen = document.createElement("div");
+// tomar el total real de productos desde el resumen
+const totalCliente = parseFloat(
+  li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+) || 0;
+
+const saldo = Math.max(totalCliente - pagado, 0);      const resumen = document.createElement("div");
       resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
       cuotasContainer.appendChild(resumen);
     }
