@@ -328,44 +328,40 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
-// Agregar al DOM
-const liProd = document.createElement("li");
-liProd.textContent = `${nombreProducto} - Cantidad: ${cantidad}`;
-
-// 🔹 Botón eliminar
-const btnEliminar = document.createElement("button");
-btnEliminar.textContent = "❌";
-btnEliminar.style.marginLeft = "10px";
-
-// Acción al eliminar
-btnEliminar.addEventListener("click", async () => {
-  listaProductosCliente.removeChild(liProd);
-
-  // Eliminar también de Firebase
-  const clienteId = liCliente.getAttribute("data-id");
-  const clienteRef = doc(db, "clientes", clienteId);
-  await updateDoc(clienteRef, {
-    productos: arrayRemove({ nombre: nombreProducto, cantidad })
-  });
-});
-
-// Adjuntar el botón al <li>
-liProd.appendChild(btnEliminar);
-
-// Finalmente, agregar el <li> completo a la lista
-listaProductosCliente.appendChild(liProd);
-  // 🔹 Guardar en Firebase
-  const clienteId = liCliente.getAttribute("data-id");
-  const clienteRef = doc(db, "clientes", clienteId);
-await updateDoc(clienteRef, {
-  productos: arrayUnion({
+  const prodCliente = {
     nombre: producto.nombre,
     cantidad,
     orden: producto.orden ?? "",
     etiqueta: producto.codigo || producto.id,
-    color: producto.color ?? ""
-  })
-});
+    color: producto.color ?? "",
+    precio: producto.precio ?? 0
+  };
+
+  const liProd = document.createElement("li");
+  liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
+
+  const btnEliminar = document.createElement("button");
+  btnEliminar.textContent = "❌";
+  btnEliminar.style.marginLeft = "10px";
+
+  btnEliminar.addEventListener("click", async () => {
+    listaProductosCliente.removeChild(liProd);
+    const clienteId = liCliente.getAttribute("data-id");
+    const clienteRef = doc(db, "clientes", clienteId);
+    await updateDoc(clienteRef, {
+      productos: arrayRemove(prodCliente) // mismo objeto que guardaste
+    });
+  });
+
+  liProd.appendChild(btnEliminar);
+  listaProductosCliente.appendChild(liProd);
+
+  const clienteId = liCliente.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+  await updateDoc(clienteRef, {
+    productos: arrayUnion(prodCliente) // mismo objeto que se muestra
+  });
+
   buscador.value = "";
   cantidadInput.value = 1;
 });
