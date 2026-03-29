@@ -218,8 +218,7 @@ if (data.productos && Array.isArray(data.productos)) {
   });
 
   const resumenTotal = document.createElement("div");
-  resumenTotal.innerHTML = `<strong>Total productos:</strong> $${totalCliente}`;
-  listaProductosCliente.appendChild(resumenTotal);
+resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display: inline-block;">Total productos: $${totalCliente}</strong>`;  listaProductosCliente.appendChild(resumenTotal);
 }
 
 lista.appendChild(li);
@@ -360,8 +359,7 @@ btnAgregar.addEventListener("click", async () => {
     const valorActual = parseFloat(resumenTotal.getAttribute("data-total")) || 0;
     const nuevoTotal = valorActual + subtotal;
     resumenTotal.setAttribute("data-total", nuevoTotal);
-    resumenTotal.innerHTML = `<strong>Total productos:</strong> $${nuevoTotal}`;
-  }
+resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display: inline-block;">Total productos: $${nuevoTotal}</strong>`;  }
 
   const clienteId = liCliente.getAttribute("data-id");
   const clienteRef = doc(db, "clientes", clienteId);
