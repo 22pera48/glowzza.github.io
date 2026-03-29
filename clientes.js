@@ -194,8 +194,7 @@ if (data.productos && Array.isArray(data.productos)) {
 
   data.productos.forEach(prod => {
     const liProd = document.createElement("li");
-    liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta}`;
-
+liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
     // 🔹 Botón eliminar también al recargar
     const btnEliminar = document.createElement("button");
     btnEliminar.textContent = "❌";
@@ -547,7 +546,8 @@ async function mostrarVentasCerradas() {
     if (data.productos && Array.isArray(data.productos)) {
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
-liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;        ulProductos.appendChild(liProd);
+liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;      
+  ulProductos.appendChild(liProd);
       });
     }
     li.appendChild(ulProductos);
