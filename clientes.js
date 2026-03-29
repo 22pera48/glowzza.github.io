@@ -172,59 +172,88 @@ async function mostrarClientes() {
     li.setAttribute("data-fecha", data.fecha);
     li.setAttribute("data-nemonico", data.nemonico || "");
 
-    // 🔹 Paso 2: Mostrar cuotas si existen
+    // 🔹 Mostrar cuotas si existen
     if (data.cuotas && Array.isArray(data.cuotas)) {
       const cuotasContainer = li.querySelector(".cuotasContainer");
       let pagado = 0;
+
       data.cuotas.forEach(cuota => {
         const cuotaItem = document.createElement("div");
         cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+
+        // Botón eliminar cuota con credenciales
+        const btnEliminarCuota = document.createElement("button");
+        btnEliminarCuota.textContent = "❌";
+        btnEliminarCuota.style.marginLeft = "10px";
+
+        btnEliminarCuota.addEventListener("click", async () => {
+          const usuario = prompt("Ingrese usuario cajero:");
+          const clave = prompt("Ingrese clave cajero:");
+
+          if (usuario === "cajero" && clave === "1234") {
+            const clienteId = li.getAttribute("data-id");
+            const clienteRef = doc(db, "clientes", clienteId);
+
+            await updateDoc(clienteRef, {
+              cuotas: arrayRemove(cuota)
+            });
+
+            cuotaItem.remove();
+            alert("Cuota eliminada correctamente.");
+          } else {
+            alert("Credenciales inválidas. No se eliminó la cuota.");
+          }
+        });
+
+        cuotaItem.appendChild(btnEliminarCuota);
         cuotasContainer.appendChild(cuotaItem);
         pagado += cuota.monto;
       });
+
       const saldo = (data.total || 0) - pagado;
       const resumen = document.createElement("div");
       resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
       cuotasContainer.appendChild(resumen);
     }
-// 🔹 Mostrar productos persistentes si existen
-if (data.productos && Array.isArray(data.productos)) {
-  const listaProductosCliente = li.querySelector(".listaProductosCliente");
-  let totalCliente = 0;
 
-  data.productos.forEach(prod => {
-    const liProd = document.createElement("li");
-liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
-    // 🔹 Botón eliminar también al recargar
-    const btnEliminar = document.createElement("button");
-    btnEliminar.textContent = "❌";
-    btnEliminar.style.marginLeft = "10px";
-    btnEliminar.addEventListener("click", async () => {
-      listaProductosCliente.removeChild(liProd);
-      const clienteId = li.getAttribute("data-id");
-      const clienteRef = doc(db, "clientes", clienteId);
-      await updateDoc(clienteRef, {
-        productos: arrayRemove(prod) // usa el mismo objeto que guardaste
+    // 🔹 Mostrar productos persistentes si existen
+    if (data.productos && Array.isArray(data.productos)) {
+      const listaProductosCliente = li.querySelector(".listaProductosCliente");
+      let totalCliente = 0;
+
+      data.productos.forEach(prod => {
+        const liProd = document.createElement("li");
+        liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
+
+        // Botón eliminar producto
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "❌";
+        btnEliminar.style.marginLeft = "10px";
+        btnEliminar.addEventListener("click", async () => {
+          listaProductosCliente.removeChild(liProd);
+          const clienteId = li.getAttribute("data-id");
+          const clienteRef = doc(db, "clientes", clienteId);
+          await updateDoc(clienteRef, {
+            productos: arrayRemove(prod)
+          });
+        });
+
+        liProd.appendChild(btnEliminar);
+        listaProductosCliente.appendChild(liProd);
+
+        totalCliente += (prod.precio ?? 0) * prod.cantidad;
       });
-    });
 
-    liProd.appendChild(btnEliminar);
-    listaProductosCliente.appendChild(liProd);
+      const resumenTotal = document.createElement("div");
+      resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display: inline-block;">Total productos: $${totalCliente}</strong>`;
+      listaProductosCliente.appendChild(resumenTotal);
+    }
 
-  // 🔹 Calcular total directamente desde Firebase
-  totalCliente += (prod.precio ?? 0) * prod.cantidad;
-
+    lista.appendChild(li);
+    count++;
   });
 
-  const resumenTotal = document.createElement("div");
-resumenTotal.innerHTML = `<strong style="font-size: 1.5em; color: #2c3e50; background: #f1c40f; padding: 5px 10px; border-radius: 5px; display: inline-block;">Total productos: $${totalCliente}</strong>`;  listaProductosCliente.appendChild(resumenTotal);
-}
-
-lista.appendChild(li);
-count++;  });
-
   contador.textContent = count;
-
   inicializarBuscadoresProductos();
 }
 // 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
