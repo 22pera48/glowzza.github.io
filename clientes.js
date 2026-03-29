@@ -177,39 +177,40 @@ async function mostrarClientes() {
       const cuotasContainer = li.querySelector(".cuotasContainer");
       let pagado = 0;
 
-      data.cuotas.forEach(cuota => {
-        const cuotaItem = document.createElement("div");
-        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+data.cuotas.forEach(cuota => {
+  const cuotaItem = document.createElement("div");
+  cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
 
-        // Botón eliminar cuota con credenciales
-        const btnEliminarCuota = document.createElement("button");
-        btnEliminarCuota.textContent = "❌";
-        btnEliminarCuota.style.marginLeft = "10px";
+  // Botón eliminar cuota con credenciales
+  const btnEliminarCuota = document.createElement("button");
+  btnEliminarCuota.textContent = "❌";
+  btnEliminarCuota.style.marginLeft = "10px";
 
-        btnEliminarCuota.addEventListener("click", async () => {
-          const usuario = prompt("Ingrese usuario cajero:");
-          const clave = prompt("Ingrese clave cajero:");
+  btnEliminarCuota.addEventListener("click", async () => {
+    const usuario = prompt("Ingrese usuario cajero:");
+    const clave = prompt("Ingrese clave cajero:");
 
-          if (usuario === "cajero" && clave === "1234") {
-            const clienteId = li.getAttribute("data-id");
-            const clienteRef = doc(db, "clientes", clienteId);
+    const valido = await validarCredenciales(usuario, clave);
 
-            await updateDoc(clienteRef, {
-              cuotas: arrayRemove(cuota)
-            });
+    if (valido) {
+      const clienteId = li.getAttribute("data-id");
+      const clienteRef = doc(db, "clientes", clienteId);
 
-            cuotaItem.remove();
-            alert("Cuota eliminada correctamente.");
-          } else {
-            alert("Credenciales inválidas. No se eliminó la cuota.");
-          }
-        });
-
-        cuotaItem.appendChild(btnEliminarCuota);
-        cuotasContainer.appendChild(cuotaItem);
-        pagado += cuota.monto;
+      await updateDoc(clienteRef, {
+        cuotas: arrayRemove(cuota)
       });
 
+      cuotaItem.remove();
+      alert("Cuota eliminada correctamente.");
+    } else {
+      alert("Credenciales inválidas. No se eliminó la cuota.");
+    }
+  });
+
+  cuotaItem.appendChild(btnEliminarCuota);
+  cuotasContainer.appendChild(cuotaItem);
+  pagado += cuota.monto;
+});
       const saldo = (data.total || 0) - pagado;
       const resumen = document.createElement("div");
       resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${saldo}`;
