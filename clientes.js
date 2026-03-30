@@ -451,12 +451,14 @@ itemsLi.forEach(liProd => {
 
   totalCliente += precio * cantidad;
 
-  items.push({
-    id: productoId,
-    nombre: nombreProducto, // ✅ ahora sí existe
-    cantidad,
-    precio
-  });
+items.push({
+  id: productoId,
+  orden: prod.orden,
+  nombre: prod.nombre,
+  color: prod.color,
+  cantidad: prod.cantidad,
+  precio: prod.precio
+});
 });
   // Paso 2: armar ventaData
   const ventaData = {
@@ -583,8 +585,7 @@ async function mostrarVentasCerradas() {
     if (data.productos && Array.isArray(data.productos)) {
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
-        liProd.textContent = `${prod.nombre} - Cantidad: ${prod.cantidad} - ID: ${prod.id} - Precio: $${prod.precio ?? 0}`;
-        ulProductos.appendChild(liProd);
+liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.id} - Precio: $${prod.precio ?? 0}`;        ulProductos.appendChild(liProd);
       });
     }
     li.appendChild(ulProductos);
