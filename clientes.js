@@ -434,27 +434,30 @@ btnCerrarVenta.addEventListener("click", async () => {
   let totalCliente = 0;
 
   // Paso 1: recorrer productos y calcular precio/total
-  itemsLi.forEach(liProd => {
-    const texto = liProd.textContent;
+itemsLi.forEach(liProd => {
+  const texto = liProd.textContent;
 
-    const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
-    const matchCantidad = texto.match(/Cantidad: (\d+)/);
-    const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
+  const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
+  const matchCantidad = texto.match(/Cantidad: (\d+)/);
+  const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
 
-    const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
-    const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
-    const productoId = matchId ? matchId[1] : null;
+  const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
+  const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+  const productoId = matchId ? matchId[1] : null;
 
-    totalCliente += precio * cantidad;
+  // 🔹 Extraer solo el nombre del producto
+  const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
+  const nombreProducto = matchNombre ? matchNombre[1] : texto;
 
-    items.push({
-      id: productoId,   // ✅ ID real del producto
-      nombre: nombreProducto,
-      cantidad,
-      precio
-    });
+  totalCliente += precio * cantidad;
+
+  items.push({
+    id: productoId,
+    nombre: nombreProducto, // ✅ ahora sí existe
+    cantidad,
+    precio
   });
-
+});
   // Paso 2: armar ventaData
   const ventaData = {
     cliente: {
