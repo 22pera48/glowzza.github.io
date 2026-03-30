@@ -583,42 +583,42 @@ async function mostrarVentasCerradas() {
     if (data.productos && Array.isArray(data.productos)) {
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
-liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;      
-  ulProductos.appendChild(liProd);
+        liProd.textContent = `${prod.nombre} - Cantidad: ${prod.cantidad} - ID: ${prod.id} - Precio: $${prod.precio ?? 0}`;
+        ulProductos.appendChild(liProd);
       });
     }
     li.appendChild(ulProductos);
 
-// Mostrar cuotas si existen
-if (data.cuotas && Array.isArray(data.cuotas)) {
-  const divCuotas = document.createElement("div");
-  divCuotas.innerHTML = "<strong>Cuotas:</strong>";
+    // Mostrar cuotas si existen
+    if (data.cuotas && Array.isArray(data.cuotas)) {
+      const divCuotas = document.createElement("div");
+      divCuotas.innerHTML = "<strong>Cuotas:</strong>";
 
-  data.cuotas.forEach(cuota => {
-    const cuotaItem = document.createElement("div");
-    cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
-    divCuotas.appendChild(cuotaItem);
-  });
+      data.cuotas.forEach(cuota => {
+        const cuotaItem = document.createElement("div");
+        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+        divCuotas.appendChild(cuotaItem);
+      });
 
-  // 🔹 Calcular pagado y falta usando el total guardado
-  const pagado = data.cuotas.reduce((acc, cuota) => acc + cuota.monto, 0);
-  const falta = Math.max((data.totalCliente || 0) - pagado, 0);
+      // Calcular pagado y falta usando el total guardado
+      const pagado = data.cuotas.reduce((acc, cuota) => acc + cuota.monto, 0);
+      const falta = Math.max((data.total || 0) - pagado, 0);
 
-  const resumen = document.createElement("div");
-  resumen.innerHTML = `
-    <strong style="
-      font-size: 1.2em;
-      color: #2c3e50;
-      background: #f1c40f;
-      padding: 5px 10px;
-      border-radius: 5px;
-      display:inline-block;">
-      Pagado: $${pagado} - Falta: $${falta}
-    </strong>`;
+      const resumen = document.createElement("div");
+      resumen.innerHTML = `
+        <strong style="
+          font-size: 1.2em;
+          color: #2c3e50;
+          background: #f1c40f;
+          padding: 5px 10px;
+          border-radius: 5px;
+          display:inline-block;">
+          Pagado: $${pagado} - Falta: $${falta}
+        </strong>`;
+      divCuotas.appendChild(resumen);
+      li.appendChild(divCuotas);
+    }
 
-  divCuotas.appendChild(resumen);
-  li.appendChild(divCuotas);
-}
     lista.appendChild(li);
     count++;
   });
