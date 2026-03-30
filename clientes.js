@@ -418,74 +418,90 @@ btnAgregar.addEventListener("click", async () => {
     });
 
     // Botón "Cerrar Venta"
-    btnCerrarVenta.addEventListener("click", async () => {
-      if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
-        alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
-        return;
-      }
+btnCerrarVenta.addEventListener("click", async () => {
+  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+    alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
+    return;
+  }
 
-      const itemsLi = listaProductosCliente.querySelectorAll("li");
-      if (itemsLi.length === 0) {
-        alert("⚠️ No se puede cerrar la venta sin productos.");
-        return;
-      }
+  const itemsLi = listaProductosCliente.querySelectorAll("li");
+  if (itemsLi.length === 0) {
+    alert("⚠️ No se puede cerrar la venta sin productos.");
+    return;
+  }
 
-      const items = [];
-      let totalCliente = 0;
-      itemsLi.forEach(liProd => {
-        const [nombreProducto, cantidadTxt] = liProd.textContent.split(" - Cantidad: ");
-        const cantidad = parseInt(cantidadTxt, 10);
-        const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
-        items.push({ nombre: nombreProducto, cantidad, precio: producto?.precio ?? 0 });
-        totalCliente += (producto?.precio ?? 0) * cantidad;
-      });
+  const items = [];
+  let totalCliente = 0;
 
-      const ventaData = {
-        cliente: {
-          id: liCliente.getAttribute("data-id"),
-          etiqueta: liCliente.getAttribute("data-etiqueta"),
-          nombre: liCliente.getAttribute("data-nombre"),
-          telefono: liCliente.getAttribute("data-telefono"),
-          fecha: liCliente.getAttribute("data-fecha"),
-          nemonico: liCliente.getAttribute("data-nemonico")
-        },
-        productos: items,
-        total: totalCliente,
-        estadoDespacho: estadoDespacho.value,
-        estadoPago: estadoPago.value,
-        fechaCierre: new Date().toISOString(),
-        cuotas: JSON.parse(liCliente.getAttribute("data-cuotas") || "[]") // 🔹 cuotas desde atributo
-      };
+  // Paso 1: recorrer productos y calcular precio/total
+  itemsLi.forEach(liProd => {
+    const texto = liProd.textContent;
 
-      try {
-        await addDoc(collection(db, "ventasCerradas"), ventaData);
+    const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
+    const matchCantidad = texto.match(/Cantidad: (\d+)/);
+    const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
 
-        for (const item of items) {
-          const producto = productos.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
-          if (producto) {
-            if (item.cantidad > (producto.stock ?? 0)) {
-              alert(`Stock insuficiente para ${producto.nombre}. Disponible: ${producto.stock ?? 0}`);
-              return;
-            }
-            const productoRef = doc(db, "productos", producto.id);
-            await updateDoc(productoRef, {
-              stock: (producto.stock ?? 0) - item.cantidad
-            });
-          }
-        }
+    const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
+    const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+    const productoId = matchId ? matchId[1] : null;
 
-        await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
-        listaProductosCliente.innerHTML = "";
-        mostrarVentasCerradas();
-        mostrarClientes();
+    totalCliente += precio * cantidad;
 
-        alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
-      } catch (error) {
-        console.error("Error al cerrar venta:", error);
-        alert("❌ Hubo un problema al cerrar la venta.");
-      }
+    items.push({
+      id: productoId,   // ✅ ID real del producto
+      nombre: texto,    // podés guardar solo el nombre si querés
+      cantidad,
+      precio
     });
+  });
 
+  // Paso 2: armar ventaData
+  const ventaData = {
+    cliente: {
+      id: liCliente.getAttribute("data-id"),
+      etiqueta: liCliente.getAttribute("data-etiqueta"),
+      nombre: liCliente.getAttribute("data-nombre"),
+      telefono: liCliente.getAttribute("data-telefono"),
+      fecha: liCliente.getAttribute("data-fecha"),
+      nemonico: liCliente.getAttribute("data-nemonico")
+    },
+    productos: items,
+    total: totalCliente,
+    estadoDespacho: estadoDespacho.value,
+    estadoPago: estadoPago.value,
+    fechaCierre: new Date().toISOString(),
+    cuotas: JSON.parse(liCliente.getAttribute("data-cuotas") || "[]")
+  };
+
+  try {
+    // Paso 3: guardar venta
+    await addDoc(collection(db, "ventasCerradas"), ventaData);
+
+    // Paso 4: actualizar stock con ID correcto
+    for (const item of items) {
+      try {
+        if (!item.id) continue;
+        const productoRef = doc(db, "productos", item.id);
+        await updateDoc(productoRef, {
+          stock: increment(-item.cantidad)
+        });
+      } catch (error) {
+        console.warn(`No se pudo actualizar stock de ${item.nombre}`, error);
+      }
+    }
+
+    // Paso 5: eliminar cliente y refrescar vistas
+    await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
+    listaProductosCliente.innerHTML = "";
+    mostrarVentasCerradas();
+    mostrarClientes();
+
+    alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
+  } catch (error) {
+    console.error("Error al cerrar venta:", error);
+    alert("❌ Hubo un problema al cerrar la venta.");
+  }
+});
     // Ocultar menú si se hace click fuera
     document.addEventListener("click", (e) => {
       if (!buscador.contains(e.target) && !menu.contains(e.target)) {
