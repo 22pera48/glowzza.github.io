@@ -573,7 +573,6 @@ async function mostrarVentasCerradas() {
     li.innerHTML = `
       <strong>ID:</strong> ${data.cliente.etiqueta || data.cliente.id} <br>
       Cliente: ${data.cliente.nombre} - Tel: ${data.cliente.telefono} - Fecha: ${data.cliente.fecha} <br>
-      Estado: Pago ${data.estadoPago}, Despacho ${data.estadoDespacho} <br>
       <strong>Total:</strong> $${data.total || 0}
     `;
 
@@ -587,6 +586,7 @@ async function mostrarVentasCerradas() {
     }
     li.appendChild(ulProductos);
 
+    // Mostrar cuotas si existen (solo listado, sin resumen)
     if (data.cuotas && Array.isArray(data.cuotas)) {
       const divCuotas = document.createElement("div");
       divCuotas.innerHTML = "<strong>Cuotas:</strong>";
@@ -597,21 +597,6 @@ async function mostrarVentasCerradas() {
         divCuotas.appendChild(cuotaItem);
       });
 
-      const pagado = data.cuotas.reduce((acc, cuota) => acc + cuota.monto, 0);
-      const falta = Math.max((data.total || 0) - pagado, 0);
-
-      const resumen = document.createElement("div");
-      resumen.innerHTML = `
-        <strong style="
-          font-size: 1.2em;
-          color: #2c3e50;
-          background: #f1c40f;
-          padding: 5px 10px;
-          border-radius: 5px;
-          display:inline-block;">
-          Pagado: $${pagado} - Falta: $${falta}
-        </strong>`;
-      divCuotas.appendChild(resumen);
       li.appendChild(divCuotas);
     }
 
