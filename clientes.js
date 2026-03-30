@@ -449,7 +449,7 @@ btnCerrarVenta.addEventListener("click", async () => {
 
     items.push({
       id: productoId,   // ✅ ID real del producto
-      nombre: texto,    // podés guardar solo el nombre si querés
+      nombre: nombreProducto,
       cantidad,
       precio
     });
