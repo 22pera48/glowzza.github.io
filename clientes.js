@@ -559,7 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // 🔹 Mostrar lista de ventas cerradas
 async function mostrarVentasCerradas() {
   const lista = document.getElementById("listaVentasCerradas");
-  const contador = document.getElementById("contadorVentasCerradas");
+  const contador = document.getElementById("contadorVentas"); // corregido
   if (!lista || !contador) return;
 
   lista.innerHTML = "";
@@ -570,7 +570,6 @@ async function mostrarVentasCerradas() {
     const data = docSnap.data();
     const li = document.createElement("li");
 
-    // Mostrar datos del cliente
     li.innerHTML = `
       <strong>ID:</strong> ${data.cliente.etiqueta || data.cliente.id} <br>
       Cliente: ${data.cliente.nombre} - Tel: ${data.cliente.telefono} - Fecha: ${data.cliente.fecha} <br>
@@ -578,7 +577,6 @@ async function mostrarVentasCerradas() {
       <strong>Total:</strong> $${data.total || 0}
     `;
 
-    // Mostrar lista de productos
     const ulProductos = document.createElement("ul");
     if (data.productos && Array.isArray(data.productos)) {
       data.productos.forEach(prod => {
@@ -589,7 +587,6 @@ async function mostrarVentasCerradas() {
     }
     li.appendChild(ulProductos);
 
-    // Mostrar cuotas si existen
     if (data.cuotas && Array.isArray(data.cuotas)) {
       const divCuotas = document.createElement("div");
       divCuotas.innerHTML = "<strong>Cuotas:</strong>";
@@ -600,7 +597,6 @@ async function mostrarVentasCerradas() {
         divCuotas.appendChild(cuotaItem);
       });
 
-      // Calcular pagado y falta usando el total guardado
       const pagado = data.cuotas.reduce((acc, cuota) => acc + cuota.monto, 0);
       const falta = Math.max((data.total || 0) - pagado, 0);
 
