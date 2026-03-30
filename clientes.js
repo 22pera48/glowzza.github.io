@@ -589,7 +589,6 @@ async function mostrarVentasCerradas() {
     // Mostrar cuotas si existen (solo listado, sin resumen)
     if (data.cuotas && Array.isArray(data.cuotas)) {
       const divCuotas = document.createElement("div");
-      divCuotas.innerHTML = "<strong>Cuotas:</strong>";
 
       data.cuotas.forEach(cuota => {
         const cuotaItem = document.createElement("div");
