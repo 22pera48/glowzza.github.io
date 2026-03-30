@@ -445,20 +445,27 @@ itemsLi.forEach(liProd => {
   const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
   const productoId = matchId ? matchId[1] : null;
 
-  // 🔹 Extraer solo el nombre del producto
+  // 🔹 Extraer orden y color directamente del texto
+  const matchOrden = texto.match(/\[(.*?)\]/);
+  const matchColor = texto.match(/Color:\s*([A-Za-z]+)/);
+
+  const orden = matchOrden ? matchOrden[1] : "";
+  const color = matchColor ? matchColor[1] : "";
+
+  // 🔹 Extraer nombre limpio (sin orden ni color)
   const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
   const nombreProducto = matchNombre ? matchNombre[1] : texto;
 
   totalCliente += precio * cantidad;
 
-items.push({
-  id: productoId,
-  orden: prod.orden,
-  nombre: prod.nombre,
-  color: prod.color,
-  cantidad: prod.cantidad,
-  precio: prod.precio
-});
+  items.push({
+    id: productoId,
+    orden,
+    nombre: nombreProducto,
+    color,
+    cantidad,
+    precio
+  });
 });
   // Paso 2: armar ventaData
   const ventaData = {
