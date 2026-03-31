@@ -571,7 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // 🔹 Mostrar lista de ventas cerradas
 async function mostrarVentasCerradas() {
   const lista = document.getElementById("listaVentasCerradas");
-  const contador = document.getElementById("contadorVentas"); // corregido
+  const contador = document.getElementById("contadorVentas"); 
   if (!lista || !contador) return;
 
   lista.innerHTML = "";
@@ -588,35 +588,42 @@ async function mostrarVentasCerradas() {
       <strong>Total:</strong> $${data.total || 0}
     `;
 
+    // Lista de productos
     const ulProductos = document.createElement("ul");
     if (data.productos && Array.isArray(data.productos)) {
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
-liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.id} - Precio: $${prod.precio ?? 0}`;        ulProductos.appendChild(liProd);
+        liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.id} - Precio: $${prod.precio ?? 0}`;
+        ulProductos.appendChild(liProd);
       });
     }
     li.appendChild(ulProductos);
 
-    // Mostrar cuotas si existen (solo listado, sin resumen)
+    // Mostrar cuotas si existen
     if (data.cuotas && Array.isArray(data.cuotas)) {
       const divCuotas = document.createElement("div");
-
       data.cuotas.forEach(cuota => {
         const cuotaItem = document.createElement("div");
         cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
         divCuotas.appendChild(cuotaItem);
       });
-
       li.appendChild(divCuotas);
     }
+
+    // 🔹 Botón eliminar con credenciales
+    const btnEliminarVenta = document.createElement("button");
+    btnEliminarVenta.textContent = "Eliminar Venta";
+    btnEliminarVenta.classList.add("btn-danger");
+    btnEliminarVenta.onclick = () => abrirModalEliminarVenta(docSnap.id);
+
+    li.appendChild(btnEliminarVenta);
 
     lista.appendChild(li);
     count++;
   });
 
   contador.textContent = count;
-}
-// 🔹 Buscar para eliminar
+}// 🔹 Buscar para eliminar
 async function buscarParaEliminar() {
   const termino = document.getElementById("buscadorEliminar").value.toLowerCase();
   const resultadoDiv = document.getElementById("resultadoEliminar");
@@ -662,7 +669,12 @@ let coleccionAEliminar = null;
   // 🔹 Confirmar eliminación
 // Variable global para guardar el cliente que se quiere eliminar
 let clienteAEliminar = null;
-
+let ventaAEliminar = null;
+// Función global para abrir el modal de eliminación de ventas cerradas
+window.abrirModalEliminarVenta = function(ventaId) {
+  ventaAEliminar = ventaId; // guardamos el ID de la venta
+  document.getElementById("modalCredenciales").style.display = "flex"; // mostramos el modal centrado
+};
 // Exponer la función al global (se llama desde el HTML)
 window.abrirModalEliminar = function(clienteId) {
   clienteAEliminar = clienteId; // guardamos el ID del cliente
