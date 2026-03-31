@@ -704,19 +704,25 @@ document.getElementById("btnConfirmarEliminar").addEventListener("click", async 
 
     // 🔹 Si las credenciales son correctas, eliminamos según corresponda
 if (clienteAEliminar) {
+  console.log("Eliminando cliente:", clienteAEliminar);
   await deleteDoc(doc(db, "clientes", clienteAEliminar));
   mostrarToast("✅ Cliente eliminado correctamente", "success");
   clienteAEliminar = null;
   await mostrarClientes();
+  // 🔹 cerrar modal sólo en éxito
+  document.getElementById("modalCredenciales").style.display = "none";
 } else if (ventaAEliminar) {
+  console.log("Eliminando venta:", ventaAEliminar);
   await deleteDoc(doc(db, "ventasCerradas", ventaAEliminar));
   mostrarToast("✅ Venta eliminada correctamente", "success");
   ventaAEliminar = null;
   await mostrarVentasCerradas();
+  // 🔹 cerrar modal sólo en éxito
+  document.getElementById("modalCredenciales").style.display = "none";
 } else {
   mostrarToast("⚠️ No hay ID cargado para eliminar", "error");
-}
-    // 🔹 Cerrar modal
+  return; // 🔹 salimos para que no caiga en el catch
+}// 🔹 Cerrar modal
     document.getElementById("modalCredenciales").style.display = "none";
 
   } catch (error) {
