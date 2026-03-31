@@ -20,23 +20,6 @@
   <div class="tabs">
     <button onclick="mostrarTab('clientes')">Clientes</button>
     <button onclick="mostrarTab('ventas')">Ventas Cerradas</button>
-    <button onclick="mostrarTab('eliminar')">Eliminar Cliente</button>
-  </div>
-
-  <!-- Pestaña Eliminar -->
-  <div id="eliminar" class="tab-content" style="display:none;">
-    <h3>Eliminar Cliente o Venta</h3>
-    <input type="text" id="buscadorEliminar" placeholder="Buscar por nombre o código">
-    <button onclick="buscarParaEliminar()">Buscar</button>
-    <div id="resultadoEliminar"></div>
-    <hr>
-    <h4>Eliminar Cliente por ID</h4>
-    <input type="text" id="clienteIdEliminar" placeholder="ID del cliente">
-<button id="btnEliminarCliente" class="btn-danger" onclick="abrirModalEliminar(document.getElementById('clienteIdEliminar').value)">
-  Eliminar Cliente
-</button>    <h4>Eliminar Venta Cerrada por ID</h4>
-    <input type="text" id="ventaIdEliminar" placeholder="ID de la venta cerrada">
-    <button id="btnEliminarVenta" class="btn-danger">Eliminar Venta</button>
   </div>
 
   <!-- Contenido de pestañas -->
