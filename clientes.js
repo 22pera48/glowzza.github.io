@@ -680,7 +680,50 @@ window.abrirModalEliminar = function(clienteId) {
   clienteAEliminar = clienteId; // guardamos el ID del cliente
   document.getElementById("modalCredenciales").style.display = "flex"; // mostramos el modal
 };
+// Listener del botón Confirmar en el modal de credenciales
+document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
+  const usuario = document.getElementById("usuarioCheck").value.trim();
+  const clave = document.getElementById("passwordCheck").value.trim();
 
+  try {
+    // 🔹 Validar credenciales contra la colección cajaCredenciales
+    const credencialesSnapshot = await getDocs(collection(db, "cajaCredenciales"));
+    let credencialValida = false;
+
+    credencialesSnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.usuario === usuario && data.password === clave) {
+        credencialValida = true;
+      }
+    });
+
+    if (!credencialValida) {
+      mostrarToast("⚠️ Credenciales incorrectas", "error");
+      return;
+    }
+
+    // 🔹 Si las credenciales son correctas, eliminamos según corresponda
+if (clienteAEliminar) {
+  await deleteDoc(doc(db, "clientes", clienteAEliminar));
+  mostrarToast("✅ Cliente eliminado correctamente", "success");
+  clienteAEliminar = null;
+  await mostrarClientes();
+} else if (ventaAEliminar) {
+  await deleteDoc(doc(db, "ventasCerradas", ventaAEliminar));
+  mostrarToast("✅ Venta eliminada correctamente", "success");
+  ventaAEliminar = null;
+  await mostrarVentasCerradas();
+} else {
+  mostrarToast("⚠️ No hay ID cargado para eliminar", "error");
+}
+    // 🔹 Cerrar modal
+    document.getElementById("modalCredenciales").style.display = "none";
+
+  } catch (error) {
+    console.error("Error al eliminar:", error);
+    mostrarToast("❌ No se pudo eliminar", "error");
+  }
+});
 // 🔹 Bloque para confirmar eliminación con credenciales desde Firestore
 document.addEventListener("DOMContentLoaded", () => {
   const btnConfirmar = document.getElementById("btnConfirmarEliminar");
