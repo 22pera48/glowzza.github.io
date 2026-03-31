@@ -816,17 +816,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // tu lógica de inicialización
 });
 
-
-  async function cargarProductos() {
-  const snap = await getDocs(collection(db, "productos"));
-  const productos = [];
-  snap.forEach(docSnap => {
-    const data = docSnap.data();
-    productos.push({ id: docSnap.id, ...data });
-  });
-  return productos;
-  }
-
   document.addEventListener("DOMContentLoaded", async () => {
   const buscador = document.getElementById("buscadorProductos");
   const menu = document.getElementById("menuProductos");
