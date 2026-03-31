@@ -660,32 +660,53 @@ let coleccionAEliminar = null;
   };
 
   // 🔹 Confirmar eliminación
-  document.addEventListener("DOMContentLoaded", () => {
+// Variable global para guardar el cliente que se quiere eliminar
+let clienteAEliminar = null;
+
+// Exponer la función al global (se llama desde el HTML)
+window.abrirModalEliminar = function(clienteId) {
+  clienteAEliminar = clienteId; // guardamos el ID del cliente
+  document.getElementById("modalCredenciales").style.display = "flex"; // mostramos el modal
+};
+
+// 🔹 Bloque para confirmar eliminación con credenciales desde Firestore
+document.addEventListener("DOMContentLoaded", () => {
   const btnConfirmar = document.getElementById("btnConfirmarEliminar");
   if (btnConfirmar) {
     btnConfirmar.addEventListener("click", async () => {
-      const usuario = document.getElementById("usuarioCheck").value.trim();
-      const password = document.getElementById("passwordCheck").value.trim();
+      const usuarioIngresado = document.getElementById("usuarioCheck").value.trim();
+      const passwordIngresado = document.getElementById("passwordCheck").value.trim();
 
-      // 🔹 Validación simple de credenciales
-      if (usuario === "admin" && password === "1234") {
-        try {
-          await deleteDoc(doc(db, coleccionAEliminar, itemAEliminar));
-          mostrarToast("✅ Eliminado correctamente", "success");
+      try {
+        // Traemos todos los documentos de la colección cajaCredenciales
+        const credencialesSnapshot = await getDocs(collection(db, "cajaCredenciales"));
+        let credencialValida = false;
+
+        credencialesSnapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          if (data.usuario === usuarioIngresado && data.password === passwordIngresado) {
+            credencialValida = true;
+          }
+        });
+
+        if (credencialValida) {
+          // 🔹 Si las credenciales son correctas, eliminamos el cliente
+          await deleteDoc(doc(db, "clientes", clienteAEliminar));
+          mostrarToast("✅ Cliente eliminado correctamente", "success");
           document.getElementById("modalCredenciales").style.display = "none";
           mostrarClientes();
-          mostrarVentasCerradas();
-        } catch (error) {
-          console.error("Error al eliminar:", error);
-          mostrarToast("❌ No se pudo eliminar", "error");
+        } else {
+          mostrarToast("⚠️ Credenciales incorrectas", "error");
         }
-      } else {
-        mostrarToast("⚠️ Credenciales incorrectas", "error");
+
+      } catch (error) {
+        console.error("Error al validar credenciales:", error);
+        mostrarToast("❌ Hubo un problema al validar las credenciales", "error");
       }
     });
   }
 
-  // 🔹 Eliminar por ID directo
+  // 🔹 Eliminar por ID directo (sin credenciales)
   const btnEliminarCliente = document.getElementById("btnEliminarCliente");
   if (btnEliminarCliente) {
     btnEliminarCliente.addEventListener("click", async () => {
@@ -702,6 +723,7 @@ let coleccionAEliminar = null;
     });
   }
 
+  // 🔹 Eliminar venta por ID directo
   const btnEliminarVenta = document.getElementById("btnEliminarVenta");
   if (btnEliminarVenta) {
     btnEliminarVenta.addEventListener("click", async () => {
@@ -717,89 +739,13 @@ let coleccionAEliminar = null;
       }
     });
   }
-  });
 
   // 🔹 Inicialización
-  document.addEventListener("DOMContentLoaded", async () => {
-  await mostrarClientes();
-  await mostrarVentasCerradas();
-  mostrarTab("clientes");
-  });
-  // 🔹 Buscador dinámico de clientes
-  document.addEventListener("DOMContentLoaded", () => {
-  const buscadorClientes = document.getElementById("buscadorClientes");
-  if (buscadorClientes) {
-    buscadorClientes.addEventListener("input", () => {
-      const termino = buscadorClientes.value.toLowerCase();
-      const lista = document.getElementById("listaClientes");
-      const items = lista.getElementsByTagName("li");
-      let visible = 0;
-      for (let i = 0; i < items.length; i++) {
-        const texto = items[i].textContent.toLowerCase();
-        const match = texto.includes(termino);
-        items[i].style.display = match ? "" : "none";
-        if (match) visible++;
-      }
-  if (visible === 0) {
-  const mensaje = document.createElement("li");
-  mensaje.style.color = "#c0392b";
-  mensaje.textContent = "No hay resultados ❌";
-  lista.appendChild(mensaje);
-  }    });
-  }
-
-  // 🔹 Buscador dinámico de ventas cerradas
-  const buscadorVentas = document.getElementById("buscadorVentas");
-  if (buscadorVentas) {
-    buscadorVentas.addEventListener("input", () => {
-      const termino = buscadorVentas.value.toLowerCase();
-      const lista = document.getElementById("listaVentasCerradas");
-      const items = lista.getElementsByTagName("li");
-      let visible = 0;
-      for (let i = 0; i < items.length; i++) {
-        const texto = items[i].textContent.toLowerCase();
-        const match = texto.includes(termino);
-        items[i].style.display = match ? "" : "none";
-        if (match) visible++;
-      }
-  if (visible === 0) {
-  const mensaje = document.createElement("li");
-  mensaje.style.color = "#c0392b";
-  mensaje.textContent = "No hay resultados ❌";
-  lista.appendChild(mensaje);
-  
-  }   
- });
-  }
-  });
-  // 🔹 Cargar productos desde Firebase y armar menú dinámico
-  // Variable global para guardar el cliente que se quiere eliminar
-let clienteAEliminar = null;
-
-// Exponer la función al global
-window.abrirModalEliminar = function(clienteId) {
-  clienteAEliminar = clienteId; // guardamos el ID del cliente
-  document.getElementById("modalCredenciales").style.display = "block"; // mostramos el modal
-};
-
-// 🔹 Bloque para confirmar eliminación
-document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
-  const usuario = document.getElementById("usuarioCheck").value;
-  const clave = document.getElementById("passwordCheck").value;
-
-  if (usuario === "caja" && clave === "1234") {
-    try {
-      await deleteDoc(doc(db, "clientes", clienteAEliminar));
-      alert("Cliente eliminado correctamente.");
-      document.getElementById("modalCredenciales").style.display = "none";
-      location.reload();
-    } catch (error) {
-      console.error("Error al eliminar cliente:", error);
-      alert("No se pudo eliminar el cliente.");
-    }
-  } else {
-    alert("Credenciales inválidas. No se eliminó el cliente.");
-  }
+  (async () => {
+    await mostrarClientes();
+    await mostrarVentasCerradas();
+    mostrarTab("clientes");
+  })();
 });
 // 🔹 Tu lógica de cargar productos y demás
 async function cargarProductos() {
