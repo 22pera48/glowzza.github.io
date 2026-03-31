@@ -776,12 +776,13 @@ let coleccionAEliminar = null;
   // Variable global para guardar el cliente que se quiere eliminar
 let clienteAEliminar = null;
 
-// Función que abre el modal y guarda el ID
-function abrirModalEliminar(clienteId) {
+// Exponer la función al global
+window.abrirModalEliminar = function(clienteId) {
   clienteAEliminar = clienteId; // guardamos el ID del cliente
   document.getElementById("modalCredenciales").style.display = "block"; // mostramos el modal
-}
-  // 🔹 Bloque para confirmar eliminación
+};
+
+// 🔹 Bloque para confirmar eliminación
 document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
   const usuario = document.getElementById("usuarioCheck").value;
   const clave = document.getElementById("passwordCheck").value;
@@ -800,7 +801,6 @@ document.getElementById("btnConfirmarEliminar").addEventListener("click", async 
     alert("Credenciales inválidas. No se eliminó el cliente.");
   }
 });
-
 // 🔹 Tu lógica de cargar productos y demás
 async function cargarProductos() {
   const snap = await getDocs(collection(db, "productos"));
