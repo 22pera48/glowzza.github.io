@@ -122,40 +122,41 @@ async function mostrarClientes() {
     const li = document.createElement("li");
 
     // Renderizado visual del cliente
-    li.innerHTML = `
-      <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
-      ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
-      <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
-      
-      <div class="buscador-productos">
-        <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
-        <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
-        <button class="btnAgregarProducto">+</button>
-        <div class="menuProductos dropdown-menu"></div>
-      </div>
-      
-      <ul class="listaProductosCliente"></ul>
+li.innerHTML = `
+  <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
+  ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
+  <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
+  
+  <div class="buscador-productos">
+    <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
+    <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
+    <button class="btnAgregarProducto">+</button>
+    <div class="menuProductos dropdown-menu"></div>
+  </div>
+  
+  <ul class="listaProductosCliente"></ul>
 
-      <div class="estadoVenta">
-        <select class="estadoDespacho">
-          <option value="">Estado</option>
-          <option value="despachado">Despachado</option>
-          <option value="deposito">En depósito</option>
-        </select>
+  <div class="estadoVenta">
+    <select class="estadoDespacho">
+      <option value="">Estado</option>
+      <option value="despachado">Despachado</option>
+      <option value="deposito">En depósito</option>
+    </select>
 
-        <select class="estadoPago">
-          <option value="">Estado</option>
-          <option value="pagado">Pagado</option>
-          <option value="sinpagar">Sin pagar</option>
-        </select>
+    <select class="estadoPago">
+      <option value="">Estado</option>
+      <option value="pagado">Pagado</option>
+      <option value="sinpagar">Sin pagar</option>
+    </select>
 
-        <button class="btnCerrarVenta">Cerrar Venta</button>
-        <button class="btnCuotas">Cuotas</button>
-      </div>
+    <button class="btnCerrarVenta">Cerrar Venta</button>
+    <button class="btnCuotas">Cuotas</button>
+    <!-- 🔹 Nuevo botón de eliminar -->
+    <button onclick="abrirModalEliminar('${docSnap.id}')">🗑️ Eliminar Cliente</button>
+  </div>
 
-      <div class="cuotasContainer"></div>
-    `;
-
+  <div class="cuotasContainer"></div>
+`;
     // Atributos
     li.setAttribute("data-id", docSnap.id);
     li.setAttribute("data-etiqueta", data.etiqueta || docSnap.id);
@@ -417,8 +418,8 @@ btnAgregar.addEventListener("click", async () => {
     });
 
     // Botón "Cerrar Venta"
-btnCerrarVenta.addEventListener("click", async () => {
-  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+    btnCerrarVenta.addEventListener("click", async () => {
+    if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
     alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
     return;
   }
@@ -651,15 +652,15 @@ async function buscarParaEliminar() {
 let itemAEliminar = null;
 let coleccionAEliminar = null;
 
-window.pedirCredenciales = function(id, coleccion) {
+  window.pedirCredenciales = function(id, coleccion) {
   itemAEliminar = id;
   coleccionAEliminar = coleccion;
   const modal = document.getElementById("modalCredenciales");
   if (modal) modal.style.display = "block";
-};
+  };
 
-// 🔹 Confirmar eliminación
-document.addEventListener("DOMContentLoaded", () => {
+  // 🔹 Confirmar eliminación
+  document.addEventListener("DOMContentLoaded", () => {
   const btnConfirmar = document.getElementById("btnConfirmarEliminar");
   if (btnConfirmar) {
     btnConfirmar.addEventListener("click", async () => {
@@ -716,16 +717,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
+  });
 
-// 🔹 Inicialización
-document.addEventListener("DOMContentLoaded", async () => {
+  // 🔹 Inicialización
+  document.addEventListener("DOMContentLoaded", async () => {
   await mostrarClientes();
   await mostrarVentasCerradas();
   mostrarTab("clientes");
-});
-// 🔹 Buscador dinámico de clientes
-document.addEventListener("DOMContentLoaded", () => {
+  });
+  // 🔹 Buscador dinámico de clientes
+  document.addEventListener("DOMContentLoaded", () => {
   const buscadorClientes = document.getElementById("buscadorClientes");
   if (buscadorClientes) {
     buscadorClientes.addEventListener("input", () => {
@@ -739,12 +740,12 @@ document.addEventListener("DOMContentLoaded", () => {
         items[i].style.display = match ? "" : "none";
         if (match) visible++;
       }
-if (visible === 0) {
+  if (visible === 0) {
   const mensaje = document.createElement("li");
   mensaje.style.color = "#c0392b";
   mensaje.textContent = "No hay resultados ❌";
   lista.appendChild(mensaje);
-}    });
+  }    });
   }
 
   // 🔹 Buscador dinámico de ventas cerradas
@@ -761,15 +762,46 @@ if (visible === 0) {
         items[i].style.display = match ? "" : "none";
         if (match) visible++;
       }
-if (visible === 0) {
+  if (visible === 0) {
   const mensaje = document.createElement("li");
   mensaje.style.color = "#c0392b";
   mensaje.textContent = "No hay resultados ❌";
   lista.appendChild(mensaje);
-}    });
+  
+  }   
+ });
+  }
+  });
+  // 🔹 Cargar productos desde Firebase y armar menú dinámico
+  // Variable global para guardar el cliente que se quiere eliminar
+let clienteAEliminar = null;
+
+// Función que abre el modal y guarda el ID
+function abrirModalEliminar(clienteId) {
+  clienteAEliminar = clienteId; // guardamos el ID del cliente
+  document.getElementById("modalCredenciales").style.display = "block"; // mostramos el modal
+}
+  // 🔹 Bloque para confirmar eliminación
+document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
+  const usuario = document.getElementById("usuarioCheck").value;
+  const clave = document.getElementById("passwordCheck").value;
+
+  if (usuario === "caja" && clave === "1234") {
+    try {
+      await deleteDoc(doc(db, "clientes", clienteAEliminar));
+      alert("Cliente eliminado correctamente.");
+      document.getElementById("modalCredenciales").style.display = "none";
+      location.reload();
+    } catch (error) {
+      console.error("Error al eliminar cliente:", error);
+      alert("No se pudo eliminar el cliente.");
+    }
+  } else {
+    alert("Credenciales inválidas. No se eliminó el cliente.");
   }
 });
-// 🔹 Cargar productos desde Firebase y armar menú dinámico
+
+// 🔹 Tu lógica de cargar productos y demás
 async function cargarProductos() {
   const snap = await getDocs(collection(db, "productos"));
   const productos = [];
@@ -781,14 +813,29 @@ async function cargarProductos() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // tu lógica de inicialización
+});
+
+
+  async function cargarProductos() {
+  const snap = await getDocs(collection(db, "productos"));
+  const productos = [];
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    productos.push({ id: docSnap.id, ...data });
+  });
+  return productos;
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
   const buscador = document.getElementById("buscadorProductos");
   const menu = document.getElementById("menuProductos");
 
   if (buscador && menu) {
-const productos = await cargarProductos();
+  const productos = await cargarProductos();
 
-// Mostrar todos los productos al hacer click
-buscador.addEventListener("focus", () => {
+  // Mostrar todos los productos al hacer click
+  buscador.addEventListener("focus", () => {
   menu.innerHTML = "";
   productos.forEach(p => {
     const item = document.createElement("div");
@@ -803,7 +850,7 @@ buscador.addEventListener("focus", () => {
     menu.appendChild(item);
   });
   menu.style.display = "block";
-});
+  });
     // Filtrar productos al escribir
     buscador.addEventListener("input", () => {
       const termino = buscador.value.toLowerCase();
@@ -812,14 +859,14 @@ buscador.addEventListener("focus", () => {
         p.nombre.toLowerCase().includes(termino) || 
         (p.codigo?.toLowerCase().includes(termino))
       );
-filtrados.forEach(p => {
+  filtrados.forEach(p => {
   const item = document.createElement("div");
-item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;  item.addEventListener("click", () => {
+  item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;  item.addEventListener("click", () => {
     buscador.value = p.nombre;
     menu.style.display = "none";
   });
   menu.appendChild(item);
-});      menu.style.display = filtrados.length > 0 ? "block" : "none";
+  });      menu.style.display = filtrados.length > 0 ? "block" : "none";
     });
 
     // Ocultar menú si se hace click fuera
@@ -829,8 +876,8 @@ item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.st
       }
     });
   }
-});
-function actualizarTotal(listaProductosCliente) {
+  });
+  function actualizarTotal(listaProductosCliente) {
   let totalCliente = 0;
 
   listaProductosCliente.querySelectorAll("li").forEach(liProd => {
