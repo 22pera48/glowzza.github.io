@@ -910,29 +910,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 Insertar siempre al inicio
   listaProductosCliente.insertBefore(resumenTotal, listaProductosCliente.firstChild);
 }
-// clientes.js
-
-// Mostrar/ocultar pestañas
-function mostrarTab(tab) {
-  // Ocultar todos los contenidos
-  document.querySelectorAll(".tab-content").forEach(div => {
-    div.style.display = "none";
-  });
-
-  // Construir el ID del tab (ej: "pedidos" -> "tabPedidos")
-  const targetId = "tab" + tab.charAt(0).toUpperCase() + tab.slice(1);
-  const target = document.getElementById(targetId);
-
-  // Mostrar el tab correspondiente
-  if (target) {
-    target.style.display = "block";
-  }
-}
-
-// Al cargar la página, mostrar por defecto "Pedidos Clientes"
-document.addEventListener("DOMContentLoaded", () => {
-  mostrarTab("pedidos");
-});
+// 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
 window.mostrarClientes = mostrarClientes;
