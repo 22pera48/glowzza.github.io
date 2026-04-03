@@ -910,18 +910,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 Insertar siempre al inicio
   listaProductosCliente.insertBefore(resumenTotal, listaProductosCliente.firstChild);
 }
-export function mostrarTab(tab) {
-  // Ocultar todos los contenidos
-  document.querySelectorAll(".tab-content").forEach(div => {
-    div.style.display = "none";
-  });
 
-  // Mostrar el tab seleccionado
-  const target = document.getElementById("tab" + tab.charAt(0).toUpperCase() + tab.slice(1));
-  if (target) {
-    target.style.display = "block";
-  }
-}
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
