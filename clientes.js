@@ -910,6 +910,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 Insertar siempre al inicio
   listaProductosCliente.insertBefore(resumenTotal, listaProductosCliente.firstChild);
 }
+// clientes.js
+
 function mostrarTab(tab) {
   // Ocultar todos los contenidos
   document.querySelectorAll(".tab-content").forEach(div => {
@@ -926,11 +928,10 @@ function mostrarTab(tab) {
   }
 }
 
-// Al cargar la página, mostrar por defecto "Pedidos Clientes"
+// Mostrar por defecto la primera pestaña (Pedidos Clientes)
 document.addEventListener("DOMContentLoaded", () => {
   mostrarTab("pedidos");
-});
-// 🔹 Exponer funciones globales
+});// 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
 window.mostrarClientes = mostrarClientes;
