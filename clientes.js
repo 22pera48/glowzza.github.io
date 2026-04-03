@@ -22,20 +22,23 @@ const db = getFirestore(app);
 // 🔹 Manejo de pestañas
 function mostrarTab(tab) {
   const clientesTab = document.getElementById("tabClientes");
+  const fullCartTab = document.getElementById("tabFullCart");
   const ventasTab = document.getElementById("tabVentas");
   const eliminarTab = document.getElementById("eliminar");
 
   if (clientesTab) clientesTab.style.display = (tab === "clientes") ? "block" : "none";
+  if (fullCartTab) fullCartTab.style.display = (tab === "fullcart") ? "block" : "none";
   if (ventasTab) ventasTab.style.display = (tab === "ventas") ? "block" : "none";
   if (eliminarTab) eliminarTab.style.display = (tab === "eliminar") ? "block" : "none";
 
   const buttons = document.querySelectorAll(".tabs button");
   buttons.forEach(btn => btn.classList.remove("active"));
-  if (tab === "clientes" && buttons[0]) buttons[0].classList.add("active");
-  else if (tab === "ventas" && buttons[1]) buttons[1].classList.add("active");
-  else if (tab === "eliminar" && buttons[2]) buttons[2].classList.add("active");
-}
 
+  if (tab === "clientes" && buttons[0]) buttons[0].classList.add("active");
+  else if (tab === "fullcart" && buttons[1]) buttons[1].classList.add("active");
+  else if (tab === "ventas" && buttons[2]) buttons[2].classList.add("active");
+  else if (tab === "eliminar" && buttons[3]) buttons[3].classList.add("active");
+}
 // 🔹 Toast flotante
 function mostrarToast(mensaje, tipo = "info") {
   const toast = document.createElement("div");
