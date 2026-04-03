@@ -18,24 +18,16 @@
 
   <!-- Pestañas -->
   <div class="tabs">
-    <button onclick="mostrarTab('pedidos')">Pedidos Clientes</button>
-    <button onclick="mostrarTab('fullcart')">Full Cart</button>
+    <button onclick="mostrarTab('clientes')">Clientes</button>
     <button onclick="mostrarTab('ventas')">Ventas Cerradas</button>
   </div>
 
   <!-- Contenido de pestañas -->
-  <div id="tabPedidos" class="tab-content">
-    <h2>Lista de Pedidos de Clientes</h2>
-    <div class="counter">Total pedidos: <span id="contadorPedidos">0</span></div>
-    <input type="text" id="buscadorPedidos" placeholder="Buscar pedido por nombre o ID">
-    <ul id="listaPedidos"></ul>
-  </div>
-
-  <div id="tabFullCart" class="tab-content" style="display:none;">
-    <h2>Lista de Carrito Lleno</h2>
-    <div class="counter">Total en carrito: <span id="contadorFullCart">0</span></div>
-    <input type="text" id="buscadorFullCart" placeholder="Buscar en carrito por nombre o etiqueta">
-    <ul id="listaFullCart"></ul>
+  <div id="tabClientes" class="tab-content">
+    <h2>Lista de Clientes</h2>
+    <div class="counter">Total clientes: <span id="contadorClientes">0</span></div>
+    <input type="text" id="buscadorClientes" placeholder="Buscar cliente por nombre o ID">
+    <ul id="listaClientes"></ul>
   </div>
 
   <div id="tabVentas" class="tab-content" style="display:none;">
