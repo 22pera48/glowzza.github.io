@@ -912,6 +912,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 }
 // clientes.js
 
+// Mostrar/ocultar pestañas
 function mostrarTab(tab) {
   // Ocultar todos los contenidos
   document.querySelectorAll(".tab-content").forEach(div => {
@@ -928,10 +929,10 @@ function mostrarTab(tab) {
   }
 }
 
-// Mostrar por defecto la primera pestaña (Pedidos Clientes)
+// Al cargar la página, mostrar por defecto "Pedidos Clientes"
 document.addEventListener("DOMContentLoaded", () => {
   mostrarTab("pedidos");
-});// 🔹 Exponer funciones globales
+});
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
 window.mostrarClientes = mostrarClientes;
