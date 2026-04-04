@@ -245,41 +245,25 @@ if (data.cuotas && Array.isArray(data.cuotas)) {
     pagado += cuota.monto;
   });
 
-// 🔹 Cálculo inicial de Pagado y Falta
-const totalCliente = parseFloat(
-  li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-) || 0;
-const falta = Math.max(totalCliente - pagado, 0);
+  // 🔹 Cálculo inicial de Pagado y Falta
+  const totalCliente = parseFloat(
+    li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+  ) || 0;
+  const falta = Math.max(totalCliente - pagado, 0);
 
-const resumen = document.createElement("div");
-resumen.classList.add("resumenCuotas");
-resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
-cuotasContainer.appendChild(resumen);
-} // 👈 cierre del if (data.cuotas)
+  const resumen = document.createElement("div");
+  resumen.classList.add("resumenCuotas");
+  resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
+  cuotasContainer.appendChild(resumen);
+}
+    lista.appendChild(li);
+    count++;
+  });
 
-// 🔹 Agregar cliente a la lista
-lista.appendChild(li);
-count++;
-
-// 🔹 Validar antes de cerrar venta (por cliente)
-const btnCerrarVenta = li.querySelector(".btnCerrarVenta");
-btnCerrarVenta.addEventListener("click", () => {
-  const productosSinStock = li.querySelectorAll(".listaProductosCliente li.sin-stock");
-
-  if (productosSinStock.length > 0) {
-    alert("Compruebe stock antes de cerrar");
-    return; // 👈 bloquea el cierre
-  }
-
-  // Lógica normal de cierre
-  cerrarVenta(li.getAttribute("data-id"));
-});
-}); // 👈 cierre del snap.forEach
-
-contador.textContent = `Clientes: ${count}`;
-inicializarBuscadoresProductos();
-} // 👈 cierre de la función mostrarClientes
-// // 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
+  contador.textContent = `Clientes: ${count}`;
+  inicializarBuscadoresProductos();
+}
+// 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
 async function inicializarBuscadoresProductos() {
   const snap = await getDocs(collection(db, "productos"));
   const productos = [];
@@ -297,7 +281,7 @@ async function inicializarBuscadoresProductos() {
     const listaProductosCliente = liCliente.querySelector(".listaProductosCliente");
     const estadoDespacho = liCliente.querySelector(".estadoDespacho");
     const estadoPago = liCliente.querySelector(".estadoPago");
-    const btnCerrarVenta = li.querySelector(".btnCerrarVenta");
+    const btnCerrarVenta = liCliente.querySelector(".btnCerrarVenta");
     const btnCuotas = liCliente.querySelector(".btnCuotas");
 
     // Botón Cuotas
@@ -738,7 +722,6 @@ async function mostrarVentasCerradas() {
 
     lista.appendChild(li);
     count++;
-    
   });
 
   contador.textContent = count;
