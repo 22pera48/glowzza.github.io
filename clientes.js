@@ -421,6 +421,12 @@ btnAgregar.addEventListener("click", async () => {
       const liProd = document.createElement("li");
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
 
+      // 🔹 Marcar en rojo si se agregó con stock insuficiente
+      liProd.style.backgroundColor = "#ffcccc";   // fondo rojo suave
+      liProd.style.border = "1px solid #e74c3c";  // borde rojo
+      liProd.style.padding = "6px";
+      liProd.style.borderRadius = "6px";
+
       const btnEliminar = document.createElement("button");
       btnEliminar.textContent = "❌";
       btnEliminar.style.marginLeft = "10px";
@@ -454,7 +460,7 @@ btnAgregar.addEventListener("click", async () => {
       document.body.removeChild(modal);
     });
 
-    return; // 👈 importante: salir de la función para no seguir con el flujo normal
+    return; // 👈 salir de la función para no seguir con el flujo normal
   }
 
   // 🔹 Flujo normal cuando hay stock suficiente
