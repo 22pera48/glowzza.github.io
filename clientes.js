@@ -353,11 +353,111 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
+  // 🔹 Caso stock insuficiente
   if (cantidad > (producto.stock ?? 0)) {
-    alert(`Stock insuficiente. Disponible: ${producto.stock ?? 0}`);
-    return;
+    // Crear modal personalizado
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
+    modal.style.display = "flex";
+    modal.style.justifyContent = "center";
+    modal.style.alignItems = "center";
+    modal.style.zIndex = "9999";
+
+    const caja = document.createElement("div");
+    caja.style.background = "#fff";
+    caja.style.padding = "20px";
+    caja.style.borderRadius = "8px";
+    caja.style.textAlign = "center";
+    caja.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+
+    const mensaje = document.createElement("p");
+    mensaje.textContent = `Stock insuficiente. Disponible: ${producto.stock ?? 0}\n¿Agregar igualmente con stock 0?`;
+
+    const btnAceptar = document.createElement("button");
+    btnAceptar.textContent = "Aceptar";
+    btnAceptar.style.margin = "10px";
+    btnAceptar.style.background = "#27ae60";
+    btnAceptar.style.color = "#fff";
+    btnAceptar.style.padding = "8px 14px";
+    btnAceptar.style.border = "none";
+    btnAceptar.style.borderRadius = "4px";
+    btnAceptar.style.cursor = "pointer";
+
+    const btnCancelar = document.createElement("button");
+    btnCancelar.textContent = "Cancelar";
+    btnCancelar.style.margin = "10px";
+    btnCancelar.style.background = "#e74c3c";
+    btnCancelar.style.color = "#fff";
+    btnCancelar.style.padding = "8px 14px";
+    btnCancelar.style.border = "none";
+    btnCancelar.style.borderRadius = "4px";
+    btnCancelar.style.cursor = "pointer";
+
+    caja.appendChild(mensaje);
+    caja.appendChild(btnAceptar);
+    caja.appendChild(btnCancelar);
+    modal.appendChild(caja);
+    document.body.appendChild(modal);
+
+    // Acción aceptar
+    btnAceptar.addEventListener("click", async () => {
+      document.body.removeChild(modal);
+
+      const prodCliente = {
+        nombre: producto.nombre,
+        cantidad,
+        orden: producto.orden ?? "",
+        etiqueta: producto.codigo || producto.id,
+        color: producto.color ?? "",
+        precio: producto.precio ?? 0,
+        stock: 0 // 👈 se agrega con stock 0
+      };
+
+      const liProd = document.createElement("li");
+      liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
+
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "❌";
+      btnEliminar.style.marginLeft = "10px";
+
+      btnEliminar.addEventListener("click", async () => {
+        listaProductosCliente.removeChild(liProd);
+        const clienteId = liCliente.getAttribute("data-id");
+        const clienteRef = doc(db, "clientes", clienteId);
+        await updateDoc(clienteRef, {
+          productos: arrayRemove(prodCliente)
+        });
+        actualizarTotal(listaProductosCliente);
+      });
+
+      liProd.appendChild(btnEliminar);
+      listaProductosCliente.appendChild(liProd);
+
+      const clienteId = liCliente.getAttribute("data-id");
+      const clienteRef = doc(db, "clientes", clienteId);
+      await updateDoc(clienteRef, {
+        productos: arrayUnion(prodCliente)
+      });
+
+      actualizarTotal(listaProductosCliente);
+      buscador.value = "";
+      cantidadInput.value = 1;
+    });
+
+    // Acción cancelar
+    btnCancelar.addEventListener("click", () => {
+      document.body.removeChild(modal);
+    });
+
+    return; // 👈 importante: salir de la función para no seguir con el flujo normal
   }
 
+  // 🔹 Flujo normal cuando hay stock suficiente
   const prodCliente = {
     nombre: producto.nombre,
     cantidad,
@@ -370,37 +470,30 @@ btnAgregar.addEventListener("click", async () => {
   const liProd = document.createElement("li");
   liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
 
-  // Botón eliminar
   const btnEliminar = document.createElement("button");
   btnEliminar.textContent = "❌";
   btnEliminar.style.marginLeft = "10px";
 
   btnEliminar.addEventListener("click", async () => {
     listaProductosCliente.removeChild(liProd);
-
     const clienteId = liCliente.getAttribute("data-id");
     const clienteRef = doc(db, "clientes", clienteId);
     await updateDoc(clienteRef, {
       productos: arrayRemove(prodCliente)
     });
-
-    // 🔹 Recalcular total al eliminar
     actualizarTotal(listaProductosCliente);
   });
 
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
 
-  // 🔹 Guardar en Firebase
   const clienteId = liCliente.getAttribute("data-id");
   const clienteRef = doc(db, "clientes", clienteId);
   await updateDoc(clienteRef, {
     productos: arrayUnion(prodCliente)
   });
 
-  // 🔹 Recalcular total al agregar
   actualizarTotal(listaProductosCliente);
-
   buscador.value = "";
   cantidadInput.value = 1;
 });
