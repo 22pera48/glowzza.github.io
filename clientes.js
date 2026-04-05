@@ -352,8 +352,9 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
-  // 🔹 Consultar stock real desde Firestore
-  const productoRef = doc(db, "productos", producto.id);
+  // 🔹 Usar el campo correcto como ID del documento en Firestore
+  const productoId = producto.id || producto.codigo || producto.etiqueta;
+  const productoRef = doc(db, "productos", productoId);
   const productoSnap = await getDoc(productoRef);
   const stockDisponible = productoSnap.exists() ? productoSnap.data().stock : 0;
 
@@ -416,7 +417,7 @@ btnAgregar.addEventListener("click", async () => {
         nombre: producto.nombre,
         cantidad,
         orden: producto.orden ?? "",
-        etiqueta: producto.codigo || producto.id,
+        etiqueta: productoId,
         color: producto.color ?? "",
         precio: producto.precio ?? 0,
         stock: 0 // 👈 se agrega con stock 0
@@ -425,7 +426,6 @@ btnAgregar.addEventListener("click", async () => {
       const liProd = document.createElement("li");
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
 
-      // 🔹 Marcar en rojo si se agregó con stock insuficiente
       liProd.style.backgroundColor = "#ffcccc";
       liProd.style.border = "1px solid #e74c3c";
       liProd.style.padding = "6px";
@@ -459,12 +459,11 @@ btnAgregar.addEventListener("click", async () => {
       cantidadInput.value = 1;
     });
 
-    // Acción cancelar
     btnCancelar.addEventListener("click", () => {
       document.body.removeChild(modal);
     });
 
-    return; // 👈 salir de la función para no seguir con el flujo normal
+    return;
   }
 
   // 🔹 Flujo normal cuando hay stock suficiente
@@ -472,10 +471,10 @@ btnAgregar.addEventListener("click", async () => {
     nombre: producto.nombre,
     cantidad,
     orden: producto.orden ?? "",
-    etiqueta: producto.codigo || producto.id,
+    etiqueta: productoId,
     color: producto.color ?? "",
     precio: producto.precio ?? 0,
-    stock: stockDisponible // 👈 ahora guarda el stock real
+    stock: stockDisponible
   };
 
   const liProd = document.createElement("li");
