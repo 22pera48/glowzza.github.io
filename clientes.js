@@ -310,7 +310,7 @@ async function inicializarBuscadoresProductos() {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
+        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
@@ -353,8 +353,13 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
+  // 🔹 Consultar stock real desde Firestore
+  const productoRef = doc(db, "productos", producto.id);
+  const productoSnap = await getDoc(productoRef);
+  const stockDisponible = productoSnap.exists() ? productoSnap.data().stock : 0;
+
   // 🔹 Caso stock insuficiente
-  if (cantidad > (producto.stock ?? 0)) {
+  if (cantidad > stockDisponible) {
     // Crear modal personalizado
     const modal = document.createElement("div");
     modal.style.position = "fixed";
@@ -376,7 +381,7 @@ btnAgregar.addEventListener("click", async () => {
     caja.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
 
     const mensaje = document.createElement("p");
-    mensaje.textContent = `Stock insuficiente. Disponible: ${producto.stock ?? 0}\n¿Agregar igualmente con stock 0?`;
+    mensaje.textContent = `Stock insuficiente. Disponible: ${stockDisponible}\n¿Agregar igualmente con stock 0?`;
 
     const btnAceptar = document.createElement("button");
     btnAceptar.textContent = "Aceptar";
@@ -422,8 +427,8 @@ btnAgregar.addEventListener("click", async () => {
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
 
       // 🔹 Marcar en rojo si se agregó con stock insuficiente
-      liProd.style.backgroundColor = "#ffcccc";   // fondo rojo suave
-      liProd.style.border = "1px solid #e74c3c";  // borde rojo
+      liProd.style.backgroundColor = "#ffcccc";
+      liProd.style.border = "1px solid #e74c3c";
       liProd.style.padding = "6px";
       liProd.style.borderRadius = "6px";
 
@@ -470,7 +475,8 @@ btnAgregar.addEventListener("click", async () => {
     orden: producto.orden ?? "",
     etiqueta: producto.codigo || producto.id,
     color: producto.color ?? "",
-    precio: producto.precio ?? 0
+    precio: producto.precio ?? 0,
+    stock: stockDisponible // 👈 ahora guarda el stock real
   };
 
   const liProd = document.createElement("li");
