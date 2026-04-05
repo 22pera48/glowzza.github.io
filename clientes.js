@@ -125,41 +125,41 @@ async function mostrarClientes() {
     const li = document.createElement("li");
 
     // Renderizado visual del cliente
-li.innerHTML = `
-  <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
-  ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
-  <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
-  
-  <div class="buscador-productos">
-    <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
-    <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
-    <button class="btnAgregarProducto">+</button>
-    <div class="menuProductos dropdown-menu"></div>
-  </div>
-  
-  <ul class="listaProductosCliente"></ul>
+    li.innerHTML = `
+      <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
+      ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
+      <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
+      
+      <div class="buscador-productos">
+        <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
+        <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
+        <button class="btnAgregarProducto">+</button>
+        <div class="menuProductos dropdown-menu"></div>
+      </div>
+      
+      <ul class="listaProductosCliente"></ul>
 
-  <div class="estadoVenta">
-    <select class="estadoDespacho">
-      <option value="">Estado</option>
-      <option value="despachado">Despachado</option>
-      <option value="deposito">En depósito</option>
-    </select>
+      <div class="estadoVenta">
+        <select class="estadoDespacho">
+          <option value="">Estado</option>
+          <option value="despachado">Despachado</option>
+          <option value="deposito">En depósito</option>
+        </select>
 
-    <select class="estadoPago">
-      <option value="">Estado</option>
-      <option value="pagado">Pagado</option>
-      <option value="sinpagar">Sin pagar</option>
-    </select>
+        <select class="estadoPago">
+          <option value="">Estado</option>
+          <option value="pagado">Pagado</option>
+          <option value="sinpagar">Sin pagar</option>
+        </select>
 
-    <button class="btnCerrarVenta">Cerrar Venta</button>
-    <button class="btnCuotas">Cuotas</button>
-    <!-- 🔹 Nuevo botón de eliminar -->
-    <button onclick="abrirModalEliminar('${docSnap.id}')">🗑️ Eliminar Cliente</button>
-  </div>
+        <button class="btnCerrarVenta">Cerrar Venta</button>
+        <button class="btnCuotas">Cuotas</button>
+        <button onclick="abrirModalEliminar('${docSnap.id}')">🗑️ Eliminar Cliente</button>
+      </div>
 
-  <div class="cuotasContainer"></div>
-`;
+      <div class="cuotasContainer"></div>
+    `;
+
     // Atributos
     li.setAttribute("data-id", docSnap.id);
     li.setAttribute("data-etiqueta", data.etiqueta || docSnap.id);
@@ -176,6 +176,17 @@ li.innerHTML = `
         const liProd = document.createElement("li");
         liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
 
+        // Guardar stock en dataset
+        liProd.dataset.stock = prod.stock ?? 0;
+        liProd.dataset.cantidad = prod.cantidad;
+
+        // 🔹 Marcar en rojo si cantidad > stock
+        if (prod.cantidad > (prod.stock ?? 0)) {
+          liProd.style.backgroundColor = "#ffcccc";
+          liProd.style.border = "1px solid #e74c3c";
+          liProd.dataset.stock = "0"; // marcar como sin stock
+        }
+
         // Botón eliminar producto
         const btnEliminar = document.createElement("button");
         btnEliminar.textContent = "❌";
@@ -185,7 +196,6 @@ li.innerHTML = `
           const clienteId = li.getAttribute("data-id");
           const clienteRef = doc(db, "clientes", clienteId);
           await updateDoc(clienteRef, { productos: arrayRemove(prod) });
-          // 🔹 Recalcular total al eliminar
           actualizarTotal(listaProductosCliente);
         });
 
@@ -193,77 +203,96 @@ li.innerHTML = `
         listaProductosCliente.appendChild(liProd);
       });
 
-      // 🔹 Recalcular total al cargar productos
       actualizarTotal(listaProductosCliente);
     }
 
-// 🔹 Mostrar cuotas si existen
-if (data.cuotas && Array.isArray(data.cuotas)) {
-  const cuotasContainer = li.querySelector(".cuotasContainer");
-  let pagado = 0;
+    // 🔹 Mostrar cuotas si existen
+    if (data.cuotas && Array.isArray(data.cuotas)) {
+      const cuotasContainer = li.querySelector(".cuotasContainer");
+      let pagado = 0;
 
-  data.cuotas.forEach(cuota => {
-    const cuotaItem = document.createElement("div");
-    cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+      data.cuotas.forEach(cuota => {
+        const cuotaItem = document.createElement("div");
+        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
 
-    // Botón eliminar cuota con credenciales
-    const btnEliminarCuota = document.createElement("button");
-    btnEliminarCuota.textContent = "❌";
-    btnEliminarCuota.style.marginLeft = "10px";
+        const btnEliminarCuota = document.createElement("button");
+        btnEliminarCuota.textContent = "❌";
+        btnEliminarCuota.style.marginLeft = "10px";
 
-    btnEliminarCuota.addEventListener("click", async () => {
-      const usuario = prompt("Ingrese usuario cajero:");
-      const clave = prompt("Ingrese clave cajero:");
-      const valido = await validarCredenciales(usuario, clave);
+        btnEliminarCuota.addEventListener("click", async () => {
+          const usuario = prompt("Ingrese usuario cajero:");
+          const clave = prompt("Ingrese clave cajero:");
+          const valido = await validarCredenciales(usuario, clave);
 
-      if (valido) {
-        const clienteId = li.getAttribute("data-id");
-        const clienteRef = doc(db, "clientes", clienteId);
-        await updateDoc(clienteRef, { cuotas: arrayRemove(cuota) });
+          if (valido) {
+            const clienteId = li.getAttribute("data-id");
+            const clienteRef = doc(db, "clientes", clienteId);
+            await updateDoc(clienteRef, { cuotas: arrayRemove(cuota) });
 
-        cuotaItem.remove();
-        alert("Cuota eliminada correctamente.");
+            cuotaItem.remove();
+            alert("Cuota eliminada correctamente.");
 
-        // 🔹 Recalcular resumen después de eliminar
-        const totalCliente = parseFloat(
-          li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-        ) || 0;
-        pagado -= cuota.monto;
-        const falta = Math.max(totalCliente - pagado, 0);
+            const totalCliente = parseFloat(
+              li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+            ) || 0;
+            pagado -= cuota.monto;
+            const falta = Math.max(totalCliente - pagado, 0);
 
-        const resumen = cuotasContainer.querySelector(".resumenCuotas");
-        if (resumen) {
-          resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
-        }
-      } else {
-        alert("Credenciales inválidas. No se eliminó la cuota.");
-      }
-    });
+            const resumen = cuotasContainer.querySelector(".resumenCuotas");
+            if (resumen) {
+              resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
+            }
+          } else {
+            alert("Credenciales inválidas. No se eliminó la cuota.");
+          }
+        });
 
-    cuotaItem.appendChild(btnEliminarCuota);
-    cuotasContainer.appendChild(cuotaItem);
-    pagado += cuota.monto;
-  });
+        cuotaItem.appendChild(btnEliminarCuota);
+        cuotasContainer.appendChild(cuotaItem);
+        pagado += cuota.monto;
+      });
 
-  // 🔹 Cálculo inicial de Pagado y Falta
-  const totalCliente = parseFloat(
-    li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-  ) || 0;
-  const falta = Math.max(totalCliente - pagado, 0);
+      const totalCliente = parseFloat(
+        li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+      ) || 0;
+      const falta = Math.max(totalCliente - pagado, 0);
 
-  const resumen = document.createElement("div");
-  resumen.classList.add("resumenCuotas");
-  resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
-  cuotasContainer.appendChild(resumen);
-}
+      const resumen = document.createElement("div");
+      resumen.classList.add("resumenCuotas");
+      resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
+      cuotasContainer.appendChild(resumen);
+    }
+
     lista.appendChild(li);
     count++;
+
+    // 🔹 Validar antes de cerrar venta
+    const btnCerrarVenta = li.querySelector(".btnCerrarVenta");
+    btnCerrarVenta.addEventListener("click", () => {
+      let bloqueo = false;
+      const productosCliente = li.querySelectorAll(".listaProductosCliente li");
+
+      productosCliente.forEach(prodLi => {
+        const stock = parseInt(prodLi.dataset.stock || "0", 10);
+        const cantidad = parseInt(prodLi.dataset.cantidad || "0", 10);
+
+        if (cantidad > stock || stock === 0) {
+          bloqueo = true;
+        }
+      });
+
+      if (bloqueo) {
+        alert("No se puede cerrar la venta: hay productos con stock insuficiente.");
+        return;
+      }
+
+      cerrarVenta(li.getAttribute("data-id"));
+    });
   });
 
   contador.textContent = `Clientes: ${count}`;
   inicializarBuscadoresProductos();
-}
-// 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
+}// 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
 async function inicializarBuscadoresProductos() {
   const snap = await getDocs(collection(db, "productos"));
   const productos = [];
@@ -310,7 +339,7 @@ async function inicializarBuscadoresProductos() {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
+          item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
