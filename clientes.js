@@ -572,19 +572,21 @@ btnCerrarVenta.addEventListener("click", async () => {
     const nombreProducto = matchNombre ? matchNombre[1] : texto;
 
     // 🔹 Validar stock insuficiente desde dataset
-    const stockDisponible = parseInt(liProd.dataset.stock, 10);
-    if (cantidad > stockDisponible) {
+    const stockDisponible = parseInt(liProd.dataset.stock ?? cantidad, 10); 
+    const cantidadReal = parseInt(liProd.dataset.cantidad ?? cantidad, 10);
+
+    if (cantidadReal > stockDisponible) {
       bloqueoStock = true;
     }
 
-    totalCliente += precio * cantidad;
+    totalCliente += precio * cantidadReal;
 
     items.push({
       id: productoId,
       orden,
       nombre: nombreProducto,
       color,
-      cantidad,
+      cantidad: cantidadReal,
       precio
     });
   });
