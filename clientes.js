@@ -1,10 +1,9 @@
 // clientes.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
-  getFirestore, getDocs, collection, deleteDoc, doc, addDoc, updateDoc, 
+  getFirestore, getDocs, getDoc, collection, deleteDoc, doc, addDoc, updateDoc, 
   increment, arrayUnion, arrayRemove 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
   authDomain: "glowzzainventario.firebaseapp.com",
