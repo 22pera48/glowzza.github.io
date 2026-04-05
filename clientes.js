@@ -175,6 +175,10 @@ li.innerHTML = `
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
         liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
+        // 🔹 Setear atributos para validación en cierre de venta
+liProd.dataset.stock = prod.stock ?? 0;
+liProd.dataset.cantidad = prod.cantidad;
+
 
         // Botón eliminar producto
         const btnEliminar = document.createElement("button");
@@ -420,6 +424,10 @@ btnAgregar.addEventListener("click", async () => {
 
       const liProd = document.createElement("li");
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
+      // 🔹 Setear atributos para validación en cierre de venta
+liProd.dataset.stock = prod.stock ?? 0;
+liProd.dataset.cantidad = prod.cantidad;
+
 
       // 🔹 Marcar en rojo si se agregó con stock insuficiente
       liProd.style.backgroundColor = "#ffcccc";   // fondo rojo suave
@@ -475,6 +483,10 @@ btnAgregar.addEventListener("click", async () => {
 
   const liProd = document.createElement("li");
   liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
+// 🔹 Setear atributos para validación en cierre de venta
+liProd.dataset.stock = prod.stock ?? 0;
+liProd.dataset.cantidad = prod.cantidad;
+
 
   const btnEliminar = document.createElement("button");
   btnEliminar.textContent = "❌";
@@ -710,6 +722,12 @@ async function mostrarVentasCerradas() {
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
         liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.id} - Precio: $${prod.precio ?? 0}`;
+       
+// 🔹 Guardar stock y cantidad en dataset
+liProd.dataset.stock = prod.stock ?? 0;       // stock disponible del producto
+liProd.dataset.cantidad = prod.cantidad;      // cantidad pedida por el cliente
+
+
         ulProductos.appendChild(liProd);
       });
     }
