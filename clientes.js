@@ -521,23 +521,24 @@ btnAgregar.addEventListener("click", async () => {
 
     // Botón "Cerrar Venta"
 btnCerrarVenta.addEventListener("click", async () => {
-  // Validar estado de despacho y pago
+  // Paso 1: validar estado de despacho y pago
   if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
     alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
     return;
   }
 
+  // Paso 2: validar que haya productos
   const itemsLi = listaProductosCliente.querySelectorAll("li");
   if (itemsLi.length === 0) {
     alert("⚠️ No se puede cerrar la venta sin productos.");
     return;
   }
 
+  // Paso 3: recorrer productos, calcular precio/total y validar stock
   const items = [];
   let totalCliente = 0;
-  let bloqueoStock = false; // 🔹 bandera para stock insuficiente
+  let bloqueoStock = false;
 
-  // Paso 1: recorrer productos y calcular precio/total
   itemsLi.forEach(liProd => {
     const texto = liProd.textContent;
 
@@ -559,7 +560,7 @@ btnCerrarVenta.addEventListener("click", async () => {
     const nombreProducto = matchNombre ? matchNombre[1] : texto;
 
     // 🔹 Validar stock insuficiente desde dataset
-    const stockDisponible = parseInt(liProd.dataset.stock || "0", 10);
+    const stockDisponible = parseInt(liProd.dataset.stock, 10);
     if (cantidad > stockDisponible) {
       bloqueoStock = true;
     }
@@ -576,13 +577,13 @@ btnCerrarVenta.addEventListener("click", async () => {
     });
   });
 
-  // Paso 1.5: cortar si hay stock insuficiente
+  // Paso 3.5: cortar si hay stock insuficiente
   if (bloqueoStock) {
     alert("⚠️ No se puede cerrar la venta: hay productos con stock insuficiente.");
     return;
   }
 
-  // Paso 2: armar ventaData
+  // Paso 4: armar ventaData
   const ventaData = {
     cliente: {
       id: liCliente.getAttribute("data-id"),
@@ -601,10 +602,10 @@ btnCerrarVenta.addEventListener("click", async () => {
   };
 
   try {
-    // Paso 3: guardar venta
+    // Paso 5: guardar venta
     await addDoc(collection(db, "ventasCerradas"), ventaData);
 
-    // Paso 4: actualizar stock con ID correcto
+    // Paso 6: actualizar stock con ID correcto
     for (const item of items) {
       try {
         if (!item.id) continue;
@@ -617,7 +618,7 @@ btnCerrarVenta.addEventListener("click", async () => {
       }
     }
 
-    // Paso 5: eliminar cliente y refrescar vistas
+    // Paso 7: eliminar cliente y refrescar vistas
     await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
     listaProductosCliente.innerHTML = "";
     mostrarVentasCerradas();
