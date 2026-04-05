@@ -175,10 +175,6 @@ li.innerHTML = `
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
         liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
-        // 🔹 Setear atributos para validación en cierre de venta
-liProd.dataset.stock = prod.stock ?? 0;
-liProd.dataset.cantidad = prod.cantidad;
-
 
         // Botón eliminar producto
         const btnEliminar = document.createElement("button");
@@ -314,7 +310,7 @@ async function inicializarBuscadoresProductos() {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-          item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
+item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
@@ -424,10 +420,6 @@ btnAgregar.addEventListener("click", async () => {
 
       const liProd = document.createElement("li");
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
-      // 🔹 Setear atributos para validación en cierre de venta
-liProd.dataset.stock = prod.stock ?? 0;
-liProd.dataset.cantidad = prod.cantidad;
-
 
       // 🔹 Marcar en rojo si se agregó con stock insuficiente
       liProd.style.backgroundColor = "#ffcccc";   // fondo rojo suave
@@ -483,10 +475,6 @@ liProd.dataset.cantidad = prod.cantidad;
 
   const liProd = document.createElement("li");
   liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
-// 🔹 Setear atributos para validación en cierre de venta
-liProd.dataset.stock = prod.stock ?? 0;
-liProd.dataset.cantidad = prod.cantidad;
-
 
   const btnEliminar = document.createElement("button");
   btnEliminar.textContent = "❌";
@@ -532,72 +520,56 @@ liProd.dataset.cantidad = prod.cantidad;
     });
 
     // Botón "Cerrar Venta"
-btnCerrarVenta.addEventListener("click", async () => {
-  // Paso 1: validar estado de despacho y pago
-  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+    btnCerrarVenta.addEventListener("click", async () => {
+    if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
     alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
     return;
   }
 
-  // Paso 2: validar que haya productos
   const itemsLi = listaProductosCliente.querySelectorAll("li");
   if (itemsLi.length === 0) {
     alert("⚠️ No se puede cerrar la venta sin productos.");
     return;
   }
 
-  // Paso 3: recorrer productos, calcular precio/total y validar stock
   const items = [];
   let totalCliente = 0;
-  let bloqueoStock = false;
 
-  itemsLi.forEach(liProd => {
-    const texto = liProd.textContent;
+  // Paso 1: recorrer productos y calcular precio/total
+itemsLi.forEach(liProd => {
+  const texto = liProd.textContent;
 
-    const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
-    const matchCantidad = texto.match(/Cantidad: (\d+)/);
-    const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
+  const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
+  const matchCantidad = texto.match(/Cantidad: (\d+)/);
+  const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
 
-    const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
-    const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
-    const productoId = matchId ? matchId[1] : null;
+  const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
+  const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+  const productoId = matchId ? matchId[1] : null;
 
-    const matchOrden = texto.match(/\[(.*?)\]/);
-    const matchColor = texto.match(/Color:\s*([A-Za-z]+)/);
+  // 🔹 Extraer orden y color directamente del texto
+  const matchOrden = texto.match(/\[(.*?)\]/);
+  const matchColor = texto.match(/Color:\s*([A-Za-z]+)/);
 
-    const orden = matchOrden ? matchOrden[1] : "";
-    const color = matchColor ? matchColor[1] : "";
+  const orden = matchOrden ? matchOrden[1] : "";
+  const color = matchColor ? matchColor[1] : "";
 
-    const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
-    const nombreProducto = matchNombre ? matchNombre[1] : texto;
+  // 🔹 Extraer nombre limpio (sin orden ni color)
+  const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
+  const nombreProducto = matchNombre ? matchNombre[1] : texto;
 
-    // 🔹 Validar stock insuficiente desde dataset
-    const stockDisponible = parseInt(liProd.dataset.stock ?? cantidad, 10); 
-    const cantidadReal = parseInt(liProd.dataset.cantidad ?? cantidad, 10);
+  totalCliente += precio * cantidad;
 
-    if (cantidadReal > stockDisponible) {
-      bloqueoStock = true;
-    }
-
-    totalCliente += precio * cantidadReal;
-
-    items.push({
-      id: productoId,
-      orden,
-      nombre: nombreProducto,
-      color,
-      cantidad: cantidadReal,
-      precio
-    });
+  items.push({
+    id: productoId,
+    orden,
+    nombre: nombreProducto,
+    color,
+    cantidad,
+    precio
   });
-
-  // Paso 3.5: cortar si hay stock insuficiente
-  if (bloqueoStock) {
-    alert("⚠️ No se puede cerrar la venta: hay productos con stock insuficiente.");
-    return;
-  }
-
-  // Paso 4: armar ventaData
+});
+  // Paso 2: armar ventaData
   const ventaData = {
     cliente: {
       id: liCliente.getAttribute("data-id"),
@@ -616,10 +588,10 @@ btnCerrarVenta.addEventListener("click", async () => {
   };
 
   try {
-    // Paso 5: guardar venta
+    // Paso 3: guardar venta
     await addDoc(collection(db, "ventasCerradas"), ventaData);
 
-    // Paso 6: actualizar stock con ID correcto
+    // Paso 4: actualizar stock con ID correcto
     for (const item of items) {
       try {
         if (!item.id) continue;
@@ -632,7 +604,7 @@ btnCerrarVenta.addEventListener("click", async () => {
       }
     }
 
-    // Paso 7: eliminar cliente y refrescar vistas
+    // Paso 5: eliminar cliente y refrescar vistas
     await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
     listaProductosCliente.innerHTML = "";
     mostrarVentasCerradas();
@@ -724,12 +696,6 @@ async function mostrarVentasCerradas() {
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
         liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.id} - Precio: $${prod.precio ?? 0}`;
-       
-// 🔹 Guardar stock y cantidad en dataset
-liProd.dataset.stock = prod.stock ?? 0;       // stock disponible del producto
-liProd.dataset.cantidad = prod.cantidad;      // cantidad pedida por el cliente
-
-
         ulProductos.appendChild(liProd);
       });
     }
