@@ -397,7 +397,8 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
-  const productoId = producto.id || producto.codigo || producto.etiqueta;
+  // 👇 Usar siempre el ID de Firestore
+  const productoId = producto.id;
   const productoRef = doc(db, "productos", productoId);
   const productoSnap = await getDoc(productoRef);
 
@@ -416,7 +417,10 @@ btnAgregar.addEventListener("click", async () => {
   const clienteSnap = await getDoc(clienteRef);
   const productosCliente = clienteSnap.data().productos || [];
 
-  const yaExiste = productosCliente.some(p => p.etiqueta === productoId);
+  // 👇 Validación por ID + color
+  const yaExiste = productosCliente.some(
+    p => p.id === productoId && p.color === (producto.color ?? "")
+  );
   if (yaExiste) {
     // 🔹 Modal de aviso
     const modal = document.createElement("div");
@@ -517,10 +521,10 @@ btnAgregar.addEventListener("click", async () => {
       document.body.removeChild(modal);
 
       const prodCliente = {
+        id: productoId, // 👈 guardamos ID único
         nombre: producto.nombre,
         cantidad,
         orden: producto.orden ?? "",
-        etiqueta: productoId,
         color: producto.color ?? "",
         precio: producto.precio ?? 0,
         stock: 0,
@@ -528,9 +532,7 @@ btnAgregar.addEventListener("click", async () => {
       };
 
       const liProd = document.createElement("li");
-      liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
-
-      // 🔹 Estilos inline para insuficiente
+      liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.id} - Precio: $${prodCliente.precio}`;
       liProd.style.backgroundColor = "#ffcccc";
       liProd.style.border = "1px solid #e74c3c";
       liProd.style.padding = "6px";
@@ -569,10 +571,10 @@ btnAgregar.addEventListener("click", async () => {
 
   // 🔹 Flujo normal cuando hay stock suficiente
   const prodCliente = {
+    id: productoId, // 👈 guardamos ID único
     nombre: producto.nombre,
     cantidad,
     orden: producto.orden ?? "",
-    etiqueta: productoId,
     color: producto.color ?? "",
     precio: producto.precio ?? 0,
     stock: stockDisponible,
@@ -580,7 +582,7 @@ btnAgregar.addEventListener("click", async () => {
   };
 
   const liProd = document.createElement("li");
-  liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
+  liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.id} - Precio: $${prodCliente.precio}`;
 
   const btnEliminar = document.createElement("button");
   btnEliminar.textContent = "❌";
