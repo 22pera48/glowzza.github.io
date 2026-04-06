@@ -19,6 +19,12 @@ body {
   align-items: center;
   z-index: 2000;         /* encima de todo */
 }
+.stock-insuficiente {
+  background-color: #ffcccc;
+  border: 1px solid #e74c3c;
+  padding: 6px;
+  border-radius: 6px;
+}
 
 #modalCredenciales > div {
   background: #fff;
