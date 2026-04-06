@@ -346,7 +346,9 @@ btnAgregar.addEventListener("click", async () => {
   const cantidad = parseInt(cantidadInput.value, 10);
   if (!nombreProducto) return;
 
-  const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+  const producto = productos.find(
+    p => p.nombre.toLowerCase() === nombreProducto.toLowerCase()
+  );
   if (!producto) {
     alert("Producto no encontrado.");
     return;
@@ -356,11 +358,18 @@ btnAgregar.addEventListener("click", async () => {
   const productoId = producto.id || producto.codigo || producto.etiqueta;
   const productoRef = doc(db, "productos", productoId);
   const productoSnap = await getDoc(productoRef);
-  const stockDisponible = productoSnap.exists() ? productoSnap.data().stock : 0;
+
+  if (!productoSnap.exists()) {
+    alert("⚠️ Documento no encontrado en Firestore");
+    return;
+  }
+
+  const stockDisponible = productoSnap.data().stock ?? 0;
+  console.log("ID usado:", productoId);
+  console.log("Stock disponible:", stockDisponible);
 
   // 🔹 Caso stock insuficiente
   if (cantidad > stockDisponible) {
-    // Crear modal personalizado
     const modal = document.createElement("div");
     modal.style.position = "fixed";
     modal.style.top = "0";
@@ -409,7 +418,6 @@ btnAgregar.addEventListener("click", async () => {
     modal.appendChild(caja);
     document.body.appendChild(modal);
 
-    // Acción aceptar
     btnAceptar.addEventListener("click", async () => {
       document.body.removeChild(modal);
 
@@ -420,12 +428,11 @@ btnAgregar.addEventListener("click", async () => {
         etiqueta: productoId,
         color: producto.color ?? "",
         precio: producto.precio ?? 0,
-        stock: 0 // 👈 se agrega con stock 0
+        stock: 0
       };
 
       const liProd = document.createElement("li");
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
-
       liProd.style.backgroundColor = "#ffcccc";
       liProd.style.border = "1px solid #e74c3c";
       liProd.style.padding = "6px";
