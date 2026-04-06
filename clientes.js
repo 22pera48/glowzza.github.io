@@ -1043,6 +1043,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 // 🔹 Eliminar venta por ID directo y devolver stock
+// 🔹 Eliminar venta por ID directo y devolver stock
 const btnEliminarVenta = document.getElementById("btnEliminarVenta");
 if (btnEliminarVenta) {
   btnEliminarVenta.addEventListener("click", async () => {
@@ -1059,7 +1060,7 @@ if (btnEliminarVenta) {
         // 🔹 Devolver stock de cada producto
         if (data.productos && Array.isArray(data.productos)) {
           for (const prod of data.productos) {
-            const productoId = prod.etiqueta || prod.id;
+            const productoId = prod.idProducto; // usar siempre el ID real
             if (!productoId) {
               console.warn("Producto sin ID válido en la venta:", prod);
               continue;
@@ -1070,10 +1071,10 @@ if (btnEliminarVenta) {
 
             if (productoSnap.exists()) {
               await updateDoc(productoRef, {
-                stock: increment(prod.cantidad)
+                stock: increment(prod.cantidad ?? 0)
               });
             } else {
-              console.warn("Producto no encontrado en stock:", productoId);
+              console.warn("Producto no encontrado en colección 'productos':", productoId);
             }
           }
         }
