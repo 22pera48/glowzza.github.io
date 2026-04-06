@@ -428,12 +428,17 @@ btnAgregar.addEventListener("click", async () => {
         color: producto.color ?? "",
         precio: producto.precio ?? 0,
         stock: 0,
-        insuficiente: true   // 👈 flag para persistir estado
+        insuficiente: true
       };
 
       const liProd = document.createElement("li");
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
-      liProd.classList.add("stock-insuficiente"); // 👈 aplicamos clase CSS
+
+      // 🔹 Estilos inline para insuficiente
+      liProd.style.backgroundColor = "#ffcccc";
+      liProd.style.border = "1px solid #e74c3c";
+      liProd.style.padding = "6px";
+      liProd.style.borderRadius = "6px";
 
       const btnEliminar = document.createElement("button");
       btnEliminar.textContent = "❌";
