@@ -339,6 +339,45 @@ async function inicializarBuscadoresProductos() {
         });
       menu.style.display = "block";
     });
+    async function reconstruirListaProductos(clienteId) {
+  const clienteRef = doc(db, "clientes", clienteId);
+  const clienteSnap = await getDoc(clienteRef);
+
+  if (!clienteSnap.exists()) return;
+
+  const productosCliente = clienteSnap.data().productos || [];
+  listaProductosCliente.innerHTML = ""; // limpiar lista
+
+  productosCliente.forEach(prodCliente => {
+    const liProd = document.createElement("li");
+    liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
+
+    // 🔹 aplicar estilo inline si es insuficiente
+    if (prodCliente.insuficiente) {
+      liProd.style.backgroundColor = "#ffcccc";
+      liProd.style.border = "1px solid #e74c3c";
+      liProd.style.padding = "6px";
+      liProd.style.borderRadius = "6px";
+    }
+
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "❌";
+    btnEliminar.style.marginLeft = "10px";
+
+    btnEliminar.addEventListener("click", async () => {
+      listaProductosCliente.removeChild(liProd);
+      await updateDoc(clienteRef, {
+        productos: arrayRemove(prodCliente)
+      });
+      actualizarTotal(listaProductosCliente);
+    });
+
+    liProd.appendChild(btnEliminar);
+    listaProductosCliente.appendChild(liProd);
+  });
+
+  actualizarTotal(listaProductosCliente);
+}
 
     // Botón "+" → valida stock antes de agregar
 btnAgregar.addEventListener("click", async () => {
