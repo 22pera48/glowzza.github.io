@@ -1042,44 +1042,56 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Eliminar venta por ID directo y devolver stock
-  const btnEliminarVenta = document.getElementById("btnEliminarVenta");
-  if (btnEliminarVenta) {
-    btnEliminarVenta.addEventListener("click", async () => {
-      const id = document.getElementById("ventaIdEliminar").value.trim();
-      if (!id) return;
-      try {
-        const ventaRef = doc(db, "ventasCerradas", id);
-        const ventaSnap = await getDoc(ventaRef);
+// 🔹 Eliminar venta por ID directo y devolver stock
+const btnEliminarVenta = document.getElementById("btnEliminarVenta");
+if (btnEliminarVenta) {
+  btnEliminarVenta.addEventListener("click", async () => {
+    const id = document.getElementById("ventaIdEliminar").value.trim();
+    if (!id) return;
 
-        if (ventaSnap.exists()) {
-          const data = ventaSnap.data();
+    try {
+      const ventaRef = doc(db, "ventasCerradas", id);
+      const ventaSnap = await getDoc(ventaRef);
 
-          // 🔹 Devolver stock de cada producto
-          if (data.productos && Array.isArray(data.productos)) {
-            for (const prod of data.productos) {
-              const productoRef = doc(db, "productos", prod.etiqueta || prod.id);
+      if (ventaSnap.exists()) {
+        const data = ventaSnap.data();
+
+        // 🔹 Devolver stock de cada producto
+        if (data.productos && Array.isArray(data.productos)) {
+          for (const prod of data.productos) {
+            const productoId = prod.etiqueta || prod.id;
+            if (!productoId) {
+              console.warn("Producto sin ID válido en la venta:", prod);
+              continue;
+            }
+
+            const productoRef = doc(db, "productos", productoId);
+            const productoSnap = await getDoc(productoRef);
+
+            if (productoSnap.exists()) {
               await updateDoc(productoRef, {
                 stock: increment(prod.cantidad)
               });
+            } else {
+              console.warn("Producto no encontrado en stock:", productoId);
             }
           }
-
-          // 🔹 Eliminar la venta cerrada
-          await deleteDoc(ventaRef);
-          mostrarToast("✅ Venta eliminada y stock devuelto", "success");
-        } else {
-          mostrarToast("⚠️ Venta no encontrada", "error");
         }
 
-        mostrarVentasCerradas();
-      } catch (error) {
-        console.error("Error al eliminar venta:", error);
-        mostrarToast("❌ No se pudo eliminar la venta", "error");
+        // 🔹 Eliminar la venta cerrada
+        await deleteDoc(ventaRef);
+        mostrarToast("✅ Venta eliminada y stock devuelto", "success");
+      } else {
+        mostrarToast("⚠️ Venta no encontrada", "error");
       }
-    });
-  }
 
+      mostrarVentasCerradas();
+    } catch (error) {
+      console.error("Error al eliminar venta:", error);
+      mostrarToast("❌ No se pudo eliminar la venta", "error");
+    }
+  });
+}
   // 🔹 Inicialización
   (async () => {
     await mostrarClientes();
