@@ -953,7 +953,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const passwordIngresado = document.getElementById("passwordCheck").value.trim();
 
       try {
-        // Traemos todos los documentos de la colección cajaCredenciales
         const credencialesSnapshot = await getDocs(collection(db, "cajaCredenciales"));
         let credencialValida = false;
 
@@ -981,7 +980,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Eliminar por ID directo (sin credenciales)
+  // 🔹 Eliminar cliente por ID directo (sin credenciales)
   const btnEliminarCliente = document.getElementById("btnEliminarCliente");
   if (btnEliminarCliente) {
     btnEliminarCliente.addEventListener("click", async () => {
@@ -998,15 +997,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Eliminar venta por ID directo
+  // 🔹 Eliminar venta por ID directo y devolver stock
   const btnEliminarVenta = document.getElementById("btnEliminarVenta");
   if (btnEliminarVenta) {
     btnEliminarVenta.addEventListener("click", async () => {
       const id = document.getElementById("ventaIdEliminar").value.trim();
       if (!id) return;
       try {
-        await deleteDoc(doc(db, "ventasCerradas", id));
-        mostrarToast("✅ Venta eliminada por ID", "success");
+        const ventaRef = doc(db, "ventasCerradas", id);
+        const ventaSnap = await getDoc(ventaRef);
+
+        if (ventaSnap.exists()) {
+          const data = ventaSnap.data();
+
+          // 🔹 Devolver stock de cada producto
+          if (data.productos && Array.isArray(data.productos)) {
+            for (const prod of data.productos) {
+              const productoRef = doc(db, "productos", prod.etiqueta || prod.id);
+              await updateDoc(productoRef, {
+                stock: increment(prod.cantidad)
+              });
+            }
+          }
+
+          // 🔹 Eliminar la venta cerrada
+          await deleteDoc(ventaRef);
+          mostrarToast("✅ Venta eliminada y stock devuelto", "success");
+        } else {
+          mostrarToast("⚠️ Venta no encontrada", "error");
+        }
+
         mostrarVentasCerradas();
       } catch (error) {
         console.error("Error al eliminar venta:", error);
