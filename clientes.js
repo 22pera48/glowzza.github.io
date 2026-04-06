@@ -410,6 +410,59 @@ btnAgregar.addEventListener("click", async () => {
   console.log("ID usado:", productoId);
   console.log("Stock disponible:", stockDisponible);
 
+  // 🔹 Verificar si el producto ya está en el carrito
+  const clienteId = liCliente.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+  const clienteSnap = await getDoc(clienteRef);
+  const productosCliente = clienteSnap.data().productos || [];
+
+  const yaExiste = productosCliente.some(p => p.etiqueta === productoId);
+  if (yaExiste) {
+    // 🔹 Modal de aviso
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
+    modal.style.display = "flex";
+    modal.style.justifyContent = "center";
+    modal.style.alignItems = "center";
+    modal.style.zIndex = "9999";
+
+    const caja = document.createElement("div");
+    caja.style.background = "#fff";
+    caja.style.padding = "20px";
+    caja.style.borderRadius = "8px";
+    caja.style.textAlign = "center";
+    caja.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+
+    const mensaje = document.createElement("p");
+    mensaje.textContent = "⚠️ El producto ya se encuentra en el carrito";
+
+    const btnCerrar = document.createElement("button");
+    btnCerrar.textContent = "Cerrar";
+    btnCerrar.style.marginTop = "10px";
+    btnCerrar.style.background = "#e74c3c";
+    btnCerrar.style.color = "#fff";
+    btnCerrar.style.padding = "8px 14px";
+    btnCerrar.style.border = "none";
+    btnCerrar.style.borderRadius = "4px";
+    btnCerrar.style.cursor = "pointer";
+
+    btnCerrar.addEventListener("click", () => {
+      document.body.removeChild(modal);
+    });
+
+    caja.appendChild(mensaje);
+    caja.appendChild(btnCerrar);
+    modal.appendChild(caja);
+    document.body.appendChild(modal);
+
+    return; // salir sin agregar
+  }
+
   // 🔹 Caso stock insuficiente
   if (cantidad > stockDisponible) {
     const modal = document.createElement("div");
@@ -489,8 +542,6 @@ btnAgregar.addEventListener("click", async () => {
 
       btnEliminar.addEventListener("click", async () => {
         listaProductosCliente.removeChild(liProd);
-        const clienteId = liCliente.getAttribute("data-id");
-        const clienteRef = doc(db, "clientes", clienteId);
         await updateDoc(clienteRef, {
           productos: arrayRemove(prodCliente)
         });
@@ -500,8 +551,6 @@ btnAgregar.addEventListener("click", async () => {
       liProd.appendChild(btnEliminar);
       listaProductosCliente.appendChild(liProd);
 
-      const clienteId = liCliente.getAttribute("data-id");
-      const clienteRef = doc(db, "clientes", clienteId);
       await updateDoc(clienteRef, {
         productos: arrayUnion(prodCliente)
       });
@@ -539,8 +588,6 @@ btnAgregar.addEventListener("click", async () => {
 
   btnEliminar.addEventListener("click", async () => {
     listaProductosCliente.removeChild(liProd);
-    const clienteId = liCliente.getAttribute("data-id");
-    const clienteRef = doc(db, "clientes", clienteId);
     await updateDoc(clienteRef, {
       productos: arrayRemove(prodCliente)
     });
@@ -550,8 +597,6 @@ btnAgregar.addEventListener("click", async () => {
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
 
-  const clienteId = liCliente.getAttribute("data-id");
-  const clienteRef = doc(db, "clientes", clienteId);
   await updateDoc(clienteRef, {
     productos: arrayUnion(prodCliente)
   });
