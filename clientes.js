@@ -531,15 +531,46 @@ btnAgregar.addEventListener("click", async () => {
     });
 
     // Botón "Cerrar Venta"
-    btnCerrarVenta.addEventListener("click", async () => {
-    if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
-    alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
+// Función auxiliar para mostrar banners
+function mostrarBanner(mensaje, tipo = "error") {
+  const banner = document.createElement("div");
+  banner.textContent = mensaje;
+  banner.style.position = "fixed";
+  banner.style.top = "20px";
+  banner.style.left = "50%";
+  banner.style.transform = "translateX(-50%)";
+  banner.style.padding = "12px 20px";
+  banner.style.borderRadius = "6px";
+  banner.style.fontWeight = "bold";
+  banner.style.zIndex = "10000";
+  banner.style.color = "#fff";
+
+  if (tipo === "error") {
+    banner.style.backgroundColor = "#e74c3c"; // rojo
+  } else if (tipo === "warning") {
+    banner.style.backgroundColor = "#f39c12"; // naranja
+  } else {
+    banner.style.backgroundColor = "#27ae60"; // verde
+  }
+
+  document.body.appendChild(banner);
+
+  setTimeout(() => {
+    if (document.body.contains(banner)) {
+      document.body.removeChild(banner);
+    }
+  }, 3000);
+}
+
+btnCerrarVenta.addEventListener("click", async () => {
+  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+    mostrarBanner("La venta solo puede cerrarse si está DESPACHADO y PAGADO.", "error");
     return;
   }
 
   const itemsLi = listaProductosCliente.querySelectorAll("li");
   if (itemsLi.length === 0) {
-    alert("⚠️ No se puede cerrar la venta sin productos.");
+    mostrarBanner("⚠️ No se puede cerrar la venta sin productos.", "warning");
     return;
   }
 
@@ -547,40 +578,57 @@ btnAgregar.addEventListener("click", async () => {
   let totalCliente = 0;
 
   // Paso 1: recorrer productos y calcular precio/total
-itemsLi.forEach(liProd => {
-  const texto = liProd.textContent;
+  itemsLi.forEach(liProd => {
+    const texto = liProd.textContent;
 
-  const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
-  const matchCantidad = texto.match(/Cantidad: (\d+)/);
-  const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
+    const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
+    const matchCantidad = texto.match(/Cantidad: (\d+)/);
+    const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
 
-  const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
-  const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
-  const productoId = matchId ? matchId[1] : null;
+    const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
+    const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+    const productoId = matchId ? matchId[1] : null;
 
-  // 🔹 Extraer orden y color directamente del texto
-  const matchOrden = texto.match(/\[(.*?)\]/);
-  const matchColor = texto.match(/Color:\s*([A-Za-z]+)/);
+    const matchOrden = texto.match(/\[(.*?)\]/);
+    const matchColor = texto.match(/Color:\s*([A-Za-z]+)/);
 
-  const orden = matchOrden ? matchOrden[1] : "";
-  const color = matchColor ? matchColor[1] : "";
+    const orden = matchOrden ? matchOrden[1] : "";
+    const color = matchColor ? matchColor[1] : "";
 
-  // 🔹 Extraer nombre limpio (sin orden ni color)
-  const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
-  const nombreProducto = matchNombre ? matchNombre[1] : texto;
+    const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
+    const nombreProducto = matchNombre ? matchNombre[1] : texto;
 
-  totalCliente += precio * cantidad;
+    totalCliente += precio * cantidad;
 
-  items.push({
-    id: productoId,
-    orden,
-    nombre: nombreProducto,
-    color,
-    cantidad,
-    precio
+    items.push({
+      id: productoId,
+      orden,
+      nombre: nombreProducto,
+      color,
+      cantidad,
+      precio
+    });
   });
-});
-  // Paso 2: armar ventaData
+
+  // Paso 2: validar stock antes de cerrar
+  for (const item of items) {
+    if (!item.id) continue;
+    const productoRef = doc(db, "productos", item.id);
+    const productoSnap = await getDoc(productoRef);
+
+    if (productoSnap.exists()) {
+      const stockActual = productoSnap.data().stock ?? 0;
+      if (item.cantidad > stockActual) {
+        mostrarBanner(
+          `❌ No se puede cerrar la venta. El producto "${item.nombre}" tiene stock ${stockActual} y se pidió ${item.cantidad}.`,
+          "error"
+        );
+        return; // 👈 corta el cierre de venta
+      }
+    }
+  }
+
+  // Paso 3: armar ventaData
   const ventaData = {
     cliente: {
       id: liCliente.getAttribute("data-id"),
@@ -599,32 +647,36 @@ itemsLi.forEach(liProd => {
   };
 
   try {
-    // Paso 3: guardar venta
+    // Paso 4: guardar venta
     await addDoc(collection(db, "ventasCerradas"), ventaData);
 
-    // Paso 4: actualizar stock con ID correcto
+    // Paso 5: actualizar stock
     for (const item of items) {
       try {
         if (!item.id) continue;
         const productoRef = doc(db, "productos", item.id);
-        await updateDoc(productoRef, {
-          stock: increment(-item.cantidad)
-        });
+        const productoSnap = await getDoc(productoRef);
+
+        if (productoSnap.exists()) {
+          const stockActual = productoSnap.data().stock ?? 0;
+          const nuevoStock = Math.max(stockActual - item.cantidad, 0);
+          await updateDoc(productoRef, { stock: nuevoStock });
+        }
       } catch (error) {
         console.warn(`No se pudo actualizar stock de ${item.nombre}`, error);
       }
     }
 
-    // Paso 5: eliminar cliente y refrescar vistas
+    // Paso 6: eliminar cliente y refrescar vistas
     await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
     listaProductosCliente.innerHTML = "";
     mostrarVentasCerradas();
     mostrarClientes();
 
-    alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
+    mostrarBanner("✅ Venta cerrada, guardada en ventasCerradas y stock actualizado.", "success");
   } catch (error) {
     console.error("Error al cerrar venta:", error);
-    alert("❌ Hubo un problema al cerrar la venta.");
+    mostrarBanner("❌ Hubo un problema al cerrar la venta.", "error");
   }
 });
     // Ocultar menú si se hace click fuera
