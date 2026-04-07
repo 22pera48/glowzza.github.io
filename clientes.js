@@ -408,8 +408,6 @@ btnAgregar.addEventListener("click", async () => {
 
   const productoId = productoSnap.id; // 👈 ID real del documento
   const stockDisponible = productoSnap.data().stock ?? 0;
-  console.log("ID usado:", productoId);
-  console.log("Stock disponible:", stockDisponible);
 
   // 🔹 Verificar si el producto ya está en el carrito
   const clienteId = liCliente.getAttribute("data-id");
@@ -417,111 +415,72 @@ btnAgregar.addEventListener("click", async () => {
   const clienteSnap = await getDoc(clienteRef);
   const productosCliente = clienteSnap.data().productos || [];
 
-  // 👇 Validación por ID + color normalizado
   const yaExiste = productosCliente.some(
     p =>
       p.id === productoId &&
       (p.color ?? "").trim().toLowerCase() === (producto.color ?? "").trim().toLowerCase()
   );
   if (yaExiste) {
-    // 🔹 Modal de aviso
+    // Modal de aviso
     const modal = document.createElement("div");
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    modal.style.zIndex = "9999";
-
+    modal.style = `
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background-color:rgba(0,0,0,0.5);display:flex;
+      justify-content:center;align-items:center;z-index:9999;
+    `;
     const caja = document.createElement("div");
-    caja.style.background = "#fff";
-    caja.style.padding = "20px";
-    caja.style.borderRadius = "8px";
-    caja.style.textAlign = "center";
-    caja.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
-
+    caja.style = `
+      background:#fff;padding:20px;border-radius:8px;
+      text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    `;
     const mensaje = document.createElement("p");
     mensaje.textContent = "⚠️ El producto ya se encuentra en el carrito";
-
     const btnCerrar = document.createElement("button");
     btnCerrar.textContent = "Cerrar";
-    btnCerrar.style.marginTop = "10px";
-    btnCerrar.style.background = "#e74c3c";
-    btnCerrar.style.color = "#fff";
-    btnCerrar.style.padding = "8px 14px";
-    btnCerrar.style.border = "none";
-    btnCerrar.style.borderRadius = "4px";
-    btnCerrar.style.cursor = "pointer";
-
-    btnCerrar.addEventListener("click", () => {
-      document.body.removeChild(modal);
-    });
-
-    caja.appendChild(mensaje);
-    caja.appendChild(btnCerrar);
+    btnCerrar.style = `
+      margin-top:10px;background:#e74c3c;color:#fff;
+      padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
+    `;
+    btnCerrar.addEventListener("click", () => document.body.removeChild(modal));
+    caja.append(mensaje, btnCerrar);
     modal.appendChild(caja);
     document.body.appendChild(modal);
-
-    return; // salir sin agregar
+    return;
   }
 
   // 🔹 Caso stock insuficiente
   if (cantidad > stockDisponible) {
     const modal = document.createElement("div");
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    modal.style.zIndex = "9999";
-
+    modal.style = `
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background-color:rgba(0,0,0,0.5);display:flex;
+      justify-content:center;align-items:center;z-index:9999;
+    `;
     const caja = document.createElement("div");
-    caja.style.background = "#fff";
-    caja.style.padding = "20px";
-    caja.style.borderRadius = "8px";
-    caja.style.textAlign = "center";
-    caja.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
-
+    caja.style = `
+      background:#fff;padding:20px;border-radius:8px;
+      text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    `;
     const mensaje = document.createElement("p");
     mensaje.textContent = `Stock insuficiente. Disponible: ${stockDisponible}\n¿Agregar igualmente con stock 0?`;
-
     const btnAceptar = document.createElement("button");
     btnAceptar.textContent = "Aceptar";
-    btnAceptar.style.margin = "10px";
-    btnAceptar.style.background = "#27ae60";
-    btnAceptar.style.color = "#fff";
-    btnAceptar.style.padding = "8px 14px";
-    btnAceptar.style.border = "none";
-    btnAceptar.style.borderRadius = "4px";
-    btnAceptar.style.cursor = "pointer";
-
+    btnAceptar.style = `
+      margin:10px;background:#27ae60;color:#fff;
+      padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
+    `;
     const btnCancelar = document.createElement("button");
     btnCancelar.textContent = "Cancelar";
-    btnCancelar.style.margin = "10px";
-    btnCancelar.style.background = "#e74c3c";
-    btnCancelar.style.color = "#fff";
-    btnCancelar.style.padding = "8px 14px";
-    btnCancelar.style.border = "none";
-    btnCancelar.style.borderRadius = "4px";
-    btnCancelar.style.cursor = "pointer";
-
-    caja.appendChild(mensaje);
-    caja.appendChild(btnAceptar);
-    caja.appendChild(btnCancelar);
+    btnCancelar.style = `
+      margin:10px;background:#e74c3c;color:#fff;
+      padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
+    `;
+    caja.append(mensaje, btnAceptar, btnCancelar);
     modal.appendChild(caja);
     document.body.appendChild(modal);
 
     btnAceptar.addEventListener("click", async () => {
       document.body.removeChild(modal);
-
       const prodCliente = {
         id: productoId,
         nombre: producto.nombre ?? "Sin nombre",
@@ -532,46 +491,33 @@ btnAgregar.addEventListener("click", async () => {
         stock: 0,
         insuficiente: true
       };
-
       const liProd = document.createElement("li");
       liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.id} - Precio: $${prodCliente.precio}`;
-      liProd.style.backgroundColor = "#ffcccc";
-      liProd.style.border = "1px solid #e74c3c";
-      liProd.style.padding = "6px";
-      liProd.style.borderRadius = "6px";
-
+      liProd.style = `
+        background-color:#ffcccc;border:1px solid #e74c3c;
+        padding:6px;border-radius:6px;
+      `;
       const btnEliminar = document.createElement("button");
       btnEliminar.textContent = "❌";
       btnEliminar.style.marginLeft = "10px";
-
       btnEliminar.addEventListener("click", async () => {
         listaProductosCliente.removeChild(liProd);
-        await updateDoc(clienteRef, {
-          productos: arrayRemove(prodCliente)
-        });
+        await updateDoc(clienteRef, { productos: arrayRemove(prodCliente) });
         actualizarTotal(listaProductosCliente);
       });
-
       liProd.appendChild(btnEliminar);
       listaProductosCliente.appendChild(liProd);
-
-      await updateDoc(clienteRef, {
-        productos: arrayUnion(prodCliente)
-      });
-
+      await updateDoc(clienteRef, { productos: arrayUnion(prodCliente) });
       actualizarTotal(listaProductosCliente);
       buscador.value = "";
       cantidadInput.value = 1;
     });
 
-    btnCancelar.addEventListener("click", () => {
-      document.body.removeChild(modal);
-    });
-
+    btnCancelar.addEventListener("click", () => document.body.removeChild(modal));
     return;
   }
 
-  // 🔹 Flujo normal cuando hay stock suficiente
+  // 🔹 Flujo normal
   const prodCliente = {
     id: productoId,
     nombre: producto.nombre ?? "Sin nombre",
@@ -582,29 +528,19 @@ btnAgregar.addEventListener("click", async () => {
     stock: stockDisponible,
     insuficiente: false
   };
-
   const liProd = document.createElement("li");
   liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.id} - Precio: $${prodCliente.precio}`;
-
   const btnEliminar = document.createElement("button");
   btnEliminar.textContent = "❌";
   btnEliminar.style.marginLeft = "10px";
-
   btnEliminar.addEventListener("click", async () => {
     listaProductosCliente.removeChild(liProd);
-    await updateDoc(clienteRef, {
-      productos: arrayRemove(prodCliente)
-    });
+    await updateDoc(clienteRef, { productos: arrayRemove(prodCliente) });
     actualizarTotal(listaProductosCliente);
   });
-
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
-
-  await updateDoc(clienteRef, {
-    productos: arrayUnion(prodCliente)
-  });
-
+  await updateDoc(clienteRef, { productos: arrayUnion(prodCliente) });
   actualizarTotal(listaProductosCliente);
   buscador.value = "";
   cantidadInput.value = 1;
