@@ -173,8 +173,7 @@ async function mostrarClientes() {
 
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
-        liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
-
+liProd.textContent = `[${prod.orden ?? ""}] ${prod.nombre ?? "Sin nombre"} - Color: ${prod.color ?? ""} - Cantidad: ${prod.cantidad ?? 0} - ID: ${prod.id ?? "SIN_ID"} - Precio: $${prod.precio ?? 0}`;
         // 🔹 aplicar estilo inline si es insuficiente
         if (prod.insuficiente) {
           liProd.style.backgroundColor = "#ffcccc";
