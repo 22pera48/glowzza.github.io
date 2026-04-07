@@ -397,8 +397,8 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
-  // 👇 Usar siempre el ID de Firestore
-  const productoId = producto.id;
+  // 👇 Usar siempre el ID del documento Firestore
+  const productoId = producto.id ?? productoSnap?.id;
   const productoRef = doc(db, "productos", productoId);
   const productoSnap = await getDoc(productoRef);
 
@@ -417,9 +417,11 @@ btnAgregar.addEventListener("click", async () => {
   const clienteSnap = await getDoc(clienteRef);
   const productosCliente = clienteSnap.data().productos || [];
 
-  // 👇 Validación por ID + color
+  // 👇 Validación por ID + color normalizado
   const yaExiste = productosCliente.some(
-    p => p.id === productoId && p.color === (producto.color ?? "")
+    p =>
+      p.id === productoId &&
+      (p.color ?? "").trim().toLowerCase() === (producto.color ?? "").trim().toLowerCase()
   );
   if (yaExiste) {
     // 🔹 Modal de aviso
@@ -521,11 +523,11 @@ btnAgregar.addEventListener("click", async () => {
       document.body.removeChild(modal);
 
       const prodCliente = {
-        id: productoId, // 👈 guardamos ID único
-        nombre: producto.nombre,
-        cantidad,
-        orden: producto.orden ?? "",
-        color: producto.color ?? "",
+        id: productoId ?? "SIN_ID",
+        nombre: producto.nombre ?? "Sin nombre",
+        cantidad: cantidad ?? 1,
+        orden: (producto.orden ?? "").trim(),
+        color: (producto.color ?? "").trim(),
         precio: producto.precio ?? 0,
         stock: 0,
         insuficiente: true
@@ -571,13 +573,13 @@ btnAgregar.addEventListener("click", async () => {
 
   // 🔹 Flujo normal cuando hay stock suficiente
   const prodCliente = {
-    id: productoId, // 👈 guardamos ID único
-    nombre: producto.nombre,
-    cantidad,
-    orden: producto.orden ?? "",
-    color: producto.color ?? "",
+    id: productoId ?? "SIN_ID",
+    nombre: producto.nombre ?? "Sin nombre",
+    cantidad: cantidad ?? 1,
+    orden: (producto.orden ?? "").trim(),
+    color: (producto.color ?? "").trim(),
     precio: producto.precio ?? 0,
-    stock: stockDisponible,
+    stock: stockDisponible ?? 0,
     insuficiente: false
   };
 
@@ -606,7 +608,7 @@ btnAgregar.addEventListener("click", async () => {
   actualizarTotal(listaProductosCliente);
   buscador.value = "";
   cantidadInput.value = 1;
-});   
+});
  // Validar credenciales al marcar como pagado
     estadoPago.addEventListener("change", async () => {
       if (estadoPago.value === "pagado") {
