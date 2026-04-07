@@ -606,7 +606,7 @@ btnAgregar.addEventListener("click", async () => {
   actualizarTotal(listaProductosCliente);
   buscador.value = "";
   cantidadInput.value = 1;
-});
+});   
  // Validar credenciales al marcar como pagado
     estadoPago.addEventListener("change", async () => {
       if (estadoPago.value === "pagado") {
