@@ -1,10 +1,9 @@
 // clientes.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
-  getFirestore, getDocs, collection, deleteDoc, doc, addDoc, updateDoc, 
+  getFirestore, getDocs, getDoc, collection, deleteDoc, doc, addDoc, updateDoc, 
   increment, arrayUnion, arrayRemove 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
   authDomain: "glowzzainventario.firebaseapp.com",
@@ -125,41 +124,41 @@ async function mostrarClientes() {
     const li = document.createElement("li");
 
     // Renderizado visual del cliente
-li.innerHTML = `
-  <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
-  ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
-  <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
-  
-  <div class="buscador-productos">
-    <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
-    <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
-    <button class="btnAgregarProducto">+</button>
-    <div class="menuProductos dropdown-menu"></div>
-  </div>
-  
-  <ul class="listaProductosCliente"></ul>
+    li.innerHTML = `
+      <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
+      ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
+      <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
+      
+      <div class="buscador-productos">
+        <input type="text" class="buscadorProductos" placeholder="Buscar producto...">
+        <input type="number" class="cantidadProducto" min="1" value="1" style="width:60px; margin-left:5px;">
+        <button class="btnAgregarProducto">+</button>
+        <div class="menuProductos dropdown-menu"></div>
+      </div>
+      
+      <ul class="listaProductosCliente"></ul>
 
-  <div class="estadoVenta">
-    <select class="estadoDespacho">
-      <option value="">Estado</option>
-      <option value="despachado">Despachado</option>
-      <option value="deposito">En depósito</option>
-    </select>
+      <div class="estadoVenta">
+        <select class="estadoDespacho">
+          <option value="">Estado</option>
+          <option value="despachado">Despachado</option>
+          <option value="deposito">En depósito</option>
+        </select>
 
-    <select class="estadoPago">
-      <option value="">Estado</option>
-      <option value="pagado">Pagado</option>
-      <option value="sinpagar">Sin pagar</option>
-    </select>
+        <select class="estadoPago">
+          <option value="">Estado</option>
+          <option value="pagado">Pagado</option>
+          <option value="sinpagar">Sin pagar</option>
+        </select>
 
-    <button class="btnCerrarVenta">Cerrar Venta</button>
-    <button class="btnCuotas">Cuotas</button>
-    <!-- 🔹 Nuevo botón de eliminar -->
-    <button onclick="abrirModalEliminar('${docSnap.id}')">🗑️ Eliminar Cliente</button>
-  </div>
+        <button class="btnCerrarVenta">Cerrar Venta</button>
+        <button class="btnCuotas">Cuotas</button>
+        <button onclick="abrirModalEliminar('${docSnap.id}')">🗑️ Eliminar Cliente</button>
+      </div>
 
-  <div class="cuotasContainer"></div>
-`;
+      <div class="cuotasContainer"></div>
+    `;
+
     // Atributos
     li.setAttribute("data-id", docSnap.id);
     li.setAttribute("data-etiqueta", data.etiqueta || docSnap.id);
@@ -174,7 +173,14 @@ li.innerHTML = `
 
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
-        liProd.textContent = `[${prod.orden}] ${prod.nombre} - Color: ${prod.color} - Cantidad: ${prod.cantidad} - ID: ${prod.etiqueta} - Precio: $${prod.precio ?? 0}`;
+liProd.textContent = `[${prod.orden ?? ""}] ${prod.nombre ?? "Sin nombre"} - Color: ${prod.color ?? ""} - Cantidad: ${prod.cantidad ?? 0} - ID: ${prod.id ?? "SIN_ID"} - Precio: $${prod.precio ?? 0}`;
+        // 🔹 aplicar estilo inline si es insuficiente
+        if (prod.insuficiente) {
+          liProd.style.backgroundColor = "#ffcccc";
+          liProd.style.border = "1px solid #e74c3c";
+          liProd.style.padding = "6px";
+          liProd.style.borderRadius = "6px";
+        }
 
         // Botón eliminar producto
         const btnEliminar = document.createElement("button");
@@ -185,7 +191,6 @@ li.innerHTML = `
           const clienteId = li.getAttribute("data-id");
           const clienteRef = doc(db, "clientes", clienteId);
           await updateDoc(clienteRef, { productos: arrayRemove(prod) });
-          // 🔹 Recalcular total al eliminar
           actualizarTotal(listaProductosCliente);
         });
 
@@ -193,69 +198,66 @@ li.innerHTML = `
         listaProductosCliente.appendChild(liProd);
       });
 
-      // 🔹 Recalcular total al cargar productos
       actualizarTotal(listaProductosCliente);
     }
 
-// 🔹 Mostrar cuotas si existen
-if (data.cuotas && Array.isArray(data.cuotas)) {
-  const cuotasContainer = li.querySelector(".cuotasContainer");
-  let pagado = 0;
+    // 🔹 Mostrar cuotas si existen
+    if (data.cuotas && Array.isArray(data.cuotas)) {
+      const cuotasContainer = li.querySelector(".cuotasContainer");
+      let pagado = 0;
 
-  data.cuotas.forEach(cuota => {
-    const cuotaItem = document.createElement("div");
-    cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
+      data.cuotas.forEach(cuota => {
+        const cuotaItem = document.createElement("div");
+        cuotaItem.textContent = `Pago: $${cuota.monto} - Fecha: ${new Date(cuota.fecha).toLocaleDateString()}`;
 
-    // Botón eliminar cuota con credenciales
-    const btnEliminarCuota = document.createElement("button");
-    btnEliminarCuota.textContent = "❌";
-    btnEliminarCuota.style.marginLeft = "10px";
+        const btnEliminarCuota = document.createElement("button");
+        btnEliminarCuota.textContent = "❌";
+        btnEliminarCuota.style.marginLeft = "10px";
 
-    btnEliminarCuota.addEventListener("click", async () => {
-      const usuario = prompt("Ingrese usuario cajero:");
-      const clave = prompt("Ingrese clave cajero:");
-      const valido = await validarCredenciales(usuario, clave);
+        btnEliminarCuota.addEventListener("click", async () => {
+          const usuario = prompt("Ingrese usuario cajero:");
+          const clave = prompt("Ingrese clave cajero:");
+          const valido = await validarCredenciales(usuario, clave);
 
-      if (valido) {
-        const clienteId = li.getAttribute("data-id");
-        const clienteRef = doc(db, "clientes", clienteId);
-        await updateDoc(clienteRef, { cuotas: arrayRemove(cuota) });
+          if (valido) {
+            const clienteId = li.getAttribute("data-id");
+            const clienteRef = doc(db, "clientes", clienteId);
+            await updateDoc(clienteRef, { cuotas: arrayRemove(cuota) });
 
-        cuotaItem.remove();
-        alert("Cuota eliminada correctamente.");
+            cuotaItem.remove();
+            alert("Cuota eliminada correctamente.");
 
-        // 🔹 Recalcular resumen después de eliminar
-        const totalCliente = parseFloat(
-          li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-        ) || 0;
-        pagado -= cuota.monto;
-        const falta = Math.max(totalCliente - pagado, 0);
+            const totalCliente = parseFloat(
+              li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+            ) || 0;
+            pagado -= cuota.monto;
+            const falta = Math.max(totalCliente - pagado, 0);
 
-        const resumen = cuotasContainer.querySelector(".resumenCuotas");
-        if (resumen) {
-          resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
-        }
-      } else {
-        alert("Credenciales inválidas. No se eliminó la cuota.");
-      }
-    });
+            const resumen = cuotasContainer.querySelector(".resumenCuotas");
+            if (resumen) {
+              resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
+            }
+          } else {
+            alert("Credenciales inválidas. No se eliminó la cuota.");
+          }
+        });
 
-    cuotaItem.appendChild(btnEliminarCuota);
-    cuotasContainer.appendChild(cuotaItem);
-    pagado += cuota.monto;
-  });
+        cuotaItem.appendChild(btnEliminarCuota);
+        cuotasContainer.appendChild(cuotaItem);
+        pagado += cuota.monto;
+      });
 
-  // 🔹 Cálculo inicial de Pagado y Falta
-  const totalCliente = parseFloat(
-    li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
-  ) || 0;
-  const falta = Math.max(totalCliente - pagado, 0);
+      const totalCliente = parseFloat(
+        li.querySelector(".resumenTotal")?.textContent.replace(/\D/g, "")
+      ) || 0;
+      const falta = Math.max(totalCliente - pagado, 0);
 
-  const resumen = document.createElement("div");
-  resumen.classList.add("resumenCuotas");
-  resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
-  cuotasContainer.appendChild(resumen);
-}
+      const resumen = document.createElement("div");
+      resumen.classList.add("resumenCuotas");
+      resumen.innerHTML = `<strong>Pagado:</strong> $${pagado} - <strong>Falta:</strong> $${falta}`;
+      cuotasContainer.appendChild(resumen);
+    }
+
     lista.appendChild(li);
     count++;
   });
@@ -310,7 +312,7 @@ async function inicializarBuscadoresProductos() {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
+        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
           buscador.value = p.nombre;
           menu.style.display = "none";
         });
@@ -340,6 +342,45 @@ item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.st
         });
       menu.style.display = "block";
     });
+    async function reconstruirListaProductos(clienteId) {
+  const clienteRef = doc(db, "clientes", clienteId);
+  const clienteSnap = await getDoc(clienteRef);
+
+  if (!clienteSnap.exists()) return;
+
+  const productosCliente = clienteSnap.data().productos || [];
+  listaProductosCliente.innerHTML = ""; // limpiar lista
+
+  productosCliente.forEach(prodCliente => {
+    const liProd = document.createElement("li");
+    liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
+
+    // 🔹 aplicar estilo inline si es insuficiente
+    if (prodCliente.insuficiente) {
+      liProd.style.backgroundColor = "#ffcccc";
+      liProd.style.border = "1px solid #e74c3c";
+      liProd.style.padding = "6px";
+      liProd.style.borderRadius = "6px";
+    }
+
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "❌";
+    btnEliminar.style.marginLeft = "10px";
+
+    btnEliminar.addEventListener("click", async () => {
+      listaProductosCliente.removeChild(liProd);
+      await updateDoc(clienteRef, {
+        productos: arrayRemove(prodCliente)
+      });
+      actualizarTotal(listaProductosCliente);
+    });
+
+    liProd.appendChild(btnEliminar);
+    listaProductosCliente.appendChild(liProd);
+  });
+
+  actualizarTotal(listaProductosCliente);
+}
 
     // Botón "+" → valida stock antes de agregar
 btnAgregar.addEventListener("click", async () => {
@@ -347,163 +388,162 @@ btnAgregar.addEventListener("click", async () => {
   const cantidad = parseInt(cantidadInput.value, 10);
   if (!nombreProducto) return;
 
-  const producto = productos.find(p => p.nombre.toLowerCase() === nombreProducto.toLowerCase());
+  const producto = productos.find(
+    p => p.nombre.toLowerCase() === nombreProducto.toLowerCase()
+  );
   if (!producto) {
     alert("Producto no encontrado.");
     return;
   }
 
-  // 🔹 Caso stock insuficiente
-  if (cantidad > (producto.stock ?? 0)) {
-    // Crear modal personalizado
+  // 👇 Usar siempre el ID del documento Firestore
+  const productoRef = doc(db, "productos", producto.id);
+  const productoSnap = await getDoc(productoRef);
+
+  if (!productoSnap.exists()) {
+    alert("⚠️ Documento no encontrado en Firestore");
+    return;
+  }
+
+  const productoId = productoRef.id; // 👈 ID real del documento
+  const stockDisponible = productoSnap.data().stock ?? 0;
+
+  // 🔹 Verificar si el producto ya está en el carrito
+  const clienteId = liCliente.getAttribute("data-id");
+  const clienteRef = doc(db, "clientes", clienteId);
+  const clienteSnap = await getDoc(clienteRef);
+  const productosCliente = clienteSnap.data().productos || [];
+
+  const yaExiste = productosCliente.some(
+    p =>
+      (p.id ?? p.etiqueta) === productoId &&
+      (p.color ?? "").trim().toLowerCase() === (producto.color ?? "").trim().toLowerCase()
+  );
+  if (yaExiste) {
     const modal = document.createElement("div");
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    modal.style.zIndex = "9999";
-
+    modal.style = `
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background-color:rgba(0,0,0,0.5);display:flex;
+      justify-content:center;align-items:center;z-index:9999;
+    `;
     const caja = document.createElement("div");
-    caja.style.background = "#fff";
-    caja.style.padding = "20px";
-    caja.style.borderRadius = "8px";
-    caja.style.textAlign = "center";
-    caja.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
-
+    caja.style = `
+      background:#fff;padding:20px;border-radius:8px;
+      text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    `;
     const mensaje = document.createElement("p");
-    mensaje.textContent = `Stock insuficiente. Disponible: ${producto.stock ?? 0}\n¿Agregar igualmente con stock 0?`;
+    mensaje.textContent = "⚠️ El producto ya se encuentra en el carrito";
+    const btnCerrar = document.createElement("button");
+    btnCerrar.textContent = "Cerrar";
+    btnCerrar.style = `
+      margin-top:10px;background:#e74c3c;color:#fff;
+      padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
+    `;
+    btnCerrar.addEventListener("click", () => document.body.removeChild(modal));
+    caja.append(mensaje, btnCerrar);
+    modal.appendChild(caja);
+    document.body.appendChild(modal);
+    return;
+  }
 
+  // 🔹 Caso stock insuficiente
+  if (cantidad > stockDisponible) {
+    const modal = document.createElement("div");
+    modal.style = `
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background-color:rgba(0,0,0,0.5);display:flex;
+      justify-content:center;align-items:center;z-index:9999;
+    `;
+    const caja = document.createElement("div");
+    caja.style = `
+      background:#fff;padding:20px;border-radius:8px;
+      text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    `;
+    const mensaje = document.createElement("p");
+    mensaje.textContent = `Stock insuficiente. Disponible: ${stockDisponible}\n¿Agregar igualmente con stock 0?`;
     const btnAceptar = document.createElement("button");
     btnAceptar.textContent = "Aceptar";
-    btnAceptar.style.margin = "10px";
-    btnAceptar.style.background = "#27ae60";
-    btnAceptar.style.color = "#fff";
-    btnAceptar.style.padding = "8px 14px";
-    btnAceptar.style.border = "none";
-    btnAceptar.style.borderRadius = "4px";
-    btnAceptar.style.cursor = "pointer";
-
+    btnAceptar.style = `
+      margin:10px;background:#27ae60;color:#fff;
+      padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
+    `;
     const btnCancelar = document.createElement("button");
     btnCancelar.textContent = "Cancelar";
-    btnCancelar.style.margin = "10px";
-    btnCancelar.style.background = "#e74c3c";
-    btnCancelar.style.color = "#fff";
-    btnCancelar.style.padding = "8px 14px";
-    btnCancelar.style.border = "none";
-    btnCancelar.style.borderRadius = "4px";
-    btnCancelar.style.cursor = "pointer";
-
-    caja.appendChild(mensaje);
-    caja.appendChild(btnAceptar);
-    caja.appendChild(btnCancelar);
+    btnCancelar.style = `
+      margin:10px;background:#e74c3c;color:#fff;
+      padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
+    `;
+    caja.append(mensaje, btnAceptar, btnCancelar);
     modal.appendChild(caja);
     document.body.appendChild(modal);
 
-    // Acción aceptar
     btnAceptar.addEventListener("click", async () => {
       document.body.removeChild(modal);
-
       const prodCliente = {
-        nombre: producto.nombre,
-        cantidad,
-        orden: producto.orden ?? "",
-        etiqueta: producto.codigo || producto.id,
-        color: producto.color ?? "",
+        id: productoId,
+        nombre: producto.nombre ?? "Sin nombre",
+        cantidad: cantidad ?? 1,
+        orden: (producto.orden ?? "").trim(),
+        color: (producto.color ?? "").trim(),
         precio: producto.precio ?? 0,
-        stock: 0 // 👈 se agrega con stock 0
+        stock: 0,
+        insuficiente: true
       };
-
       const liProd = document.createElement("li");
-      liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
-
-      // 🔹 Marcar en rojo si se agregó con stock insuficiente
-      liProd.style.backgroundColor = "#ffcccc";   // fondo rojo suave
-      liProd.style.border = "1px solid #e74c3c";  // borde rojo
-      liProd.style.padding = "6px";
-      liProd.style.borderRadius = "6px";
-
+      liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.id} - Precio: $${prodCliente.precio}`;
+      liProd.style = `
+        background-color:#ffcccc;border:1px solid #e74c3c;
+        padding:6px;border-radius:6px;
+      `;
       const btnEliminar = document.createElement("button");
       btnEliminar.textContent = "❌";
       btnEliminar.style.marginLeft = "10px";
-
       btnEliminar.addEventListener("click", async () => {
         listaProductosCliente.removeChild(liProd);
-        const clienteId = liCliente.getAttribute("data-id");
-        const clienteRef = doc(db, "clientes", clienteId);
-        await updateDoc(clienteRef, {
-          productos: arrayRemove(prodCliente)
-        });
+        await updateDoc(clienteRef, { productos: arrayRemove(prodCliente) });
         actualizarTotal(listaProductosCliente);
       });
-
       liProd.appendChild(btnEliminar);
       listaProductosCliente.appendChild(liProd);
-
-      const clienteId = liCliente.getAttribute("data-id");
-      const clienteRef = doc(db, "clientes", clienteId);
-      await updateDoc(clienteRef, {
-        productos: arrayUnion(prodCliente)
-      });
-
+      await updateDoc(clienteRef, { productos: arrayUnion(prodCliente) });
       actualizarTotal(listaProductosCliente);
       buscador.value = "";
       cantidadInput.value = 1;
     });
 
-    // Acción cancelar
-    btnCancelar.addEventListener("click", () => {
-      document.body.removeChild(modal);
-    });
-
-    return; // 👈 salir de la función para no seguir con el flujo normal
+    btnCancelar.addEventListener("click", () => document.body.removeChild(modal));
+    return;
   }
 
-  // 🔹 Flujo normal cuando hay stock suficiente
+  // 🔹 Flujo normal
   const prodCliente = {
-    nombre: producto.nombre,
-    cantidad,
-    orden: producto.orden ?? "",
-    etiqueta: producto.codigo || producto.id,
-    color: producto.color ?? "",
-    precio: producto.precio ?? 0
+    id: productoId,
+    nombre: producto.nombre ?? "Sin nombre",
+    cantidad: cantidad ?? 1,
+    orden: (producto.orden ?? "").trim(),
+    color: (producto.color ?? "").trim(),
+    precio: producto.precio ?? 0,
+    stock: stockDisponible,
+    insuficiente: false
   };
-
   const liProd = document.createElement("li");
-  liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.etiqueta} - Precio: $${prodCliente.precio}`;
-
+  liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.id} - Precio: $${prodCliente.precio}`;
   const btnEliminar = document.createElement("button");
   btnEliminar.textContent = "❌";
   btnEliminar.style.marginLeft = "10px";
-
   btnEliminar.addEventListener("click", async () => {
     listaProductosCliente.removeChild(liProd);
-    const clienteId = liCliente.getAttribute("data-id");
-    const clienteRef = doc(db, "clientes", clienteId);
-    await updateDoc(clienteRef, {
-      productos: arrayRemove(prodCliente)
-    });
+    await updateDoc(clienteRef, { productos: arrayRemove(prodCliente) });
     actualizarTotal(listaProductosCliente);
   });
-
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
-
-  const clienteId = liCliente.getAttribute("data-id");
-  const clienteRef = doc(db, "clientes", clienteId);
-  await updateDoc(clienteRef, {
-    productos: arrayUnion(prodCliente)
-  });
-
+  await updateDoc(clienteRef, { productos: arrayUnion(prodCliente) });
   actualizarTotal(listaProductosCliente);
   buscador.value = "";
   cantidadInput.value = 1;
 });
-    // Validar credenciales al marcar como pagado
+ // Validar credenciales al marcar como pagado
     estadoPago.addEventListener("change", async () => {
       if (estadoPago.value === "pagado") {
         const usuario = prompt("Ingrese usuario de caja:");
@@ -520,15 +560,46 @@ btnAgregar.addEventListener("click", async () => {
     });
 
     // Botón "Cerrar Venta"
-    btnCerrarVenta.addEventListener("click", async () => {
-    if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
-    alert("La venta solo puede cerrarse si está DESPACHADO y PAGADO.");
+// Función auxiliar para mostrar banners
+function mostrarBanner(mensaje, tipo = "error") {
+  const banner = document.createElement("div");
+  banner.textContent = mensaje;
+  banner.style.position = "fixed";
+  banner.style.top = "20px";
+  banner.style.left = "50%";
+  banner.style.transform = "translateX(-50%)";
+  banner.style.padding = "12px 20px";
+  banner.style.borderRadius = "6px";
+  banner.style.fontWeight = "bold";
+  banner.style.zIndex = "10000";
+  banner.style.color = "#fff";
+
+  if (tipo === "error") {
+    banner.style.backgroundColor = "#e74c3c"; // rojo
+  } else if (tipo === "warning") {
+    banner.style.backgroundColor = "#f39c12"; // naranja
+  } else {
+    banner.style.backgroundColor = "#27ae60"; // verde
+  }
+
+  document.body.appendChild(banner);
+
+  setTimeout(() => {
+    if (document.body.contains(banner)) {
+      document.body.removeChild(banner);
+    }
+  }, 3000);
+}
+
+btnCerrarVenta.addEventListener("click", async () => {
+  if (estadoDespacho.value !== "despachado" || estadoPago.value !== "pagado") {
+    mostrarBanner("La venta solo puede cerrarse si está DESPACHADO y PAGADO.", "error");
     return;
   }
 
   const itemsLi = listaProductosCliente.querySelectorAll("li");
   if (itemsLi.length === 0) {
-    alert("⚠️ No se puede cerrar la venta sin productos.");
+    mostrarBanner("⚠️ No se puede cerrar la venta sin productos.", "warning");
     return;
   }
 
@@ -536,40 +607,57 @@ btnAgregar.addEventListener("click", async () => {
   let totalCliente = 0;
 
   // Paso 1: recorrer productos y calcular precio/total
-itemsLi.forEach(liProd => {
-  const texto = liProd.textContent;
+  itemsLi.forEach(liProd => {
+    const texto = liProd.textContent;
 
-  const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
-  const matchCantidad = texto.match(/Cantidad: (\d+)/);
-  const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
+    const matchPrecio = texto.match(/Precio: \$([0-9]+)/);
+    const matchCantidad = texto.match(/Cantidad: (\d+)/);
+    const matchId = texto.match(/ID: ([A-Za-z0-9]+)/);
 
-  const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
-  const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
-  const productoId = matchId ? matchId[1] : null;
+    const precio = matchPrecio ? parseFloat(matchPrecio[1]) : 0;
+    const cantidad = matchCantidad ? parseInt(matchCantidad[1], 10) : 1;
+    const productoId = matchId ? matchId[1] : null;
 
-  // 🔹 Extraer orden y color directamente del texto
-  const matchOrden = texto.match(/\[(.*?)\]/);
-  const matchColor = texto.match(/Color:\s*([A-Za-z]+)/);
+    const matchOrden = texto.match(/\[(.*?)\]/);
+    const matchColor = texto.match(/Color:\s*([A-Za-z]+)/);
 
-  const orden = matchOrden ? matchOrden[1] : "";
-  const color = matchColor ? matchColor[1] : "";
+    const orden = matchOrden ? matchOrden[1] : "";
+    const color = matchColor ? matchColor[1] : "";
 
-  // 🔹 Extraer nombre limpio (sin orden ni color)
-  const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
-  const nombreProducto = matchNombre ? matchNombre[1] : texto;
+    const matchNombre = texto.match(/^\[.*?\]\s*(.*?)\s-\sColor/);
+    const nombreProducto = matchNombre ? matchNombre[1] : texto;
 
-  totalCliente += precio * cantidad;
+    totalCliente += precio * cantidad;
 
-  items.push({
-    id: productoId,
-    orden,
-    nombre: nombreProducto,
-    color,
-    cantidad,
-    precio
+    items.push({
+      id: productoId,
+      orden,
+      nombre: nombreProducto,
+      color,
+      cantidad,
+      precio
+    });
   });
-});
-  // Paso 2: armar ventaData
+
+  // Paso 2: validar stock antes de cerrar
+  for (const item of items) {
+    if (!item.id) continue;
+    const productoRef = doc(db, "productos", item.id);
+    const productoSnap = await getDoc(productoRef);
+
+    if (productoSnap.exists()) {
+      const stockActual = productoSnap.data().stock ?? 0;
+      if (item.cantidad > stockActual) {
+        mostrarBanner(
+          `❌ No se puede cerrar la venta. El producto "${item.nombre}" tiene stock ${stockActual} y se pidió ${item.cantidad}.`,
+          "error"
+        );
+        return; // 👈 corta el cierre de venta
+      }
+    }
+  }
+
+  // Paso 3: armar ventaData
   const ventaData = {
     cliente: {
       id: liCliente.getAttribute("data-id"),
@@ -588,32 +676,36 @@ itemsLi.forEach(liProd => {
   };
 
   try {
-    // Paso 3: guardar venta
+    // Paso 4: guardar venta
     await addDoc(collection(db, "ventasCerradas"), ventaData);
 
-    // Paso 4: actualizar stock con ID correcto
+    // Paso 5: actualizar stock
     for (const item of items) {
       try {
         if (!item.id) continue;
         const productoRef = doc(db, "productos", item.id);
-        await updateDoc(productoRef, {
-          stock: increment(-item.cantidad)
-        });
+        const productoSnap = await getDoc(productoRef);
+
+        if (productoSnap.exists()) {
+          const stockActual = productoSnap.data().stock ?? 0;
+          const nuevoStock = Math.max(stockActual - item.cantidad, 0);
+          await updateDoc(productoRef, { stock: nuevoStock });
+        }
       } catch (error) {
         console.warn(`No se pudo actualizar stock de ${item.nombre}`, error);
       }
     }
 
-    // Paso 5: eliminar cliente y refrescar vistas
+    // Paso 6: eliminar cliente y refrescar vistas
     await deleteDoc(doc(db, "clientes", ventaData.cliente.id));
     listaProductosCliente.innerHTML = "";
     mostrarVentasCerradas();
     mostrarClientes();
 
-    alert("✅ Venta cerrada, guardada en ventasCerradas, cuotas copiadas y stock actualizado.");
+    mostrarBanner("✅ Venta cerrada, guardada en ventasCerradas y stock actualizado.", "success");
   } catch (error) {
     console.error("Error al cerrar venta:", error);
-    alert("❌ Hubo un problema al cerrar la venta.");
+    mostrarBanner("❌ Hubo un problema al cerrar la venta.", "error");
   }
 });
     // Ocultar menú si se hace click fuera
@@ -844,7 +936,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const passwordIngresado = document.getElementById("passwordCheck").value.trim();
 
       try {
-        // Traemos todos los documentos de la colección cajaCredenciales
         const credencialesSnapshot = await getDocs(collection(db, "cajaCredenciales"));
         let credencialValida = false;
 
@@ -872,7 +963,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Eliminar por ID directo (sin credenciales)
+  // 🔹 Eliminar cliente por ID directo (sin credenciales)
   const btnEliminarCliente = document.getElementById("btnEliminarCliente");
   if (btnEliminarCliente) {
     btnEliminarCliente.addEventListener("click", async () => {
@@ -889,23 +980,57 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Eliminar venta por ID directo
-  const btnEliminarVenta = document.getElementById("btnEliminarVenta");
-  if (btnEliminarVenta) {
-    btnEliminarVenta.addEventListener("click", async () => {
-      const id = document.getElementById("ventaIdEliminar").value.trim();
-      if (!id) return;
-      try {
-        await deleteDoc(doc(db, "ventasCerradas", id));
-        mostrarToast("✅ Venta eliminada por ID", "success");
-        mostrarVentasCerradas();
-      } catch (error) {
-        console.error("Error al eliminar venta:", error);
-        mostrarToast("❌ No se pudo eliminar la venta", "error");
-      }
-    });
-  }
+// 🔹 Eliminar venta por ID directo y devolver stock
+// 🔹 Eliminar venta por ID directo y devolver stock
+const btnEliminarVenta = document.getElementById("btnEliminarVenta");
+if (btnEliminarVenta) {
+  btnEliminarVenta.addEventListener("click", async () => {
+    const id = document.getElementById("ventaIdEliminar").value.trim();
+    if (!id) return;
 
+    try {
+      const ventaRef = doc(db, "ventasCerradas", id);
+      const ventaSnap = await getDoc(ventaRef);
+
+      if (ventaSnap.exists()) {
+        const data = ventaSnap.data();
+
+        // 🔹 Devolver stock de cada producto
+        if (data.productos && Array.isArray(data.productos)) {
+          for (const prod of data.productos) {
+            const productoId = prod.idProducto; // usar siempre el ID real
+            if (!productoId) {
+              console.warn("Producto sin ID válido en la venta:", prod);
+              continue;
+            }
+
+            const productoRef = doc(db, "productos", productoId);
+            const productoSnap = await getDoc(productoRef);
+
+            if (productoSnap.exists()) {
+              await updateDoc(productoRef, {
+                stock: increment(prod.cantidad ?? 0)
+              });
+            } else {
+              console.warn("Producto no encontrado en colección 'productos':", productoId);
+            }
+          }
+        }
+
+        // 🔹 Eliminar la venta cerrada
+        await deleteDoc(ventaRef);
+        mostrarToast("✅ Venta eliminada y stock devuelto", "success");
+      } else {
+        mostrarToast("⚠️ Venta no encontrada", "error");
+      }
+
+      mostrarVentasCerradas();
+    } catch (error) {
+      console.error("Error al eliminar venta:", error);
+      mostrarToast("❌ No se pudo eliminar la venta", "error");
+    }
+  });
+}
   // 🔹 Inicialización
   (async () => {
     await mostrarClientes();
