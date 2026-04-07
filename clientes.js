@@ -417,11 +417,9 @@ btnAgregar.addEventListener("click", async () => {
   const clienteSnap = await getDoc(clienteRef);
   const productosCliente = clienteSnap.data().productos || [];
 
-  // 👇 Validación por ID + color normalizado
+  // 👇 Validación por ID + color
   const yaExiste = productosCliente.some(
-    p =>
-      p.id === productoId &&
-      (p.color ?? "").trim().toLowerCase() === (producto.color ?? "").trim().toLowerCase()
+    p => p.id === productoId && p.color === (producto.color ?? "")
   );
   if (yaExiste) {
     // 🔹 Modal de aviso
@@ -523,11 +521,11 @@ btnAgregar.addEventListener("click", async () => {
       document.body.removeChild(modal);
 
       const prodCliente = {
-        id: productoId,
+        id: productoId, // 👈 guardamos ID único
         nombre: producto.nombre,
         cantidad,
         orden: producto.orden ?? "",
-        color: (producto.color ?? "").trim(),
+        color: producto.color ?? "",
         precio: producto.precio ?? 0,
         stock: 0,
         insuficiente: true
@@ -573,11 +571,11 @@ btnAgregar.addEventListener("click", async () => {
 
   // 🔹 Flujo normal cuando hay stock suficiente
   const prodCliente = {
-    id: productoId,
+    id: productoId, // 👈 guardamos ID único
     nombre: producto.nombre,
     cantidad,
     orden: producto.orden ?? "",
-    color: (producto.color ?? "").trim(),
+    color: producto.color ?? "",
     precio: producto.precio ?? 0,
     stock: stockDisponible,
     insuficiente: false
