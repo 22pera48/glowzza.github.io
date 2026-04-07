@@ -416,11 +416,10 @@ btnAgregar.addEventListener("click", async () => {
 
   const yaExiste = productosCliente.some(
     p =>
-      p.id === productoId &&
+      (p.id ?? p.etiqueta) === productoId &&
       (p.color ?? "").trim().toLowerCase() === (producto.color ?? "").trim().toLowerCase()
   );
   if (yaExiste) {
-    // Modal de aviso
     const modal = document.createElement("div");
     modal.style = `
       position:fixed;top:0;left:0;width:100%;height:100%;
