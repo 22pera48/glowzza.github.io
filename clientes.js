@@ -398,8 +398,7 @@ btnAgregar.addEventListener("click", async () => {
   }
 
   // 👇 Usar siempre el ID del documento Firestore
-  const productoId = producto.id ?? productoSnap?.id;
-  const productoRef = doc(db, "productos", productoId);
+  const productoRef = doc(db, "productos", producto.id);
   const productoSnap = await getDoc(productoRef);
 
   if (!productoSnap.exists()) {
@@ -407,6 +406,7 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
+  const productoId = productoSnap.id; // 👈 ID real del documento
   const stockDisponible = productoSnap.data().stock ?? 0;
   console.log("ID usado:", productoId);
   console.log("Stock disponible:", stockDisponible);
@@ -523,7 +523,7 @@ btnAgregar.addEventListener("click", async () => {
       document.body.removeChild(modal);
 
       const prodCliente = {
-        id: productoId ?? "SIN_ID",
+        id: productoId,
         nombre: producto.nombre ?? "Sin nombre",
         cantidad: cantidad ?? 1,
         orden: (producto.orden ?? "").trim(),
@@ -573,13 +573,13 @@ btnAgregar.addEventListener("click", async () => {
 
   // 🔹 Flujo normal cuando hay stock suficiente
   const prodCliente = {
-    id: productoId ?? "SIN_ID",
+    id: productoId,
     nombre: producto.nombre ?? "Sin nombre",
     cantidad: cantidad ?? 1,
     orden: (producto.orden ?? "").trim(),
     color: (producto.color ?? "").trim(),
     precio: producto.precio ?? 0,
-    stock: stockDisponible ?? 0,
+    stock: stockDisponible,
     insuficiente: false
   };
 
