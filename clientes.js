@@ -406,7 +406,7 @@ btnAgregar.addEventListener("click", async () => {
     return;
   }
 
-  const productoId = productoSnap.id; // 👈 ID real del documento
+  const productoId = productoRef.id; // 👈 ID real del documento
   const stockDisponible = productoSnap.data().stock ?? 0;
 
   // 🔹 Verificar si el producto ya está en el carrito
