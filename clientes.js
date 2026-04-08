@@ -428,36 +428,36 @@ btnAgregar.addEventListener("click", async () => {
   const clienteSnap = await getDoc(clienteRef);
   const productosCliente = clienteSnap.data().productos || [];
 
-const yaExiste = productosCliente.some(
+//const yaExiste = productosCliente.some(
   p => p.id === productoId
-);
+//);
 
-if (yaExiste) {
-    const modal = document.createElement("div");
-    modal.style = `
-      position:fixed;top:0;left:0;width:100%;height:100%;
-      background-color:rgba(0,0,0,0.5);display:flex;
-      justify-content:center;align-items:center;z-index:9999;
-    `;
-    const caja = document.createElement("div");
-    caja.style = `
-      background:#fff;padding:20px;border-radius:8px;
-      text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);
-    `;
-    const mensaje = document.createElement("p");
-    mensaje.textContent = "⚠️ El producto ya se encuentra en el carrito";
-    const btnCerrar = document.createElement("button");
-    btnCerrar.textContent = "Cerrar";
-    btnCerrar.style = `
-      margin-top:10px;background:#e74c3c;color:#fff;
-      padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
-    `;
-    btnCerrar.addEventListener("click", () => document.body.removeChild(modal));
-    caja.append(mensaje, btnCerrar);
-    modal.appendChild(caja);
-    document.body.appendChild(modal);
-    return;
-  }
+//if (yaExiste) {
+ //   const modal = document.createElement("div");
+  //  modal.style = `
+    //  position:fixed;top:0;left:0;width:100%;height:100%;
+    //  background-color:rgba(0,0,0,0.5);display:flex;
+    //  justify-content:center;align-items:center;z-index:9999;
+    //`;
+   // const caja = document.createElement("div");
+   // caja.style = `
+   //   background:#fff;padding:20px;border-radius:8px;
+   //   text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    //`;
+   // const mensaje = document.createElement("p");
+   // mensaje.textContent = "⚠️ El producto ya se encuentra en el carrito";
+   // const btnCerrar = document.createElement("button");
+   // btnCerrar.textContent = "Cerrar";
+   // btnCerrar.style = `
+    //  margin-top:10px;background:#e74c3c;color:#fff;
+   //   padding:8px 14px;border:none;border-radius:4px;cursor:pointer;
+  //  `;
+  //  btnCerrar.addEventListener("click", () => document.body.removeChild(modal));
+  //  caja.append(mensaje, btnCerrar);
+  //  modal.appendChild(caja);
+  //  document.body.appendChild(modal);
+  //  return;
+  //}
 
   // 🔹 Caso stock insuficiente
   if (cantidad > stockDisponible) {
