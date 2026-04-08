@@ -326,10 +326,14 @@ async function inicializarBuscadoresProductos() {
       menu.innerHTML = "";
       productos.forEach(p => {
         const item = document.createElement("div");
-        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;        item.addEventListener("click", () => {
-          buscador.value = p.nombre;
-          menu.style.display = "none";
-        });
+        item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;     
+item.addEventListener("click", () => {
+  // Lo que ve el usuario en el input
+  buscador.value = `[${p.orden}] ${p.nombre} - ${p.color}`;
+  // Guardamos el ID real en un atributo extra
+  buscador.dataset.productoId = p.id;
+  menu.style.display = "none";
+});
         menu.appendChild(item);
       });
       menu.style.display = "block";
@@ -348,10 +352,13 @@ async function inicializarBuscadoresProductos() {
         .forEach(p => {
           const item = document.createElement("div");
           item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
-          item.addEventListener("click", () => {
-            buscador.value = p.nombre;
-            menu.style.display = "none";
-          });
+item.addEventListener("click", () => {
+  // Lo que ve el usuario en el input
+  buscador.value = `[${p.orden}] ${p.nombre} - ${p.color}`;
+  // Guardamos el ID real en un atributo extra
+  buscador.dataset.productoId = p.id;
+  menu.style.display = "none";
+});
           menu.appendChild(item);
         });
       menu.style.display = "block";
@@ -398,18 +405,15 @@ async function inicializarBuscadoresProductos() {
 
     // Botón "+" → valida stock antes de agregar
 btnAgregar.addEventListener("click", async () => {
-  const nombreProducto = buscador.value.trim();
+  const productoIdSeleccionado = buscador.dataset.productoId; // 👈 tomamos el ID
   const cantidad = parseInt(cantidadInput.value, 10);
-  if (!nombreProducto) return;
+  if (!productoIdSeleccionado) return;
 
-  const producto = productos.find(
-    p => p.nombre.toLowerCase() === nombreProducto.toLowerCase()
-  );
+  const producto = productos.find(p => p.id === productoIdSeleccionado);
   if (!producto) {
     alert("Producto no encontrado.");
     return;
   }
-
   // 👇 Usar siempre el ID del documento Firestore
   const productoRef = doc(db, "productos", producto.id);
   const productoSnap = await getDoc(productoRef);
@@ -1110,11 +1114,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 🔹 Ahora mostramos orden, nombre, color, stock e ID/código
     item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock} - ID: ${p.codigo || p.id}`;
     
-    item.addEventListener("click", () => {
-      buscador.value = p.nombre;
-      menu.style.display = "none";
-    });
-    
+item.addEventListener("click", () => {
+  // Lo que ve el usuario en el input
+  buscador.value = `[${p.orden}] ${p.nombre} - ${p.color}`;
+  // Guardamos el ID real en un atributo extra
+  buscador.dataset.productoId = p.id;
+  menu.style.display = "none";
+});    
     menu.appendChild(item);
   });
   menu.style.display = "block";
@@ -1129,10 +1135,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
   filtrados.forEach(p => {
   const item = document.createElement("div");
-  item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;  item.addEventListener("click", () => {
-    buscador.value = p.nombre;
-    menu.style.display = "none";
-  });
+  item.textContent = `[${p.orden}] ${p.nombre} - Color: ${p.color} - Stock: ${p.stock ?? 0} - Precio: $${p.precio ?? 0} - ID: ${p.codigo || p.id}`;
+item.addEventListener("click", () => {
+  // Lo que ve el usuario en el input
+  buscador.value = `[${p.orden}] ${p.nombre} - ${p.color}`;
+  // Guardamos el ID real en un atributo extra
+  buscador.dataset.productoId = p.id;
+  menu.style.display = "none";
+});
   menu.appendChild(item);
   });      menu.style.display = filtrados.length > 0 ? "block" : "none";
     });
