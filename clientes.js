@@ -398,12 +398,13 @@ async function inicializarBuscadoresProductos() {
 
     // Botón "+" → valida stock antes de agregar
 btnAgregar.addEventListener("click", async () => {
-  const productoIdSeleccionado = buscador.value.trim(); // 👈 ahora tomamos el ID del producto
+  const nombreProducto = buscador.value.trim();
   const cantidad = parseInt(cantidadInput.value, 10);
-  if (!productoIdSeleccionado) return;
+  if (!nombreProducto) return;
 
-  // Buscar por ID en vez de por nombre
-  const producto = productos.find(p => p.id === productoIdSeleccionado);
+  const producto = productos.find(
+    p => p.nombre.toLowerCase() === nombreProducto.toLowerCase()
+  );
   if (!producto) {
     alert("Producto no encontrado.");
     return;
@@ -427,8 +428,10 @@ btnAgregar.addEventListener("click", async () => {
   const clienteSnap = await getDoc(clienteRef);
   const productosCliente = clienteSnap.data().productos || [];
 
-  const yaExiste = productosCliente.some(p => p.id === productoId);
-  if (yaExiste) {
+const yaExiste = productosCliente.some(
+  p => p.id === productoId
+);
+if (yaExiste) {
     const modal = document.createElement("div");
     modal.style = `
       position:fixed;top:0;left:0;width:100%;height:100%;
@@ -535,7 +538,6 @@ btnAgregar.addEventListener("click", async () => {
     stock: stockDisponible,
     insuficiente: false
   };
-
   const liProd = document.createElement("li");
   liProd.textContent = `[${prodCliente.orden}] ${prodCliente.nombre} - Color: ${prodCliente.color} - Cantidad: ${prodCliente.cantidad} - ID: ${prodCliente.id} - Precio: $${prodCliente.precio}`;
   const btnEliminar = document.createElement("button");
@@ -548,7 +550,6 @@ btnAgregar.addEventListener("click", async () => {
   });
   liProd.appendChild(btnEliminar);
   listaProductosCliente.appendChild(liProd);
-
   await updateDoc(clienteRef, { productos: arrayUnion(prodCliente) });
   actualizarTotal(listaProductosCliente);
   buscador.value = "";
