@@ -429,7 +429,7 @@ btnAgregar.addEventListener("click", async () => {
   const productosCliente = clienteSnap.data().productos || [];
 
 const yaExiste = productosCliente.some(
-  p => p.id === productoId && p.color?.toLowerCase() === producto.color?.toLowerCase()
+  p => p.id === productoId
 );
 
 if (yaExiste) {
