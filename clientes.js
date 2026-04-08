@@ -428,12 +428,11 @@ btnAgregar.addEventListener("click", async () => {
   const clienteSnap = await getDoc(clienteRef);
   const productosCliente = clienteSnap.data().productos || [];
 
-  const yaExiste = productosCliente.some(
-    p =>
-      (p.id ?? p.etiqueta) === productoId &&
-      (p.color ?? "").trim().toLowerCase() === (producto.color ?? "").trim().toLowerCase()
-  );
-  if (yaExiste) {
+const yaExiste = productosCliente.some(
+  p => p.id === productoId && p.color?.toLowerCase() === producto.color?.toLowerCase()
+);
+
+if (yaExiste) {
     const modal = document.createElement("div");
     modal.style = `
       position:fixed;top:0;left:0;width:100%;height:100%;
