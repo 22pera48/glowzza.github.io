@@ -90,6 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+
 async function validarCredenciales(usuarioIngresado, passwordIngresado) {
   const snap = await getDocs(collection(db, "cajaCredenciales"));
   let valido = false;
@@ -109,6 +112,9 @@ async function validarCredenciales(usuarioIngresado, passwordIngresado) {
 
   return valido;
 }
+
+
+
 // 🔹 Mostrar clientes con buscador de productos, cantidad y botón "+"
 async function mostrarClientes() {
   const lista = document.getElementById("listaClientes");
@@ -125,7 +131,7 @@ async function mostrarClientes() {
 
     // Renderizado visual del cliente
     li.innerHTML = `
-      <strong>ID:</strong> ${data.etiqueta || docSnap.id} <br>
+      <strong>ID Cliente:</strong> ${data.etiqueta || docSnap.id} <br>
       ${data.nombre} - Tel: ${data.telefono} - Fecha: ${data.fecha}
       <button onclick="editarCliente('${docSnap.id}', '${data.nombre}', '${data.telefono}', '${data.nemonico || ""}', '${data.fecha}')">✏️ Editar</button>
       
@@ -173,7 +179,12 @@ async function mostrarClientes() {
 
       data.productos.forEach(prod => {
         const liProd = document.createElement("li");
-liProd.textContent = `[${prod.orden ?? ""}] ${prod.nombre ?? "Sin nombre"} - Color: ${prod.color ?? ""} - Cantidad: ${prod.cantidad ?? 0} - ID: ${prod.id ?? "SIN_ID"} - Precio: $${prod.precio ?? 0}`;
+        liProd.textContent = `[${prod.orden ?? ""}] ${prod.nombre ?? "Sin nombre"} - 
+          Color: ${prod.color ?? ""} - 
+          Cantidad: ${prod.cantidad ?? 0} - 
+          ID: ${prod.id || "(sin ID guardado)"} - 
+          Precio: $${prod.precio ?? 0}`;
+
         // 🔹 aplicar estilo inline si es insuficiente
         if (prod.insuficiente) {
           liProd.style.backgroundColor = "#ffcccc";
@@ -265,6 +276,9 @@ liProd.textContent = `[${prod.orden ?? ""}] ${prod.nombre ?? "Sin nombre"} - Col
   contador.textContent = `Clientes: ${count}`;
   inicializarBuscadoresProductos();
 }
+
+
+
 // 🔹 Inicializar buscadores de productos (sin descontar stock en "+")
 async function inicializarBuscadoresProductos() {
   const snap = await getDocs(collection(db, "productos"));
@@ -716,6 +730,9 @@ btnCerrarVenta.addEventListener("click", async () => {
     });
   });
 }
+
+
+
 // 🔹 Editar cliente
 window.editarCliente = function(id, nombre, telefono, nemonico, fecha) {
   const modal = document.getElementById("modalEditarCliente");
@@ -729,6 +746,8 @@ window.editarCliente = function(id, nombre, telefono, nemonico, fecha) {
 
   modal.style.display = "block";
 };
+
+
 
 // 🔹 Guardar cambios al editar cliente
 document.addEventListener("DOMContentLoaded", () => {
@@ -761,6 +780,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+
 
 // 🔹 Mostrar lista de ventas cerradas
 async function mostrarVentasCerradas() {
@@ -817,7 +839,10 @@ async function mostrarVentasCerradas() {
   });
 
   contador.textContent = count;
-}// 🔹 Buscar para eliminar
+}
+
+
+// 🔹 Buscar para eliminar
 async function buscarParaEliminar() {
   const termino = document.getElementById("buscadorEliminar").value.toLowerCase();
   const resultadoDiv = document.getElementById("resultadoEliminar");
@@ -849,6 +874,8 @@ async function buscarParaEliminar() {
   });
 }
 
+
+
 // 🔹 Variables globales para eliminación
 let itemAEliminar = null;
 let coleccionAEliminar = null;
@@ -860,6 +887,9 @@ let coleccionAEliminar = null;
   if (modal) modal.style.display = "block";
   };
 
+
+
+
   // 🔹 Confirmar eliminación
 // Variable global para guardar el cliente que se quiere eliminar
 let clienteAEliminar = null;
@@ -869,11 +899,16 @@ window.abrirModalEliminarVenta = function(ventaId) {
   ventaAEliminar = ventaId; // guardamos el ID de la venta
   document.getElementById("modalCredenciales").style.display = "flex"; // mostramos el modal centrado
 };
+
+
+
 // Exponer la función al global (se llama desde el HTML)
 window.abrirModalEliminar = function(clienteId) {
   clienteAEliminar = clienteId; // guardamos el ID del cliente
   document.getElementById("modalCredenciales").style.display = "flex"; // mostramos el modal
 };
+
+
 // Listener del botón Confirmar en el modal de credenciales
 document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
   const usuario = document.getElementById("usuarioCheck").value.trim();
@@ -927,7 +962,10 @@ document.getElementById("btnConfirmarEliminar").addEventListener("click", async 
       mostrarToast("❌ No se pudo eliminar", "error");
     }
   }
-});// 🔹 Bloque para confirmar eliminación con credenciales desde Firestore
+});
+
+
+// 🔹 Bloque para confirmar eliminación con credenciales desde Firestore
 document.addEventListener("DOMContentLoaded", () => {
   const btnConfirmar = document.getElementById("btnConfirmarEliminar");
   if (btnConfirmar) {
@@ -1038,6 +1076,9 @@ if (btnEliminarVenta) {
     mostrarTab("clientes");
   })();
 });
+
+
+
 // 🔹 Tu lógica de cargar productos y demás
 async function cargarProductos() {
   const snap = await getDocs(collection(db, "productos"));
@@ -1049,9 +1090,13 @@ async function cargarProductos() {
   return productos;
 }
 
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   // tu lógica de inicialización
 });
+
+
 
   document.addEventListener("DOMContentLoaded", async () => {
   const buscador = document.getElementById("buscadorProductos");
@@ -1137,6 +1182,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 Insertar siempre al inicio
   listaProductosCliente.insertBefore(resumenTotal, listaProductosCliente.firstChild);
 }
+
+
+
 // 🔹 Exponer funciones globales
 window.mostrarTab = mostrarTab;
 window.buscarParaEliminar = buscarParaEliminar;
