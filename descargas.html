@@ -11,14 +11,12 @@
       margin: 0;
       padding: 40px;
     }
-
     h1 {
       color: #333;
       margin-bottom: 30px;
       font-size: 32px;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
-
     .boton-descarga {
       width: 280px;
       height: 80px;
@@ -37,7 +35,6 @@
       background-color: #1976D2;
       transform: scale(1.05);
     }
-
     .boton-volver {
       width: 280px;
       height: 60px;
@@ -65,30 +62,29 @@
   <button onclick="descargarVentas()" class="boton-descarga">Descargar Ventas Cerradas</button>
   <button onclick="descargarBalance()" class="boton-descarga">Descargar Balance</button>
   <button onclick="descargarStock()" class="boton-descarga">Descargar Stock</button>
-<button onclick="descargarProveedores()" class="boton-descarga">Descargar Proveedores</button>
+  <button onclick="descargarProveedores()" class="boton-descarga">Descargar Proveedores</button>
   <button onclick="descargarTodo()" class="boton-descarga">Full Download</button>
 
-  <!-- 🔹 Botón para volver al menú principal -->
   <button onclick="location.href='menu.html'" class="boton-volver">Volver al Menú Principal</button>
 
   <script type="module">
-    import { getFirestore, getDocs, collection } 
+    import { getFirestore, getDocs, collection }  
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { initializeApp } 
+    import { initializeApp }  
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
-  authDomain: "glowzzainventario.firebaseapp.com",
-  projectId: "glowzzainventario",
-  storageBucket: "glowzzainventario.appspot.com",   // 🔹 corregido
-  messagingSenderId: "159721581844",
-  appId: "1:159721581844:web:f62cdb303258dc847b6601",
-  measurementId: "G-0FR3Q6P3L2"
-};
-      // 🔹 Inicializar Firebase (esto faltaba)
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+      authDomain: "glowzzainventario.firebaseapp.com",
+      projectId: "glowzzainventario",
+      storageBucket: "glowzzainventario.appspot.com",
+      messagingSenderId: "159721581844",
+      appId: "1:159721581844:web:f62cdb303258dc847b6601",
+      measurementId: "G-0FR3Q6P3L2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     function descargarTXT(nombreArchivo, contenido) {
       const blob = new Blob([contenido], { type: "text/plain" });
@@ -98,36 +94,30 @@ const firebaseConfig = {
       enlace.click();
     }
 
-    // 🔹 Exponer todas las funciones en window
+    // Clientes
     window.descargarClientes = async function() {
       const snapshot = await getDocs(collection(db, "clientes"));
       let texto = "=== CLIENTES ===\n";
       snapshot.forEach(doc => {
         const data = doc.data();
-        texto += `${data.nombre} | Tel: ${data.telefono} | Fecha: ${data.fecha}\n`;
+        texto += `${data.nombre || "Sin nombre"} | Tel: ${data.telefono || "-"} | Fecha: ${data.fecha || "-"}\n`;
       });
       descargarTXT("clientes.txt", texto);
     }
-    window.descargarProveedores = async function() {
-  const snapshot = await getDocs(collection(db, "proveedores"));
-  let texto = "=== PROVEEDORES ===\n";
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    texto += `${data.nombre} | Tel: ${data.telefono} | Costo: $${data.costo} | Fecha: ${data.fecha}\n`;
-  });
-  descargarTXT("proveedores.txt", texto);
-}
 
+    // Ventas cerradas
     window.descargarVentas = async function() {
       const snapshot = await getDocs(collection(db, "ventasCerradas"));
       let texto = "=== VENTAS CERRADAS ===\n";
       snapshot.forEach(doc => {
         const data = doc.data();
-        texto += `${data.nombre} | Total: $${data.total} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
+        const cliente = data.cliente || {};
+        texto += `${cliente.nombre || "Sin nombre"} | Total: $${data.total || 0} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
       });
       descargarTXT("ventas_cerradas.txt", texto);
     }
 
+    // Balance
     window.descargarBalance = async function() {
       const snapshot = await getDocs(collection(db, "ventasCerradas"));
       let totalIngresos = 0;
@@ -138,16 +128,29 @@ const firebaseConfig = {
       descargarTXT("balance.txt", texto);
     }
 
+    // Stock
     window.descargarStock = async function() {
       const snapshot = await getDocs(collection(db, "productos"));
       let texto = "=== STOCK ===\n";
       snapshot.forEach(doc => {
         const data = doc.data();
-        texto += `[${data.orden}] ${data.nombre} (${data.color || ""}) | Stock: ${data.stock} | Precio: $${data.precio}\n`;
+        texto += `[${data.orden || ""}] ${data.nombre || "Sin nombre"} (${data.color || ""}) | Stock: ${data.stock || 0} | Precio: $${data.precio || 0}\n`;
       });
       descargarTXT("stock.txt", texto);
     }
 
+    // Proveedores
+    window.descargarProveedores = async function() {
+      const snapshot = await getDocs(collection(db, "proveedores"));
+      let texto = "=== PROVEEDORES ===\n";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        texto += `${data.nombre || "Sin nombre"} | Tel: ${data.telefono || "-"} | Costo: $${data.costo || 0} | Fecha: ${data.fecha || "-"}\n`;
+      });
+      descargarTXT("proveedores.txt", texto);
+    }
+
+    // Full Download
     window.descargarTodo = async function() {
       const ahora = new Date();
       const fechaHora = ahora.toISOString().replace(/[:.]/g, "-");
@@ -155,41 +158,47 @@ const firebaseConfig = {
 
       let texto = `=== FULL DOWNLOAD ===\nGenerado el: ${ahora.toLocaleString()}\n\n`;
 
+      // Clientes
       const clientesSnap = await getDocs(collection(db, "clientes"));
       texto += "=== CLIENTES ===\n";
       clientesSnap.forEach(doc => {
         const data = doc.data();
-        texto += `${data.nombre} | Tel: ${data.telefono} | Fecha: ${data.fecha}\n`;
+        texto += `${data.nombre || "Sin nombre"} | Tel: ${data.telefono || "-"} | Fecha: ${data.fecha || "-"}\n`;
       });
       texto += "\n";
 
+      // Ventas cerradas
       const ventasSnap = await getDocs(collection(db, "ventasCerradas"));
       texto += "=== VENTAS CERRADAS ===\n";
       ventasSnap.forEach(doc => {
         const data = doc.data();
-        texto += `${data.nombre} | Total: $${data.total} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
+        const cliente = data.cliente || {};
+        texto += `${cliente.nombre || "Sin nombre"} | Total: $${data.total || 0} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
       });
       texto += "\n";
 
+      // Proveedores
       const proveedoresSnap = await getDocs(collection(db, "proveedores"));
-texto += "=== PROVEEDORES ===\n";
-proveedoresSnap.forEach(doc => {
-  const data = doc.data();
-  texto += `${data.nombre} | Tel: ${data.telefono} | Costo: $${data.costo} | Fecha: ${data.fecha}\n`;
-});
-texto += "\n";
+      texto += "=== PROVEEDORES ===\n";
+      proveedoresSnap.forEach(doc => {
+        const data = doc.data();
+        texto += `${data.nombre || "Sin nombre"} | Tel: ${data.telefono || "-"} | Costo: $${data.costo || 0} | Fecha: ${data.fecha || "-"}\n`;
+      });
+      texto += "\n";
 
+      // Balance
       let totalIngresos = 0;
       ventasSnap.forEach(doc => {
         totalIngresos += doc.data().total || 0;
       });
       texto += `=== BALANCE ===\nTotal Ingresos: $${totalIngresos}\n\n`;
 
+      // Stock
       const stockSnap = await getDocs(collection(db, "productos"));
       texto += "=== STOCK ===\n";
       stockSnap.forEach(doc => {
         const data = doc.data();
-        texto += `[${data.orden}] ${data.nombre} (${data.color || ""}) | Stock: ${data.stock} | Precio: $${data.precio}\n`;
+        texto += `[${data.orden || ""}] ${data.nombre || "Sin nombre"} (${data.color || ""}) | Stock: ${data.stock || 0} | Precio: $${data.precio || 0}\n`;
       });
 
       descargarTXT(nombreArchivo, texto);
