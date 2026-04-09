@@ -877,7 +877,8 @@ if (formStock) {
         categoria,
         sku: sku || null,
         imagen: imagenUrl,
-        creadoEn: new Date().toISOString()
+        creadoEn: new Date().toISOString(),
+        proveedor: "Glowzza"   // 👈 campo nuevo
       });
 
       alert("Producto guardado correctamente ✅");
