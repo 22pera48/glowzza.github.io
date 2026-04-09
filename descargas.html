@@ -112,7 +112,7 @@
       snapshot.forEach(doc => {
         const data = doc.data();
         const cliente = data.cliente || {};
-        texto += `${cliente.nombre || "Sin nombre"} | Total: $${data.total || 0} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
+        texto += `${cliente.nombre || "Sin nombre"} | Total: $${Number(data.total) || 0} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
       });
       descargarTXT("ventas_cerradas.txt", texto);
     }
@@ -122,7 +122,8 @@
       const snapshot = await getDocs(collection(db, "ventasCerradas"));
       let totalIngresos = 0;
       snapshot.forEach(doc => {
-        totalIngresos += doc.data().total || 0;
+        const data = doc.data();
+        totalIngresos += Number(data.total) || 0;
       });
       let texto = `=== BALANCE ===\nTotal Ingresos: $${totalIngresos}\n`;
       descargarTXT("balance.txt", texto);
@@ -173,7 +174,7 @@
       ventasSnap.forEach(doc => {
         const data = doc.data();
         const cliente = data.cliente || {};
-        texto += `${cliente.nombre || "Sin nombre"} | Total: $${data.total || 0} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
+        texto += `${cliente.nombre || "Sin nombre"} | Total: $${Number(data.total) || 0} | Fecha cierre: ${data.fechaCierre || "Sin fecha"}\n`;
       });
       texto += "\n";
 
@@ -189,7 +190,8 @@
       // Balance
       let totalIngresos = 0;
       ventasSnap.forEach(doc => {
-        totalIngresos += doc.data().total || 0;
+        const data = doc.data();
+        totalIngresos += Number(data.total) || 0;
       });
       texto += `=== BALANCE ===\nTotal Ingresos: $${totalIngresos}\n\n`;
 
