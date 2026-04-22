@@ -54,13 +54,30 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const contenedor = document.getElementById("listaFavoritos");
-      const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
       if (favoritos.length === 0) {
         contenedor.innerHTML = "<p>No tienes productos en favoritos.</p>";
         return;
       }
 
+      renderFavoritos(favoritos);
+
+      // Buscador dinámico
+      const buscador = document.getElementById("buscador");
+      buscador.addEventListener("input", () => {
+        const filtro = buscador.value.toLowerCase();
+        document.querySelectorAll(".producto").forEach(prod => {
+          const nombre = prod.querySelector("h4").textContent.toLowerCase();
+          prod.style.display = nombre.includes(filtro) ? "block" : "none";
+        });
+      });
+    });
+
+    // 🔹 Renderizar favoritos
+    function renderFavoritos(favoritos) {
+      const contenedor = document.getElementById("listaFavoritos");
+      contenedor.innerHTML = "";
       favoritos.forEach((prod, index) => {
         const div = document.createElement("div");
         div.classList.add("producto");
@@ -75,24 +92,19 @@
         `;
         contenedor.appendChild(div);
       });
+    }
 
-      // Buscador dinámico en favoritos
-      const buscador = document.getElementById("buscador");
-      buscador.addEventListener("input", () => {
-        const filtro = buscador.value.toLowerCase();
-        document.querySelectorAll(".producto").forEach(prod => {
-          const nombre = prod.querySelector("h4").textContent.toLowerCase();
-          prod.style.display = nombre.includes(filtro) ? "block" : "none";
-        });
-      });
-    });
-
-    // 🔹 Función para eliminar favoritos
+    // 🔹 Eliminar favorito sin recargar toda la página
     function eliminarFavorito(index) {
       let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
       favoritos.splice(index, 1);
       localStorage.setItem("favoritos", JSON.stringify(favoritos));
-      location.reload();
+      renderFavoritos(favoritos);
+    }
+
+    // 🔹 Simulación de agregar al carrito (puedes reemplazar con tu lógica real)
+    function agregarAlCarrito(nombre, precio) {
+      alert(`${nombre} agregado al carrito por $${precio}`);
     }
   </script>
 </body>
