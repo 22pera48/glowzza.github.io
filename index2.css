@@ -242,27 +242,6 @@ button:hover, .btn-principal:hover {
   transition: opacity 0.8s ease;
 }
 
-.carousel .prev, .carousel .next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(233,30,99,0.7);
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 20px;
-  transition: background 0.3s ease;
-  z-index: 3;
-}
-
-.carousel .prev:hover, .carousel .next:hover {
-  background: rgba(194,24,91,0.9);
-}
-
-.carousel .prev { left: 20px; }
-.carousel .next { right: 20px; }
 
 /* Indicadores */
 .indicadores {
