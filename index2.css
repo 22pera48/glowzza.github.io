@@ -220,11 +220,40 @@ section {
 
 section h1 {
   font-size: 2em;
-  margin-bottom: 25px;
-  color: #e91e63;
+  margin-bottom: 10px;
   text-align: center;
+  font-weight: 700;
+  background: linear-gradient(90deg, #e91e63, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block; /* 🔹 antes estaba inline-block */
+  position: relative;
 }
 
+section h1::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 3px;
+  left: 50%; /* 🔹 centramos el subrayado */
+  transform: translateX(-50%);
+  bottom: -5px;
+  background: #e91e63;
+  transition: width 0.4s ease;
+}
+
+section h1:hover::after {
+  width: 100%;
+}
+
+/* Mensajes debajo de títulos */
+.mensaje-seccion {
+  text-align: center;
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 30px;
+  font-style: italic;
+}
 /* Productos */
 .productos {
   display: grid;
@@ -322,6 +351,7 @@ footer .social-icons a {
   background-color: #fff;
   color: #333;
 }
+
 
 #buscador:focus {
   border-color: #c2185b;
