@@ -13,33 +13,40 @@
 <body>
 
   <!-- 🔹 Header -->
-  <header class="header">
-    <nav class="menu">
-      <a href="#peluqueria">Peluquería</a>
-      <a href="#maquillaje">Maquillaje</a>
-      <a href="#skincare">Skincare</a>
-      <a href="#cuidado personal">Cuidado Personal</a>
-      <a href="#perfume y esencias">Perfume y Esencias</a>
-      <a href="#contacto">Contacto</a>
-    </nav>
-
-    <div class="acciones-header">
-      <div class="social-icons">
-        <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
-        <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
-        <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
-      </div>
-      <div class="buscador-toggle">
-        <input type="text" id="buscador" placeholder="Buscar productos..." />
-        <button onclick="irAlCarrito()" class="btn-principal">
-          <span class="material-icons">shopping_cart</span> Carrito
-        </button>
-        <button onclick="irAFavoritos()" class="btn-secundario">
-          <span class="material-icons">favorite</span> Mis Favoritos
-        </button>
-      </div>
+<header class="header">
+  <!-- Fila superior -->
+  <div class="top-bar">
+    <div class="social-icons">
+      <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
+      <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
+      <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
     </div>
-  </header>
+
+    <div class="buscador">
+      <input type="text" id="buscador" placeholder="Buscar productos..." />
+    </div>
+
+    <div class="acciones">
+      <button onclick="irAlCarrito()" class="btn-principal">
+        <span class="material-icons">shopping_cart</span> Carrito
+      </button>
+      <button onclick="irAFavoritos()" class="btn-secundario">
+        <span class="material-icons">favorite</span> Mis Favoritos
+      </button>
+    </div>
+  </div>
+
+  <!-- Fila inferior -->
+  <nav class="menu">
+    <a href="#peluqueria">Peluquería</a>
+    <a href="#maquillaje">Maquillaje</a>
+    <a href="#skincare">Skincare</a>
+    <a href="#cuidado personal">Cuidado Personal</a>
+    <a href="#perfume y esencias">Perfume y Esencias</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
 
   <!-- 🔹 Banner con carrusel -->
   <section class="banner">

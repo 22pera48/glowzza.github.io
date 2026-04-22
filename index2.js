@@ -133,13 +133,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -------------------- Firebase: cargar productos dinámicamente --------------------
-const secciones = {
-  peluqueria: document.querySelector("#peluqueria .productos"),
-  skincare: document.querySelector("#skincare .productos"),
-  maquillaje: document.querySelector("#maquillaje .productos"),
-  "cuidado personal": document.querySelector("#cuidado\\ personal .productos"),
-  "perfume y esencias": document.querySelector("#perfume\\ y\\ esencias .productos")
-};
+  const secciones = {
+    peluqueria: document.querySelector("#peluqueria .productos"),
+    skincare: document.querySelector("#skincare .productos"),
+    maquillaje: document.querySelector("#maquillaje .productos"),
+    "cuidado personal": document.querySelector("#cuidado\\ personal .productos"),
+    "perfume y esencias": document.querySelector("#perfume\\ y\\ esencias .productos")
+  };
 
   onSnapshot(collection(db, "productos_publicados_web"), (snapshot) => {
     Object.values(secciones).forEach(sec => sec.innerHTML = "");
@@ -148,7 +148,9 @@ const secciones = {
       const div = document.createElement("div");
       div.classList.add("producto");
       div.innerHTML = `
-        <img src="${producto.imagen}" alt="${producto.nombre}">
+        <div class="img-wrapper">
+          <img src="${producto.imagen}" alt="${producto.nombre}">
+        </div>
         <h4>${producto.nombre}</h4>
         <p>$${producto.precio}</p>
         ${producto.descripcion ? `<p class="descripcion">${producto.descripcion}</p>` : ""}
