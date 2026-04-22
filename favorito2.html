@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Favoritos - Glowzza</title>
+
+  <!-- Fuentes y estilos -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="index2.css">
+</head>
+<body>
+
+  <!-- 🔹 Header -->
+  <header class="header">
+    <div class="top-bar">
+      <div class="social-icons">
+        <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
+        <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
+        <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
+      </div>
+      <div class="buscador">
+        <input type="text" id="buscador" placeholder="Buscar favoritos..." />
+      </div>
+      <div class="acciones">
+        <button onclick="window.location.href='index2.html'" class="btn-principal">
+          <span class="material-icons">home</span> Inicio
+        </button>
+        <button onclick="window.location.href='carrito.html'" class="btn-secundario">
+          <span class="material-icons">shopping_cart</span> Carrito
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 🔹 Sección Favoritos -->
+  <section id="favoritos">
+    <h1>Mis Favoritos</h1>
+    <div class="productos" id="listaFavoritos"></div>
+  </section>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    <div class="social-icons">
+      <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
+      <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
+      <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
+    </div>
+    <p>© 2026 - Glowzza</p>
+  </footer>
+
+  <!-- 🔹 Scripts -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const contenedor = document.getElementById("listaFavoritos");
+      const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+      if (favoritos.length === 0) {
+        contenedor.innerHTML = "<p>No tienes productos en favoritos.</p>";
+        return;
+      }
+
+      favoritos.forEach(nombre => {
+        // Render básico: solo nombre. Si querés traer imagen/precio, hay que guardar más datos en localStorage.
+        const div = document.createElement("div");
+        div.classList.add("producto");
+        div.innerHTML = `
+          <div class="img-wrapper">
+            <img src="images/default.jpg" alt="${nombre}">
+          </div>
+          <h4>${nombre}</h4>
+          <button class="btn-principal" onclick="agregarAlCarrito('${nombre}', 0)">Agregar al carrito</button>
+        `;
+        contenedor.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>
+
