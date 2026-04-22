@@ -215,16 +215,6 @@ button:hover, .btn-principal:hover {
 }
 
 /* Banner con carrusel */
-.banner {
-  position: relative;
-  width: 100%;
-  height: auto;        /* se adapta al contenido */
-  display: flex;
-  flex-direction: column; /* 🔹 para que carrusel y texto se apilen */
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
 .carousel {
   position: relative;   /* 🔹 antes estaba absolute */
   width: 100%;
@@ -268,18 +258,31 @@ button:hover, .btn-principal:hover {
 }
 
 /* Contenido del banner */
+.banner {
+  position: relative;
+  width: 100%;
+  height: auto;             /* se adapta al contenido */
+  display: flex;
+  flex-direction: column;   /* apila carrusel y texto */
+  justify-content: flex-start; /* evita espacio vacío arriba */
+  align-items: center;
+  overflow: hidden;
+}
+
 .banner-contenido {
   position: relative;
   z-index: 2;
   text-align: center;
   background: rgba(255,255,255,0.85);
-  padding: 30px;
+  padding: 15px 30px;       /* menos padding arriba/abajo */
   border-radius: 12px;
+  margin-top: 0;            /* elimina espacio extra arriba */
 }
 
 .banner h1 {
   font-size: 3em;
   color: #e91e63;
+  margin-top: 0;            /* resetea margen superior */
   margin-bottom: 10px;
 }
 
@@ -288,6 +291,7 @@ button:hover, .btn-principal:hover {
   color: #444;
   margin-bottom: 20px;
 }
+
 
 .boton-promocion a {
   background-color: #e91e63;
