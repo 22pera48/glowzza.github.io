@@ -92,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let autoPlay;
 
   if (slides.length > 0) {
-    mostrarSlide(slideIndex);
-    autoPlay = setInterval(() => moverSlide(1), 5000);
+    window.mostrarSlide(slideIndex); // expuesta en window
+    autoPlay = setInterval(() => window.moverSlide(1), 5000);
 
     const indicadores = document.querySelector(".indicadores");
     slides.forEach((_, i) => {
@@ -101,14 +101,14 @@ document.addEventListener("DOMContentLoaded", () => {
       dot.classList.add("dot");
       dot.addEventListener("click", () => {
         slideIndex = i;
-        mostrarSlide(slideIndex);
+        window.mostrarSlide(slideIndex);
         resetAutoPlay();
       });
       indicadores.appendChild(dot);
     });
   }
 
-  function mostrarSlide(n) {
+  window.mostrarSlide = function(n) {
     slides.forEach((img, i) => {
       img.style.display = i === n ? "block" : "none";
       img.style.opacity = i === n ? "1" : "0";
@@ -116,17 +116,17 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".dot").forEach((dot, i) => {
       dot.classList.toggle("active", i === n);
     });
-  }
+  };
 
-  function moverSlide(n) {
+  window.moverSlide = function(n) {
     slideIndex = (slideIndex + n + slides.length) % slides.length;
-    mostrarSlide(slideIndex);
+    window.mostrarSlide(slideIndex);
     resetAutoPlay();
-  }
+  };
 
   function resetAutoPlay() {
     clearInterval(autoPlay);
-    autoPlay = setInterval(() => moverSlide(1), 5000);
+    autoPlay = setInterval(() => window.moverSlide(1), 5000);
   }
 
   // -------------------- Buscador dinámico --------------------
