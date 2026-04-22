@@ -215,15 +215,25 @@ section h1 {
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-.producto img {
-  width: 100%;
-  max-height: 220px;   /* límite de altura */
-  object-fit: contain; /* mantiene proporción sin recortar */
+/* Contenedor de imagen */
+.img-wrapper {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
   border-radius: 8px;
-  cursor: pointer;     /* indica que se puede hacer click */
-  background-color: #f9f9f9; /* relleno detrás si sobra espacio */
+  overflow: hidden;
 }
 
+.img-wrapper img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+/* Texto del producto */
 .producto h4 {
   margin: 15px 0 8px;
   font-size: 1.1em;
@@ -323,4 +333,3 @@ footer .social-icons a {
   font-weight: bold;
   cursor: pointer;
 }
-
