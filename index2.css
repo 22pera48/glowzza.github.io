@@ -217,19 +217,19 @@ button:hover, .btn-principal:hover {
 /* Banner con carrusel */
 .banner {
   position: relative;
-  min-height: 420px; /* altura mínima */
-  height: auto;      /* se adapta al contenido */
+  width: 100%;
+  height: auto;        /* se adapta al contenido */
   display: flex;
+  flex-direction: column; /* 🔹 para que carrusel y texto se apilen */
   justify-content: center;
   align-items: center;
   overflow: hidden;
 }
-
 .carousel {
-  position: absolute;
+  position: relative;   /* 🔹 antes estaba absolute */
   width: 100%;
-  height: auto;        /* se adapta a la imagen */
-  max-height: 100vh;   /* nunca más alto que la pantalla */
+  height: auto;         /* se adapta a la imagen */
+  max-height: 100vh;    /* nunca más alto que la pantalla */
   overflow: hidden;
 }
 
