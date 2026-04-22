@@ -228,18 +228,20 @@ button:hover, .btn-principal:hover {
 .carousel {
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: auto;        /* se adapta a la imagen */
+  max-height: 100vh;   /* nunca más alto que la pantalla */
   overflow: hidden;
 }
 
 .carousel .slides img {
   width: 100%;
-  height: auto;          /* se adapta a la proporción */
-  object-fit: contain;   /* nunca recorta */
+  height: auto;
+  object-fit: contain; /* muestra la imagen completa */
   display: none;
   opacity: 0;
   transition: opacity 0.8s ease;
 }
+
 .carousel .prev, .carousel .next {
   position: absolute;
   top: 50%;
