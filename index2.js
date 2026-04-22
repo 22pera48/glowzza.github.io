@@ -20,7 +20,7 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
   // -------------------- Carrito --------------------
   window.irAlCarrito = () => window.location.href = "carrito.html";
-  window.irAFavoritos = () => window.location.href = "favoritos.html";
+  window.irAFavoritos = () => window.location.href = "favorito2.html";
 
   window.agregarAlCarrito = (nombre, precio) => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
