@@ -18,10 +18,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // -------------------- Carrito --------------------
+  // -------------------- Navegación --------------------
   window.irAlCarrito = () => window.location.href = "carrito2.html";
   window.irAFavoritos = () => window.location.href = "favorito2.html";
+  window.finalizarCompra = () => window.location.href = "checkout.html";
 
+  // -------------------- Carrito --------------------
   window.agregarAlCarrito = (nombre, precio) => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     let item = carrito.find(p => p.nombre === nombre);
@@ -55,34 +57,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  window.finalizarCompra = () => window.location.href = "checkout.html";
-
   // -------------------- Wishlist --------------------
-document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("btn-favorito")) {
-    const card = e.target.closest(".producto");
-    const nombre = card.querySelector("h4").textContent;
-    const precio = card.querySelector("p").textContent.replace("$", "");
-    const imagen = card.querySelector("img").src;
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-favorito")) {
+      const card = e.target.closest(".producto");
+      const nombre = card.querySelector("h4").textContent;
+      const precio = card.querySelector("p").textContent.replace("$", "");
+      const imagen = card.querySelector("img").src;
 
-    let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-    // Evitar duplicados
-    if (!favoritos.some(p => p.nombre === nombre)) {
-      favoritos.push({ nombre, precio, imagen });
+      if (!favoritos.some(p => p.nombre === nombre)) {
+        favoritos.push({ nombre, precio, imagen });
+      }
+
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+
+      Swal.fire({
+        icon: 'info',
+        title: 'Agregado a favoritos',
+        text: nombre,
+        timer: 1200,
+        showConfirmButton: false
+      });
     }
+  });
 
-    localStorage.setItem("favoritos", JSON.stringify(favoritos));
-
-    Swal.fire({
-      icon: 'info',
-      title: 'Agregado a favoritos',
-      text: nombre,
-      timer: 1200,
-      showConfirmButton: false
-    });
-  }
-});
   // -------------------- Dark Mode --------------------
   window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
 
@@ -190,47 +190,4 @@ document.addEventListener("click", (e) => {
     };
   }
 });
-let slideIndex = 0;
 
-document.addEventListener("DOMContentLoaded", () => {
-  mostrarSlide(slideIndex);
-
-  // Rotación automática cada 5 segundos
-  setInterval(() => moverSlide(1), 5000);
-});
-
-function mostrarSlide(n) {
-  const slides = document.querySelectorAll(".carousel .slides img");
-  const dotsContainer = document.querySelector(".indicadores");
-
-  if (n >= slides.length) slideIndex = 0;
-  if (n < 0) slideIndex = slides.length - 1;
-
-  slides.forEach((img, i) => {
-    img.style.display = i === slideIndex ? "block" : "none";
-    img.style.opacity = i === slideIndex ? "1" : "0";
-  });
-
-  // Crear indicadores si no existen
-  if (dotsContainer && dotsContainer.children.length === 0) {
-    slides.forEach((_, i) => {
-      const dot = document.createElement("span");
-      dot.classList.add("dot");
-      dot.addEventListener("click", () => {
-        slideIndex = i;
-        mostrarSlide(slideIndex);
-      });
-      dotsContainer.appendChild(dot);
-    });
-  }
-
-  const dots = document.querySelectorAll(".dot");
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === slideIndex);
-  });
-}
-
-function moverSlide(n) {
-  slideIndex += n;
-  mostrarSlide(slideIndex);
-}
