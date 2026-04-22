@@ -114,7 +114,6 @@
   }
 }
 
-
 body {
   font-family: 'Open Sans', sans-serif;
   background-color: #fafafa;
@@ -334,12 +333,13 @@ section h1 {
   text-align: center;
   font-weight: 700;
   background: linear-gradient(90deg, #e91e63, #ff9800);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: block; /* 🔹 antes estaba inline-block */
+  -webkit-background-clip: text;   /* prefijo WebKit */
+  background-clip: text;           /* versión estándar */
+  -webkit-text-fill-color: transparent; /* prefijo WebKit */
+  color: transparent;              /* versión estándar */
+  display: block;
   position: relative;
 }
-
 section h1::after {
   content: "";
   position: absolute;
