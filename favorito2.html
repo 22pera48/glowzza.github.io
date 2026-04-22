@@ -61,39 +61,21 @@
         return;
       }
 
-      favoritos.forEach((prod, index) => {
+      favoritos.forEach(nombre => {
+        // Render básico: solo nombre. Si querés traer imagen/precio, hay que guardar más datos en localStorage.
         const div = document.createElement("div");
         div.classList.add("producto");
         div.innerHTML = `
           <div class="img-wrapper">
-            <img src="${prod.imagen}" alt="${prod.nombre}">
+            <img src="images/default.jpg" alt="${nombre}">
           </div>
-          <h4>${prod.nombre}</h4>
-          <p>$${prod.precio}</p>
-          <button class="btn-principal" onclick="agregarAlCarrito('${prod.nombre}', ${prod.precio})">Agregar al carrito</button>
-          <button class="btn-secundario" onclick="eliminarFavorito(${index})">Eliminar</button>
+          <h4>${nombre}</h4>
+          <button class="btn-principal" onclick="agregarAlCarrito('${nombre}', 0)">Agregar al carrito</button>
         `;
         contenedor.appendChild(div);
       });
-
-      // Buscador dinámico en favoritos
-      const buscador = document.getElementById("buscador");
-      buscador.addEventListener("input", () => {
-        const filtro = buscador.value.toLowerCase();
-        document.querySelectorAll(".producto").forEach(prod => {
-          const nombre = prod.querySelector("h4").textContent.toLowerCase();
-          prod.style.display = nombre.includes(filtro) ? "block" : "none";
-        });
-      });
     });
-
-    // 🔹 Función para eliminar favoritos
-    function eliminarFavorito(index) {
-      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
-      favoritos.splice(index, 1); // elimina el producto en esa posición
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
-      location.reload(); // recarga la página para actualizar la lista
-    }
   </script>
 </body>
 </html>
+
