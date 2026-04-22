@@ -58,22 +58,31 @@ document.addEventListener("DOMContentLoaded", () => {
   window.finalizarCompra = () => window.location.href = "checkout.html";
 
   // -------------------- Wishlist --------------------
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-favorito")) {
-      const producto = e.target.closest(".producto").querySelector("h4").textContent;
-      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
-      if (!favoritos.includes(producto)) favoritos.push(producto);
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
-      Swal.fire({
-        icon: 'info',
-        title: 'Agregado a favoritos',
-        text: producto,
-        timer: 1200,
-        showConfirmButton: false
-      });
-    }
-  });
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("btn-favorito")) {
+    const card = e.target.closest(".producto");
+    const nombre = card.querySelector("h4").textContent;
+    const precio = card.querySelector("p").textContent.replace("$", "");
+    const imagen = card.querySelector("img").src;
 
+    let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+    // Evitar duplicados
+    if (!favoritos.some(p => p.nombre === nombre)) {
+      favoritos.push({ nombre, precio, imagen });
+    }
+
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Agregado a favoritos',
+      text: nombre,
+      timer: 1200,
+      showConfirmButton: false
+    });
+  }
+});
   // -------------------- Dark Mode --------------------
   window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
 
