@@ -128,7 +128,10 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
+  margin: 0;   /* asegura que no haya hueco */
+  padding: 0;  /* compacta el header */
 }
+
 
 /* Fila superior */
 .top-bar {
@@ -264,9 +267,11 @@ button:hover, .btn-principal:hover {
   height: auto;             /* se adapta al contenido */
   display: flex;
   flex-direction: column;   /* apila carrusel y texto */
-  justify-content: flex-start; /* evita espacio vacío arriba */
+  justify-content: flex-start; /* evita hueco superior */
   align-items: center;
   overflow: hidden;
+  margin-top: 0;            /* 🔹 asegura que no se separe del header */
+  padding-top: 0;           /* 🔹 elimina relleno extra arriba */
 }
 
 .banner-contenido {
@@ -274,11 +279,10 @@ button:hover, .btn-principal:hover {
   z-index: 2;
   text-align: center;
   background: rgba(255,255,255,0.85);
-  padding: 15px 30px;       /* menos padding arriba/abajo */
+  padding: 15px 30px;       /* menos padding vertical */
   border-radius: 12px;
-  margin-top: 0;            /* elimina espacio extra arriba */
+  margin-top: 0;            /* 🔹 evita espacio extra arriba */
 }
-
 .banner h1 {
   font-size: 3em;
   color: #e91e63;
