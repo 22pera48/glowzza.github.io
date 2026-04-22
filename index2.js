@@ -18,12 +18,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // -------------------- Navegación --------------------
+  // -------------------- Carrito --------------------
   window.irAlCarrito = () => window.location.href = "carrito2.html";
   window.irAFavoritos = () => window.location.href = "favorito2.html";
-  window.finalizarCompra = () => window.location.href = "checkout.html";
 
-  // -------------------- Carrito --------------------
   window.agregarAlCarrito = (nombre, precio) => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     let item = carrito.find(p => p.nombre === nombre);
@@ -57,32 +55,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  window.finalizarCompra = () => window.location.href = "checkout.html";
+
   // -------------------- Wishlist --------------------
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-favorito")) {
-      const card = e.target.closest(".producto");
-      const nombre = card.querySelector("h4").textContent;
-      const precio = card.querySelector("p").textContent.replace("$", "");
-      const imagen = card.querySelector("img").src;
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("btn-favorito")) {
+    const card = e.target.closest(".producto");
+    const nombre = card.querySelector("h4").textContent;
+    const precio = card.querySelector("p").textContent.replace("$", "");
+    const imagen = card.querySelector("img").src;
 
-      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+    let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-      if (!favoritos.some(p => p.nombre === nombre)) {
-        favoritos.push({ nombre, precio, imagen });
-      }
-
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
-
-      Swal.fire({
-        icon: 'info',
-        title: 'Agregado a favoritos',
-        text: nombre,
-        timer: 1200,
-        showConfirmButton: false
-      });
+    // Evitar duplicados
+    if (!favoritos.some(p => p.nombre === nombre)) {
+      favoritos.push({ nombre, precio, imagen });
     }
-  });
 
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Agregado a favoritos',
+      text: nombre,
+      timer: 1200,
+      showConfirmButton: false
+    });
+  }
+});
   // -------------------- Dark Mode --------------------
   window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
 
@@ -92,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let autoPlay;
 
   if (slides.length > 0) {
-    window.mostrarSlide(slideIndex); // expuesta en window
-    autoPlay = setInterval(() => window.moverSlide(1), 5000);
+    mostrarSlide(slideIndex);
+    autoPlay = setInterval(() => moverSlide(1), 5000);
 
     const indicadores = document.querySelector(".indicadores");
     slides.forEach((_, i) => {
@@ -101,14 +101,14 @@ document.addEventListener("DOMContentLoaded", () => {
       dot.classList.add("dot");
       dot.addEventListener("click", () => {
         slideIndex = i;
-        window.mostrarSlide(slideIndex);
+        mostrarSlide(slideIndex);
         resetAutoPlay();
       });
       indicadores.appendChild(dot);
     });
   }
 
-  window.mostrarSlide = function(n) {
+  function mostrarSlide(n) {
     slides.forEach((img, i) => {
       img.style.display = i === n ? "block" : "none";
       img.style.opacity = i === n ? "1" : "0";
@@ -116,17 +116,17 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".dot").forEach((dot, i) => {
       dot.classList.toggle("active", i === n);
     });
-  };
+  }
 
-  window.moverSlide = function(n) {
+  function moverSlide(n) {
     slideIndex = (slideIndex + n + slides.length) % slides.length;
-    window.mostrarSlide(slideIndex);
+    mostrarSlide(slideIndex);
     resetAutoPlay();
-  };
+  }
 
   function resetAutoPlay() {
     clearInterval(autoPlay);
-    autoPlay = setInterval(() => window.moverSlide(1), 5000);
+    autoPlay = setInterval(() => moverSlide(1), 5000);
   }
 
   // -------------------- Buscador dinámico --------------------
@@ -190,4 +190,47 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 });
+let slideIndex = 0;
 
+document.addEventListener("DOMContentLoaded", () => {
+  mostrarSlide(slideIndex);
+
+  // Rotación automática cada 5 segundos
+  setInterval(() => moverSlide(1), 5000);
+});
+
+function mostrarSlide(n) {
+  const slides = document.querySelectorAll(".carousel .slides img");
+  const dotsContainer = document.querySelector(".indicadores");
+
+  if (n >= slides.length) slideIndex = 0;
+  if (n < 0) slideIndex = slides.length - 1;
+
+  slides.forEach((img, i) => {
+    img.style.display = i === slideIndex ? "block" : "none";
+    img.style.opacity = i === slideIndex ? "1" : "0";
+  });
+
+  // Crear indicadores si no existen
+  if (dotsContainer && dotsContainer.children.length === 0) {
+    slides.forEach((_, i) => {
+      const dot = document.createElement("span");
+      dot.classList.add("dot");
+      dot.addEventListener("click", () => {
+        slideIndex = i;
+        mostrarSlide(slideIndex);
+      });
+      dotsContainer.appendChild(dot);
+    });
+  }
+
+  const dots = document.querySelectorAll(".dot");
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === slideIndex);
+  });
+}
+
+function moverSlide(n) {
+  slideIndex += n;
+  mostrarSlide(slideIndex);
+}
