@@ -4,14 +4,6 @@
   padding: 0;
   box-sizing: border-box;
 }
-
-body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: #fafafa;
-  color: #222;
-  line-height: 1.6;
-}
-
 /* 🔹 Carrito Glowzza */
 #carrito {
   max-width: 900px;
@@ -43,6 +35,7 @@ body {
   color: #fff;
   font-weight: 700;
   padding: 12px;
+  border-radius: 6px 6px 0 0;
 }
 
 .tabla-carrito td {
@@ -77,18 +70,17 @@ body {
 
 .btn-principal,
 .btn-secundario {
+  border: none;
   padding: 10px 20px;
-  border-radius: 25px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
-/* Botón principal */
 .btn-principal {
   background-color: #e91e63;
   color: #fff;
-  border: none;
 }
 
 .btn-principal:hover {
@@ -96,17 +88,14 @@ body {
   box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
 }
 
-/* Botón secundario */
 .btn-secundario {
-  background: transparent;
-  border: 2px solid #e91e63;
-  color: #e91e63;
+  background-color: #f8bbd0;
+  color: #fff;
 }
 
 .btn-secundario:hover {
-  background-color: #e91e63;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
+  background-color: #f06292;
+  box-shadow: 0 4px 10px rgba(240, 98, 146, 0.3);
 }
 
 /* 🔹 Responsivo */
@@ -125,17 +114,26 @@ body {
   }
 }
 
-/* Header */
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #fafafa;
+  color: #222;
+  line-height: 1.6;
+}
+
+/* Header reorganizado */
 header {
   background: #fff;
   border-bottom: 1px solid #eee;
   position: sticky;
   top: 0;
   z-index: 1000;
-  margin: 0;
-  padding: 0;
+  margin: 0;   /* asegura que no haya hueco */
+  padding: 0;  /* compacta el header */
 }
 
+
+/* Fila superior */
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -163,28 +161,80 @@ header {
   gap: 10px;
 }
 
+/* Fila inferior (categorías) */
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.menu a {
+  color: #444;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.menu a:hover {
+  color: #e91e63;
+}
+
 .social-icons a {
   color: #e91e63;
   font-size: 22px;
 }
 
+/* Botones */
+button, .btn-principal {
+  background-color: #e91e63;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+button:hover, .btn-principal:hover {
+  background-color: #c2185b;
+}
+
+.btn-secundario {
+  background: transparent;
+  border: 2px solid #e91e63;
+  color: #e91e63;
+  padding: 6px 14px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secundario:hover {
+  background-color: #e91e63;
+  color: white;
+}
+
 /* Banner con carrusel */
 .carousel {
-  position: relative;
+  position: relative;   /* 🔹 antes estaba absolute */
   width: 100%;
-  height: auto;
-  max-height: 100vh;
+  height: auto;         /* se adapta a la imagen */
+  max-height: 100vh;    /* nunca más alto que la pantalla */
   overflow: hidden;
 }
 
 .carousel .slides img {
   width: 100%;
   height: auto;
-  object-fit: contain;
+  object-fit: contain; /* muestra la imagen completa */
   display: none;
   opacity: 0;
   transition: opacity 0.8s ease;
 }
+
 
 /* Indicadores */
 .indicadores {
@@ -214,14 +264,14 @@ header {
 .banner {
   position: relative;
   width: 100%;
-  height: auto;
+  height: auto;             /* se adapta al contenido */
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  flex-direction: column;   /* apila carrusel y texto */
+  justify-content: flex-start; /* evita hueco superior */
   align-items: center;
   overflow: hidden;
-  margin-top: 0;
-  padding-top: 0;
+  margin-top: 0;            /* 🔹 asegura que no se separe del header */
+  padding-top: 0;           /* 🔹 elimina relleno extra arriba */
 }
 
 .banner-contenido {
@@ -229,15 +279,14 @@ header {
   z-index: 2;
   text-align: center;
   background: rgba(255,255,255,0.85);
-  padding: 15px 30px;
+  padding: 15px 30px;       /* menos padding vertical */
   border-radius: 12px;
-  margin-top: 0;
+  margin-top: 0;            /* 🔹 evita espacio extra arriba */
 }
-
 .banner h1 {
   font-size: 3em;
   color: #e91e63;
-  margin-top: 0;
+  margin-top: 0;            /* resetea margen superior */
   margin-bottom: 10px;
 }
 
@@ -246,6 +295,7 @@ header {
   color: #444;
   margin-bottom: 20px;
 }
+
 
 .boton-promocion a {
   background-color: #e91e63;
@@ -272,20 +322,19 @@ section h1 {
   text-align: center;
   font-weight: 700;
   background: linear-gradient(90deg, #e91e63, #ff9800);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  -webkit-background-clip: text;   /* prefijo WebKit */
+  background-clip: text;           /* versión estándar */
+  -webkit-text-fill-color: transparent; /* prefijo WebKit */
+  color: transparent;              /* versión estándar */
   display: block;
   position: relative;
 }
-
 section h1::after {
   content: "";
   position: absolute;
   width: 0;
   height: 3px;
-  left: 50%;
+  left: 50%; /* 🔹 centramos el subrayado */
   transform: translateX(-50%);
   bottom: -5px;
   background: #e91e63;
@@ -304,11 +353,10 @@ section h1:hover::after {
   margin-bottom: 30px;
   font-style: italic;
 }
-
 /* Productos */
 .productos {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr); /* máximo 4 por fila */
   gap: 20px;
 }
 
@@ -378,43 +426,6 @@ section h1:hover::after {
   max-width: 600px;
 }
 
-#contacto h2 {
-  font-size: 1.8em;
-  color: #e91e63;
-  margin-bottom: 15px;
-}
-
-#contacto p {
-  font-size: 1.1em;
-  color: #555;
-  margin-bottom: 20px;
-}
-
-#contacto input,
-#contacto textarea {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1em;
-}
-
-#contacto button {
-  background-color: #e91e63;
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-#contacto button:hover {
-  background-color: #c2185b;
-}
-
 /* Footer */
 footer {
   background: #222;
@@ -423,19 +434,9 @@ footer {
   padding: 25px;
 }
 
-footer .social-icons {
-  margin-bottom: 10px;
-}
-
 footer .social-icons a {
   color: white;
   margin: 0 10px;
-  font-size: 20px;
-  transition: color 0.3s ease;
-}
-
-footer .social-icons a:hover {
-  color: #e91e63;
 }
 
 /* Buscador */
@@ -450,6 +451,7 @@ footer .social-icons a:hover {
   color: #333;
 }
 
+
 #buscador:focus {
   border-color: #c2185b;
   box-shadow: 0 0 8px rgba(233,30,99,0.4);
@@ -462,10 +464,8 @@ footer .social-icons a:hover {
   position: fixed;
   z-index: 2000;
   padding-top: 60px;
-  left: 0; 
-  top: 0;
-  width: 100%; 
-  height: 100%;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
   overflow: auto;
   background-color: rgba(0,0,0,0.8);
 }
@@ -480,8 +480,7 @@ footer .social-icons a:hover {
 
 .close {
   position: absolute;
-  top: 20px; 
-  right: 35px;
+  top: 20px; right: 35px;
   color: #fff;
   font-size: 40px;
   font-weight: bold;
