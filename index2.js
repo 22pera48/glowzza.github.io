@@ -1,50 +1,65 @@
-// -------------------- Carrito --------------------
-function irAlCarrito() {
-  window.location.href = "carrito.html";
-}
+// Importar Firebase SDK desde CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function agregarAlCarrito(nombre, precio) {
-  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-  let item = carrito.find(p => p.nombre === nombre);
-  if (item) {
-    item.cantidad++;
-  } else {
-    carrito.push({ nombre, precio, cantidad: 1 });
-  }
-  localStorage.setItem("carrito", JSON.stringify(carrito));
+// Configuración Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+  authDomain: "glowzzainventario.firebaseapp.com",
+  projectId: "glowzzainventario",
+  storageBucket: "glowzzainventario.appspot.com",
+  messagingSenderId: "159721581844",
+  appId: "1:159721581844:web:f62cdb303258dc847b6601",
+  measurementId: "G-0FR3Q6P3L2"
+};
 
-  Swal.fire({
-    position: 'top-end',
-    icon: 'success',
-    title: `${nombre} agregado al carrito`,
-    showConfirmButton: false,
-    timer: 1500
-  });
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  mostrarMiniCart();
-}
-
-function mostrarMiniCart() {
-  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-  const lista = document.getElementById("miniCartItems");
-  if (!lista) return;
-  lista.innerHTML = "";
-  carrito.forEach(prod => {
-    const li = document.createElement("li");
-    li.textContent = `${prod.nombre} x${prod.cantidad} - $${prod.precio * prod.cantidad}`;
-    lista.appendChild(li);
-  });
-}
-
-function finalizarCompra() {
-  window.location.href = "checkout.html";
-}
-
-// -------------------- Wishlist --------------------
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".btn-favorito").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const producto = btn.closest(".producto").querySelector("h4").textContent;
+  // -------------------- Carrito --------------------
+  window.irAlCarrito = () => window.location.href = "carrito.html";
+
+  window.agregarAlCarrito = (nombre, precio) => {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    let item = carrito.find(p => p.nombre === nombre);
+    if (item) {
+      item.cantidad++;
+    } else {
+      carrito.push({ nombre, precio, cantidad: 1 });
+    }
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: `${nombre} agregado al carrito`,
+      showConfirmButton: false,
+      timer: 1500
+    });
+
+    mostrarMiniCart();
+  };
+
+  function mostrarMiniCart() {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    const lista = document.getElementById("miniCartItems");
+    if (!lista) return;
+    lista.innerHTML = "";
+    carrito.forEach(prod => {
+      const li = document.createElement("li");
+      li.textContent = `${prod.nombre} x${prod.cantidad} - $${prod.precio * prod.cantidad}`;
+      lista.appendChild(li);
+    });
+  }
+
+  window.finalizarCompra = () => window.location.href = "checkout.html";
+
+  // -------------------- Wishlist --------------------
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-favorito")) {
+      const producto = e.target.closest(".producto").querySelector("h4").textContent;
       let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
       if (!favoritos.includes(producto)) favoritos.push(producto);
       localStorage.setItem("favoritos", JSON.stringify(favoritos));
@@ -55,27 +70,21 @@ document.addEventListener("DOMContentLoaded", () => {
         timer: 1200,
         showConfirmButton: false
       });
-    });
+    }
   });
-});
 
-// -------------------- Dark Mode --------------------
-function toggleDarkMode() {
-  document.body.classList.toggle("dark-mode");
-}
+  // -------------------- Dark Mode --------------------
+  window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
 
-// -------------------- Carrusel --------------------
-let slideIndex = 0;
-let slides;
-let autoPlay;
+  // -------------------- Carrusel --------------------
+  let slideIndex = 0;
+  let slides = document.querySelectorAll(".slides img");
+  let autoPlay;
 
-document.addEventListener("DOMContentLoaded", () => {
-  slides = document.querySelectorAll(".slides img");
   if (slides.length > 0) {
     mostrarSlide(slideIndex);
     autoPlay = setInterval(() => moverSlide(1), 5000);
 
-    // Crear indicadores dinámicamente
     const indicadores = document.querySelector(".indicadores");
     slides.forEach((_, i) => {
       const dot = document.createElement("span");
@@ -88,38 +97,64 @@ document.addEventListener("DOMContentLoaded", () => {
       indicadores.appendChild(dot);
     });
   }
-});
 
-function mostrarSlide(n) {
-  slides.forEach((img, i) => {
-    img.style.display = i === n ? "block" : "none";
-    img.style.opacity = i === n ? "1" : "0";
-  });
+  function mostrarSlide(n) {
+    slides.forEach((img, i) => {
+      img.style.display = i === n ? "block" : "none";
+      img.style.opacity = i === n ? "1" : "0";
+    });
+    document.querySelectorAll(".dot").forEach((dot, i) => {
+      dot.classList.toggle("active", i === n);
+    });
+  }
 
-  const dots = document.querySelectorAll(".dot");
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === n);
-  });
-}
+  function moverSlide(n) {
+    slideIndex = (slideIndex + n + slides.length) % slides.length;
+    mostrarSlide(slideIndex);
+    resetAutoPlay();
+  }
 
-function moverSlide(n) {
-  slideIndex = (slideIndex + n + slides.length) % slides.length;
-  mostrarSlide(slideIndex);
-  resetAutoPlay();
-}
+  function resetAutoPlay() {
+    clearInterval(autoPlay);
+    autoPlay = setInterval(() => moverSlide(1), 5000);
+  }
 
-function resetAutoPlay() {
-  clearInterval(autoPlay);
-  autoPlay = setInterval(() => moverSlide(1), 5000);
-}
-// Buscador dinámico
-document.addEventListener("DOMContentLoaded", () => {
+  // -------------------- Buscador dinámico --------------------
   const buscador = document.getElementById("buscador");
-  buscador.addEventListener("input", () => {
-    const filtro = buscador.value.toLowerCase();
-    document.querySelectorAll(".producto").forEach(prod => {
-      const nombre = prod.querySelector("h4").textContent.toLowerCase();
-      prod.style.display = nombre.includes(filtro) ? "block" : "none";
+  if (buscador) {
+    buscador.addEventListener("input", () => {
+      const filtro = buscador.value.toLowerCase();
+      document.querySelectorAll(".producto").forEach(prod => {
+        const nombre = prod.querySelector("h4").textContent.toLowerCase();
+        prod.style.display = nombre.includes(filtro) ? "block" : "none";
+      });
+    });
+  }
+
+  // -------------------- Firebase: cargar productos dinámicamente --------------------
+  const secciones = {
+    peluqueria: document.querySelector("#peluqueria .productos"),
+    skincare: document.querySelector("#skincare .productos"),
+    maquillaje: document.querySelector("#maquillaje .productos"),
+    "cuidado-personal": document.querySelector("#cuidado-personal .productos"),
+    perfumeria: document.querySelector("#perfumeria .productos")
+  };
+
+  onSnapshot(collection(db, "productos_publicados_web"), (snapshot) => {
+    Object.values(secciones).forEach(sec => sec.innerHTML = "");
+    snapshot.forEach((doc) => {
+      const producto = doc.data();
+      const div = document.createElement("div");
+      div.classList.add("producto");
+      div.innerHTML = `
+        <img src="${producto.imagen}" alt="${producto.nombre}">
+        <h4>${producto.nombre}</h4>
+        <p>$${producto.precio}</p>
+        <button class="btn-principal" onclick="agregarAlCarrito('${producto.nombre}', ${producto.precio})">Agregar al carrito</button>
+        <button class="btn-secundario btn-favorito">❤ Favorito</button>
+      `;
+      secciones[producto.categoria]?.appendChild(div);
     });
   });
 });
+

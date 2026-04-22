@@ -232,6 +232,17 @@ section h1 {
   font-weight: bold;
 }
 
+/* 🔹 Botones dentro de producto */
+.producto .btn-principal,
+.producto .btn-secundario {
+  margin-top: 10px;
+  display: inline-block;
+}
+
+.producto .btn-secundario {
+  margin-left: 8px;
+}
+
 /* Contacto */
 #contacto {
   background: #fff0f6;
@@ -254,6 +265,7 @@ footer .social-icons a {
   color: white;
   margin: 0 10px;
 }
+
 /* Buscador */
 #buscador {
   padding: 10px 16px;
