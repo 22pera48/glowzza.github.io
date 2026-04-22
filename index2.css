@@ -270,46 +270,53 @@ button:hover, .btn-principal:hover {
   justify-content: flex-start; /* evita hueco superior */
   align-items: center;
   overflow: hidden;
-  margin-top: 0;            /* 🔹 asegura que no se separe del header */
-  padding-top: 0;           /* 🔹 elimina relleno extra arriba */
+  margin-top: 0;            /* asegura que no se separe del header */
+  padding-top: 0;           /* elimina relleno extra arriba */
 }
 
 .banner-contenido {
   position: relative;
   z-index: 2;
   text-align: center;
-  background: rgba(255,255,255,0.85);
-  padding: 15px 30px;       /* menos padding vertical */
-  border-radius: 12px;
-  margin-top: 0;            /* 🔹 evita espacio extra arriba */
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,246,0.95));
+  padding: 20px 40px;       /* más aire para hero */
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(233,30,99,0.25);
+  margin: 0 auto 20px;      /* centrado y separado del carrusel */
+  max-width: 900px;
 }
-.banner h1 {
+
+.banner-contenido h1 {
   font-size: 3em;
   color: #e91e63;
-  margin-top: 0;            /* resetea margen superior */
-  margin-bottom: 10px;
+  margin: 0 0 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
-.banner p {
-  font-size: 1.3em;
+.banner-contenido p {
+  font-size: 1.4em;
   color: #444;
   margin-bottom: 20px;
+  font-style: italic;
 }
-
 
 .boton-promocion a {
   background-color: #e91e63;
   color: white;
-  padding: 12px 24px;
+  padding: 12px 28px;
   border-radius: 30px;
   text-decoration: none;
   font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(233,30,99,0.3);
 }
 
 .boton-promocion a:hover {
   background-color: #c2185b;
+  transform: scale(1.05);
 }
+
 
 /* Secciones */
 section {
