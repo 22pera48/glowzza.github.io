@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glowzza</title>
+
+  <!-- Fuentes y estilos -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="index2.css">
+</head>
+<body>
+
+  <!-- 🔹 Header -->
+  <header class="header">
+    <nav class="menu">
+      <a href="#peluqueria">Peluquería</a>
+      <a href="#maquillaje">Maquillaje</a>
+      <a href="#skincare">Skincare</a>
+      <a href="#cuidado-personal">Cuidado Personal</a>
+      <a href="#perfumeria">Perfumería</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <div class="acciones-header">
+      <div class="social-icons">
+        <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
+        <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
+        <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
+      </div>
+      <div class="buscador-toggle">
+        <!-- Campo de búsqueda dinámico -->
+        <input type="text" id="buscador" placeholder="Buscar productos..." />
+        <button onclick="irAlCarrito()" class="btn-principal">
+          <span class="material-icons">shopping_cart</span> Carrito
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 🔹 Banner con carrusel -->
+  <section class="banner">
+    <div class="carousel">
+      <div class="slides">
+        <img src="images/banner1.jpg" alt="Banner 1">
+        <img src="images/banner2.jpg" alt="Banner 2">
+        <img src="images/banner3.jpg" alt="Banner 3">
+      </div>
+      <button class="prev" onclick="moverSlide(-1)">❮</button>
+      <button class="next" onclick="moverSlide(1)">❯</button>
+      <div class="indicadores"></div>
+    </div>
+    <div class="banner-contenido">
+      <h1>Glowzza</h1>
+      <p>PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
+      <div class="boton-promocion">
+        <a href="promociones.html">🔥 VER PROMOCIONES EXCLUSIVAS 🔥</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🔹 Secciones de productos -->
+  <section id="peluqueria">
+    <h1>Peluquería</h1>
+    <div class="productos">
+      <div class="producto"><h4>Shampoo Nutritivo</h4><p>$1200</p></div>
+      <div class="producto"><h4>Acondicionador Hidratante</h4><p>$1500</p></div>
+    </div>
+  </section>
+
+  <section id="skincare">
+    <h1>Skincare</h1>
+    <div class="productos">
+      <div class="producto"><h4>Crema Facial</h4><p>$2500</p></div>
+      <div class="producto"><h4>Serum Vitamina C</h4><p>$3200</p></div>
+    </div>
+  </section>
+
+  <section id="maquillaje">
+    <h1>Maquillaje</h1>
+    <div class="productos">
+      <div class="producto"><h4>Labial Mate</h4><p>$1800</p></div>
+      <div class="producto"><h4>Base Líquida</h4><p>$2800</p></div>
+    </div>
+  </section>
+
+  <section id="cuidado-personal">
+    <h1>Cuidado Personal</h1>
+    <div class="productos">
+      <div class="producto"><h4>Jabón Artesanal</h4><p>$800</p></div>
+      <div class="producto"><h4>Crema Corporal</h4><p>$2200</p></div>
+    </div>
+  </section>
+
+  <section id="perfumeria">
+    <h1>Perfumería</h1>
+    <div class="productos">
+      <div class="producto"><h4>Perfume Floral</h4><p>$4500</p></div>
+      <div class="producto"><h4>Colonia Fresca</h4><p>$3000</p></div>
+    </div>
+  </section>
+
+  <!-- 🔹 Contacto -->
+  <section id="contacto">
+    <h1>Contacto</h1>
+    <p><strong>WhatsApp:</strong> 11 71019084</p>
+    <p><strong>Email:</strong> glowzzaventas@gmail.com</p>
+  </section>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    <div class="social-icons">
+      <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
+      <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
+      <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
+    </div>
+    <p>© 2026 - Glowzza</p>
+  </footer>
+
+  <!-- 🔹 Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="index2.js"></script>
+</body>
+</html>
