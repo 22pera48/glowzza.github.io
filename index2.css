@@ -217,7 +217,8 @@ button:hover, .btn-principal:hover {
 /* Banner con carrusel */
 .banner {
   position: relative;
-  height: 420px;
+  min-height: 420px; /* altura mínima */
+  height: auto;      /* se adapta al contenido */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -233,13 +234,12 @@ button:hover, .btn-principal:hover {
 
 .carousel .slides img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;          /* se adapta a la proporción */
+  object-fit: contain;   /* nunca recorta */
   display: none;
   opacity: 0;
   transition: opacity 0.8s ease;
 }
-
 .carousel .prev, .carousel .next {
   position: absolute;
   top: 50%;
