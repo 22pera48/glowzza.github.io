@@ -20,6 +20,7 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
   // -------------------- Carrito --------------------
   window.irAlCarrito = () => window.location.href = "carrito.html";
+  window.irAFavoritos = () => window.location.href = "favoritos.html";
 
   window.agregarAlCarrito = (nombre, precio) => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -150,11 +151,31 @@ document.addEventListener("DOMContentLoaded", () => {
         <img src="${producto.imagen}" alt="${producto.nombre}">
         <h4>${producto.nombre}</h4>
         <p>$${producto.precio}</p>
+        ${producto.descripcion ? `<p class="descripcion">${producto.descripcion}</p>` : ""}
         <button class="btn-principal" onclick="agregarAlCarrito('${producto.nombre}', ${producto.precio})">Agregar al carrito</button>
         <button class="btn-secundario btn-favorito">❤ Favorito</button>
       `;
       secciones[producto.categoria]?.appendChild(div);
     });
   });
-});
 
+  // -------------------- Modal para ampliar imagen --------------------
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImg");
+  const caption = document.getElementById("caption");
+  const closeBtn = document.querySelector(".close");
+
+  document.addEventListener("click", (e) => {
+    if (e.target.closest(".producto") && e.target.tagName === "IMG") {
+      modal.style.display = "block";
+      modalImg.src = e.target.src;
+      caption.textContent = e.target.alt;
+    }
+  });
+
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      modal.style.display = "none";
+    };
+  }
+});

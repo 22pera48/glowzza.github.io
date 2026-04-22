@@ -35,6 +35,9 @@
         <button onclick="irAlCarrito()" class="btn-principal">
           <span class="material-icons">shopping_cart</span> Carrito
         </button>
+        <button onclick="irAFavoritos()" class="btn-secundario">
+          <span class="material-icons">favorite</span> Mis Favoritos
+        </button>
       </div>
     </div>
   </header>
@@ -103,8 +106,21 @@
     <p>© 2026 - Glowzza</p>
   </footer>
 
+  <!-- 🔹 Modal para ver imagen ampliada -->
+  <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImg">
+    <div id="caption"></div>
+  </div>
+
   <!-- 🔹 Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="index2.js"></script>
+  <script>
+    function irAFavoritos() {
+      window.location.href = "favoritos.html";
+    }
+  </script>
 </body>
 </html>
+
