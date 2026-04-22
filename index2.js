@@ -18,12 +18,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // -------------------- Navegación --------------------
+  // -------------------- Carrito --------------------
   window.irAlCarrito = () => window.location.href = "carrito2.html";
   window.irAFavoritos = () => window.location.href = "favorito2.html";
-  window.finalizarCompra = () => window.location.href = "checkout.html";
 
-  // -------------------- Carrito --------------------
   window.agregarAlCarrito = (nombre, precio) => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     let item = carrito.find(p => p.nombre === nombre);
@@ -57,77 +55,80 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  window.finalizarCompra = () => window.location.href = "checkout.html";
+
   // -------------------- Wishlist --------------------
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-favorito")) {
-      const card = e.target.closest(".producto");
-      const nombre = card.querySelector("h4").textContent;
-      const precio = card.querySelector("p").textContent.replace("$", "");
-      const imagen = card.querySelector("img").src;
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("btn-favorito")) {
+    const card = e.target.closest(".producto");
+    const nombre = card.querySelector("h4").textContent;
+    const precio = card.querySelector("p").textContent.replace("$", "");
+    const imagen = card.querySelector("img").src;
 
-      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+    let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-      if (!favoritos.some(p => p.nombre === nombre)) {
-        favoritos.push({ nombre, precio, imagen });
-      }
-
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
-
-      Swal.fire({
-        icon: 'info',
-        title: 'Agregado a favoritos',
-        text: nombre,
-        timer: 1200,
-        showConfirmButton: false
-      });
+    // Evitar duplicados
+    if (!favoritos.some(p => p.nombre === nombre)) {
+      favoritos.push({ nombre, precio, imagen });
     }
-  });
 
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Agregado a favoritos',
+      text: nombre,
+      timer: 1200,
+      showConfirmButton: false
+    });
+  }
+});
   // -------------------- Dark Mode --------------------
   window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
 
-  // -------------------- Carrusel --------------------
-  let slideIndex = 0;
-  let slides = document.querySelectorAll(".carousel .slides img");
-  let autoPlay;
+// -------------------- Carrusel --------------------
+let slideIndex = 0;
+let slides = document.querySelectorAll(".slides img");
+let autoPlay;
 
-  if (slides.length > 0) {
-    window.mostrarSlide(0); // mostrar la primera imagen
-    autoPlay = setInterval(() => window.moverSlide(1), 5000);
+if (slides.length > 0) {
+  window.mostrarSlide(0); // mostrar la primera imagen
+  autoPlay = setInterval(() => window.moverSlide(1), 5000);
 
-    const indicadores = document.querySelector(".indicadores");
-    slides.forEach((_, i) => {
-      const dot = document.createElement("span");
-      dot.classList.add("dot");
-      dot.addEventListener("click", () => {
-        slideIndex = i;
-        window.mostrarSlide(slideIndex);
-        resetAutoPlay();
-      });
-      indicadores.appendChild(dot);
+  const indicadores = document.querySelector(".indicadores");
+  slides.forEach((_, i) => {
+    const dot = document.createElement("span");
+    dot.classList.add("dot");
+    dot.addEventListener("click", () => {
+      slideIndex = i;
+      window.mostrarSlide(slideIndex);
+      resetAutoPlay();
     });
-  }
+    indicadores.appendChild(dot);
+  });
+}
 
-  window.mostrarSlide = function(n) {
-    slides.forEach((img, i) => {
-      img.style.display = i === n ? "block" : "none";
-      img.style.opacity = i === n ? "1" : "0";
-    });
-    document.querySelectorAll(".dot").forEach((dot, i) => {
-      dot.classList.toggle("active", i === n);
-    });
-  };
+window.mostrarSlide = function(n) {
+  slides.forEach((img, i) => {
+    img.style.display = i === n ? "block" : "none";
+    img.style.opacity = i === n ? "1" : "0";
+  });
+  document.querySelectorAll(".dot").forEach((dot, i) => {
+    dot.classList.toggle("active", i === n);
+  });
+};
 
-  window.moverSlide = function(n) {
-    slideIndex = (slideIndex + n + slides.length) % slides.length;
-    window.mostrarSlide(slideIndex);
-    resetAutoPlay();
-  };
+window.moverSlide = function(n) {
+  slideIndex = (slideIndex + n + slides.length) % slides.length;
+  window.mostrarSlide(slideIndex);
+  resetAutoPlay();
+};
 
-  function resetAutoPlay() {
-    clearInterval(autoPlay);
-    autoPlay = setInterval(() => window.moverSlide(1), 5000);
-  }
+function resetAutoPlay() {
+  clearInterval(autoPlay);
+  autoPlay = setInterval(() => window.moverSlide(1), 5000);
+}
+
 
   // -------------------- Buscador dinámico --------------------
   const buscador = document.getElementById("buscador");
@@ -146,14 +147,12 @@ document.addEventListener("DOMContentLoaded", () => {
     peluqueria: document.querySelector("#peluqueria .productos"),
     skincare: document.querySelector("#skincare .productos"),
     maquillaje: document.querySelector("#maquillaje .productos"),
-    "cuidado personal": document.querySelector("#cuidado-personal .productos"),
-    "perfume y esencias": document.querySelector("#perfume-esencias .productos")
+    "cuidado personal": document.querySelector("#cuidado\\ personal .productos"),
+    "perfume y esencias": document.querySelector("#perfume\\ y\\ esencias .productos")
   };
 
   onSnapshot(collection(db, "productos_publicados_web"), (snapshot) => {
-    Object.values(secciones).forEach(sec => {
-      if (sec) sec.innerHTML = "";
-    });
+    Object.values(secciones).forEach(sec => sec.innerHTML = "");
     snapshot.forEach((doc) => {
       const producto = doc.data();
       const div = document.createElement("div");
@@ -168,9 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button class="btn-principal" onclick="agregarAlCarrito('${producto.nombre}', ${producto.precio})">Agregar al carrito</button>
         <button class="btn-secundario btn-favorito">❤ Favorito</button>
       `;
-      if (secciones[producto.categoria]) {
-        secciones[producto.categoria].appendChild(div);
-      }
+      secciones[producto.categoria]?.appendChild(div);
     });
   });
 
@@ -194,4 +191,47 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 });
+let slideIndex = 0;
 
+document.addEventListener("DOMContentLoaded", () => {
+  mostrarSlide(slideIndex);
+
+  // Rotación automática cada 5 segundos
+  setInterval(() => moverSlide(1), 5000);
+});
+
+function mostrarSlide(n) {
+  const slides = document.querySelectorAll(".carousel .slides img");
+  const dotsContainer = document.querySelector(".indicadores");
+
+  if (n >= slides.length) slideIndex = 0;
+  if (n < 0) slideIndex = slides.length - 1;
+
+  slides.forEach((img, i) => {
+    img.style.display = i === slideIndex ? "block" : "none";
+    img.style.opacity = i === slideIndex ? "1" : "0";
+  });
+
+  // Crear indicadores si no existen
+  if (dotsContainer && dotsContainer.children.length === 0) {
+    slides.forEach((_, i) => {
+      const dot = document.createElement("span");
+      dot.classList.add("dot");
+      dot.addEventListener("click", () => {
+        slideIndex = i;
+        mostrarSlide(slideIndex);
+      });
+      dotsContainer.appendChild(dot);
+    });
+  }
+
+  const dots = document.querySelectorAll(".dot");
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === slideIndex);
+  });
+}
+
+function moverSlide(n) {
+  slideIndex += n;
+  mostrarSlide(slideIndex);
+}
