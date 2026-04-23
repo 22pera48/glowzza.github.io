@@ -217,8 +217,13 @@ button:hover, .btn-principal:hover {
 
 /* 🔹 Hero Glowzza arriba */
 .hero-glowzza {
-  margin-bottom: 0;   /* quita el gap debajo del logo */
-  padding-bottom: 10px; /* ajusta si querés un poco de aire */
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,246,0.95));
+  padding: 20px 40px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(233,30,99,0.25);
+  margin: 0 auto;
+  max-width: 900px;
 }
 
 .hero-glowzza h1 {
@@ -469,8 +474,4 @@ footer .social-icons a {
   font-size: 40px;
   font-weight: bold;
   cursor: pointer;
-}
-section.banner {
-  padding-top: 0;   /* elimina el padding heredado */
-  margin-top: 0;    /* evita separación extra */
 }
