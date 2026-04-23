@@ -217,15 +217,8 @@ button:hover, .btn-principal:hover {
 
 /* 🔹 Hero Glowzza arriba */
 .hero-glowzza {
-  text-align: center;
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,246,0.95));
-  padding: 20px 40px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(233,30,99,0.25);
-  margin: 0 auto 20px;
-  max-width: 900px;
+  margin: 0 auto 5px;   /* 🔹 solo 5px de separación */
 }
-
 .hero-glowzza h1 {
   font-size: 3em;
   color: #e91e63;
