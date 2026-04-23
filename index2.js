@@ -189,7 +189,6 @@ document.addEventListener("click", (e) => {
       modal.style.display = "none";
     };
   }
-  
 });
 let slideIndex = 0;
 
