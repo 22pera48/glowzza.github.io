@@ -216,47 +216,53 @@ button:hover, .btn-principal:hover {
 }
 
 /* 🔹 Hero Glowzza arriba */
+/* 🔹 Hero Glowzza mejorado */
 .hero-glowzza {
+  margin-top: 40px;          /* separación respecto al menú */
+  margin-bottom: 0;
   text-align: center;
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,246,0.95));
-  padding: 20px 40px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(233,30,99,0.25);
-  margin: 0 auto;
-  max-width: 900px;
+  background: linear-gradient(135deg, #fff0f6, #ffe4ec); /* gradiente suave */
+  padding: 40px 50px;        /* más aire interno */
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(233,30,99,0.25);
+  max-width: 950px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
 }
 
 .hero-glowzza h1 {
-  font-size: 3em;
+  font-size: 3.5em;
+  font-weight: 900;
   color: #e91e63;
-  margin: 0 0 10px;
+  margin-bottom: 15px;
   letter-spacing: 2px;
   text-transform: uppercase;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.1); /* resalta más */
 }
 
 .hero-glowzza p {
-  font-size: 1.4em;
-  color: #444;
-  margin-bottom: 20px;
+  font-size: 1.5em;
+  color: #555;
+  margin-bottom: 25px;
   font-style: italic;
 }
 
 .hero-glowzza .boton-promocion a {
-  background-color: #e91e63;
+  background: linear-gradient(90deg, #e91e63, #ff9800); /* gradiente llamativo */
   color: white;
-  padding: 12px 28px;
-  border-radius: 30px;
+  padding: 14px 32px;
+  border-radius: 40px;
   text-decoration: none;
   font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(233,30,99,0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 16px rgba(233,30,99,0.4);
 }
 
 .hero-glowzza .boton-promocion a:hover {
-  background-color: #c2185b;
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(233,30,99,0.5);
 }
-
 /* Banner con carrusel */
 .carousel {
   position: relative;
