@@ -58,77 +58,77 @@ document.addEventListener("DOMContentLoaded", () => {
   window.finalizarCompra = () => window.location.href = "checkout.html";
 
   // -------------------- Wishlist --------------------
-document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("btn-favorito")) {
-    const card = e.target.closest(".producto");
-    const nombre = card.querySelector("h4").textContent;
-    const precio = card.querySelector("p").textContent.replace("$", "");
-    const imagen = card.querySelector("img").src;
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-favorito")) {
+      const card = e.target.closest(".producto");
+      const nombre = card.querySelector("h4").textContent;
+      const precio = card.querySelector("p").textContent.replace("$", "");
+      const imagen = card.querySelector("img").src;
 
-    let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-    // Evitar duplicados
-    if (!favoritos.some(p => p.nombre === nombre)) {
-      favoritos.push({ nombre, precio, imagen });
+      if (!favoritos.some(p => p.nombre === nombre)) {
+        favoritos.push({ nombre, precio, imagen });
+      }
+
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+
+      Swal.fire({
+        icon: 'info',
+        title: 'Agregado a favoritos',
+        text: nombre,
+        timer: 1200,
+        showConfirmButton: false
+      });
     }
+  });
 
-    localStorage.setItem("favoritos", JSON.stringify(favoritos));
-
-    Swal.fire({
-      icon: 'info',
-      title: 'Agregado a favoritos',
-      text: nombre,
-      timer: 1200,
-      showConfirmButton: false
-    });
-  }
-});
   // -------------------- Dark Mode --------------------
   window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
 
-// -------------------- Carrusel --------------------
-let slideIndex = 0;
-let slides = document.querySelectorAll(".slides img");
-let autoPlay;
+  // -------------------- Carrusel automático --------------------
+  let slideIndex = 0;
+  let slides = document.querySelectorAll(".slides img");
+  let autoPlay;
 
-if (slides.length > 0) {
-  window.mostrarSlide(0); // mostrar la primera imagen
-  autoPlay = setInterval(() => window.moverSlide(1), 5000);
+  if (slides.length > 0) {
+    mostrarSlide(0);
+    autoPlay = setInterval(() => moverSlide(1), 5000);
 
-  const indicadores = document.querySelector(".indicadores");
-  slides.forEach((_, i) => {
-    const dot = document.createElement("span");
-    dot.classList.add("dot");
-    dot.addEventListener("click", () => {
-      slideIndex = i;
-      window.mostrarSlide(slideIndex);
-      resetAutoPlay();
+    const indicadores = document.querySelector(".indicadores");
+    slides.forEach((_, i) => {
+      const dot = document.createElement("span");
+      dot.classList.add("dot");
+      dot.addEventListener("click", () => {
+        slideIndex = i;
+        mostrarSlide(slideIndex);
+        resetAutoPlay();
+      });
+      indicadores.appendChild(dot);
     });
-    indicadores.appendChild(dot);
-  });
-}
+  }
 
-// 🔹 Exponer funciones al ámbito global
-window.mostrarSlide = function(n) {
-  slides.forEach((img, i) => {
-    img.style.display = i === n ? "block" : "none";
-    img.style.opacity = i === n ? "1" : "0";
-  });
-  document.querySelectorAll(".dot").forEach((dot, i) => {
-    dot.classList.toggle("active", i === n);
-  });
-};
+  function mostrarSlide(n) {
+    slides.forEach((img, i) => {
+      img.style.display = i === n ? "block" : "none";
+      img.style.opacity = i === n ? "1" : "0";
+    });
+    document.querySelectorAll(".dot").forEach((dot, i) => {
+      dot.classList.toggle("active", i === n);
+    });
+  }
 
-window.moverSlide = function(n) {
-  slideIndex = (slideIndex + n + slides.length) % slides.length;
-  window.mostrarSlide(slideIndex);
-  resetAutoPlay();
-};
+  function moverSlide(n) {
+    slideIndex = (slideIndex + n + slides.length) % slides.length;
+    mostrarSlide(slideIndex);
+    resetAutoPlay();
+  }
 
-function resetAutoPlay() {
-  clearInterval(autoPlay);
-  autoPlay = setInterval(() => window.moverSlide(1), 5000);
-}
+  function resetAutoPlay() {
+    clearInterval(autoPlay);
+    autoPlay = setInterval(() => moverSlide(1), 5000);
+  }
+
   // -------------------- Buscador dinámico --------------------
   const buscador = document.getElementById("buscador");
   if (buscador) {
@@ -142,13 +142,14 @@ function resetAutoPlay() {
   }
 
   // -------------------- Firebase: cargar productos dinámicamente --------------------
-const secciones = {
-  peluqueria: document.querySelector("#peluqueria .productos"),
-  skincare: document.querySelector("#skincare .productos"),
-  maquillaje: document.querySelector("#maquillaje .productos"),
-  "cuidado personal": document.querySelector("#cuidado-personal .productos"),
-  "perfume y esencias": document.querySelector("#perfume-esencias .productos")
-};
+  const secciones = {
+    peluqueria: document.querySelector("#peluqueria .productos"),
+    skincare: document.querySelector("#skincare .productos"),
+    maquillaje: document.querySelector("#maquillaje .productos"),
+    "cuidado personal": document.querySelector("#cuidado-personal .productos"),
+    "perfume y esencias": document.querySelector("#perfume-esencias .productos")
+  };
+
   onSnapshot(collection(db, "productos_publicados_web"), (snapshot) => {
     Object.values(secciones).forEach(sec => sec.innerHTML = "");
     snapshot.forEach((doc) => {
@@ -188,49 +189,4 @@ const secciones = {
       modal.style.display = "none";
     };
   }
-
 });
-let slideIndex = 0;
-
-document.addEventListener("DOMContentLoaded", () => {
-  mostrarSlide(slideIndex);
-
-  // Rotación automática cada 5 segundos
-  setInterval(() => moverSlide(1), 5000);
-});
-
-function mostrarSlide(n) {
-  const slides = document.querySelectorAll(".carousel .slides img");
-  const dotsContainer = document.querySelector(".indicadores");
-
-  if (n >= slides.length) slideIndex = 0;
-  if (n < 0) slideIndex = slides.length - 1;
-
-  slides.forEach((img, i) => {
-    img.style.display = i === slideIndex ? "block" : "none";
-    img.style.opacity = i === slideIndex ? "1" : "0";
-  });
-
-  // Crear indicadores si no existen
-  if (dotsContainer && dotsContainer.children.length === 0) {
-    slides.forEach((_, i) => {
-      const dot = document.createElement("span");
-      dot.classList.add("dot");
-      dot.addEventListener("click", () => {
-        slideIndex = i;
-        mostrarSlide(slideIndex);
-      });
-      dotsContainer.appendChild(dot);
-    });
-  }
-
-  const dots = document.querySelectorAll(".dot");
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === slideIndex);
-  });
-}
-
-function moverSlide(n) {
-  slideIndex += n;
-  mostrarSlide(slideIndex);
-}
