@@ -13,90 +13,92 @@
 <body>
 
   <!-- 🔹 Header -->
-<header class="header">
-  <!-- Fila superior -->
-  <div class="top-bar">
-    <div class="social-icons">
-      <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
-      <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
-      <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
+  <header class="header">
+    <!-- Fila superior -->
+    <div class="top-bar">
+      <div class="social-icons">
+        <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
+        <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
+        <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
+      </div>
+
+      <div class="buscador">
+        <input type="text" id="buscador" placeholder="Buscar productos..." />
+      </div>
+
+      <div class="acciones">
+        <button onclick="irAlCarrito()" class="btn-principal">
+          <span class="material-icons">shopping_cart</span> Carrito
+        </button>
+        <button onclick="irAFavoritos()" class="btn-secundario">
+          <span class="material-icons">favorite</span> Mis Favoritos
+        </button>
+      </div>
     </div>
 
-    <div class="buscador">
-      <input type="text" id="buscador" placeholder="Buscar productos..." />
-    </div>
+    <!-- Fila inferior -->
+    <nav class="menu">
+      <a href="#peluqueria">Peluquería</a>
+      <a href="#maquillaje">Maquillaje</a>
+      <a href="#skincare">Skincare</a>
+      <a href="#cuidado-personal">Cuidado Personal</a>
+      <a href="#perfume-esencias">Perfume y Esencias</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
 
-    <div class="acciones">
-      <button onclick="irAlCarrito()" class="btn-principal">
-        <span class="material-icons">shopping_cart</span> Carrito
-      </button>
-      <button onclick="irAFavoritos()" class="btn-secundario">
-        <span class="material-icons">favorite</span> Mis Favoritos
-      </button>
+  <!-- 🔹 Cartel Glowzza arriba -->
+  <div class="hero-glowzza">
+    <h1>Glowzza</h1>
+    <p>PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
+    <div class="boton-promocion">
+      <a href="promociones.html">🔥 VER PROMOCIONES EXCLUSIVAS 🔥</a>
     </div>
   </div>
-
-  <!-- Fila inferior -->
-  <nav class="menu">
-    <a href="#peluqueria">Peluquería</a>
-    <a href="#maquillaje">Maquillaje</a>
-    <a href="#skincare">Skincare</a>
-    <a href="#cuidado personal">Cuidado Personal</a>
-    <a href="#perfume y esencias">Perfume y Esencias</a>
-    <a href="#contacto">Contacto</a>
-  </nav>
-</header>
-
 
   <!-- 🔹 Banner con carrusel -->
   <section class="banner">
     <div class="carousel">
       <div class="slides">
-<img src="images/banner/b1.png" alt="Banner 1">
-<img src="images/banner/b2.png" alt="Banner 2">
-<img src="images/banner/b3.png" alt="Banner 3">
+        <img src="images/banner/b1.png" alt="Banner 1">
+        <img src="images/banner/b2.png" alt="Banner 2">
+        <img src="images/banner/b3.png" alt="Banner 3">
       </div>
       <div class="indicadores"></div>
-    </div>
-    <div class="banner-contenido">
-      <h1>Glowzza</h1>
-      <p>PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
-      <div class="boton-promocion">
-        <a href="promociones.html">🔥 VER PROMOCIONES EXCLUSIVAS 🔥</a>
-      </div>
     </div>
   </section>
 
   <!-- 🔹 Secciones de productos -->
-<section id="peluqueria">
-  <h1>Peluquería</h1>
-  <p class="mensaje-seccion">Descubrí productos que realzan tu estilo y cuidan tu cabello.</p>
-  <div class="productos"></div>
-</section>
+  <section id="peluqueria">
+    <h1>Peluquería</h1>
+    <p class="mensaje-seccion">Descubrí productos que realzan tu estilo y cuidan tu cabello.</p>
+    <div class="productos"></div>
+  </section>
 
-<section id="skincare">
-  <h1>Skincare</h1>
-  <p class="mensaje-seccion">Rutinas pensadas para una piel radiante y saludable.</p>
-  <div class="productos"></div>
-</section>
+  <section id="skincare">
+    <h1>Skincare</h1>
+    <p class="mensaje-seccion">Rutinas pensadas para una piel radiante y saludable.</p>
+    <div class="productos"></div>
+  </section>
 
-<section id="maquillaje">
-  <h1>Maquillaje</h1>
-  <p class="mensaje-seccion">Colores y texturas para expresar tu arte personal.</p>
-  <div class="productos"></div>
-</section>
+  <section id="maquillaje">
+    <h1>Maquillaje</h1>
+    <p class="mensaje-seccion">Colores y texturas para expresar tu arte personal.</p>
+    <div class="productos"></div>
+  </section>
 
-<section id="cuidado personal">
-  <h1>Cuidado Personal</h1>
-  <p class="mensaje-seccion">Bienestar diario con productos que te acompañan siempre.</p>
-  <div class="productos"></div>
-</section>
+  <section id="cuidado-personal">
+    <h1>Cuidado Personal</h1>
+    <p class="mensaje-seccion">Bienestar diario con productos que te acompañan siempre.</p>
+    <div class="productos"></div>
+  </section>
 
-<section id="perfume y esencias">
-  <h1>Perfume y Esencias</h1>
-  <p class="mensaje-seccion">Fragancias únicas que dejan huella en cada momento.</p>
-  <div class="productos"></div>
-</section>
+  <section id="perfume-esencias">
+    <h1>Perfume y Esencias</h1>
+    <p class="mensaje-seccion">Fragancias únicas que dejan huella en cada momento.</p>
+    <div class="productos"></div>
+  </section>
+
   <!-- 🔹 Contacto -->
   <section id="contacto">
     <h1>Contacto</h1>
@@ -134,4 +136,3 @@
   </script>
 </body>
 </html>
-
