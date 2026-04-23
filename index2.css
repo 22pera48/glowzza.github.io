@@ -4,6 +4,14 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #fafafa;
+  color: #222;
+  line-height: 1.6;
+}
+
 /* 🔹 Carrito Glowzza */
 #carrito {
   max-width: 900px;
@@ -35,7 +43,6 @@
   color: #fff;
   font-weight: 700;
   padding: 12px;
-  border-radius: 6px 6px 0 0;
 }
 
 .tabla-carrito td {
@@ -114,13 +121,6 @@
   }
 }
 
-body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: #fafafa;
-  color: #222;
-  line-height: 1.6;
-}
-
 /* Header reorganizado */
 header {
   background: #fff;
@@ -128,12 +128,10 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  margin: 0;   /* asegura que no haya hueco */
-  padding: 0;  /* compacta el header */
+  margin: 0;
+  padding: 0;
 }
 
-
-/* Fila superior */
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -217,24 +215,65 @@ button:hover, .btn-principal:hover {
   color: white;
 }
 
+/* 🔹 Hero Glowzza arriba */
+.hero-glowzza {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,246,0.95));
+  padding: 20px 40px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(233,30,99,0.25);
+  margin: 0 auto 20px;
+  max-width: 900px;
+}
+
+.hero-glowzza h1 {
+  font-size: 3em;
+  color: #e91e63;
+  margin: 0 0 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hero-glowzza p {
+  font-size: 1.4em;
+  color: #444;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.hero-glowzza .boton-promocion a {
+  background-color: #e91e63;
+  color: white;
+  padding: 12px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(233,30,99,0.3);
+}
+
+.hero-glowzza .boton-promocion a:hover {
+  background-color: #c2185b;
+  transform: scale(1.05);
+}
+
 /* Banner con carrusel */
 .carousel {
-  position: relative;   /* 🔹 antes estaba absolute */
+  position: relative;
   width: 100%;
-  height: auto;         /* se adapta a la imagen */
-  max-height: 100vh;    /* nunca más alto que la pantalla */
+  height: auto;
+  max-height: 100vh;
   overflow: hidden;
 }
 
 .carousel .slides img {
   width: 100%;
   height: auto;
-  object-fit: contain; /* muestra la imagen completa */
+  object-fit: contain;
   display: none;
   opacity: 0;
   transition: opacity 0.8s ease;
 }
-
 
 /* Indicadores */
 .indicadores {
@@ -260,64 +299,6 @@ button:hover, .btn-principal:hover {
   background: #e91e63;
 }
 
-/* Contenido del banner */
-.banner {
-  position: relative;
-  width: 100%;
-  height: auto;             /* se adapta al contenido */
-  display: flex;
-  flex-direction: column;   /* apila carrusel y texto */
-  justify-content: flex-start; /* evita hueco superior */
-  align-items: center;
-  overflow: hidden;
-  margin-top: 0;            /* asegura que no se separe del header */
-  padding-top: 0;           /* elimina relleno extra arriba */
-}
-
-.banner-contenido {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,246,0.95));
-  padding: 20px 40px;       /* más aire para hero */
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(233,30,99,0.25);
-  margin: 0 auto 20px;      /* centrado y separado del carrusel */
-  max-width: 900px;
-}
-
-.banner-contenido h1 {
-  font-size: 3em;
-  color: #e91e63;
-  margin: 0 0 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.banner-contenido p {
-  font-size: 1.4em;
-  color: #444;
-  margin-bottom: 20px;
-  font-style: italic;
-}
-
-.boton-promocion a {
-  background-color: #e91e63;
-  color: white;
-  padding: 12px 28px;
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(233,30,99,0.3);
-}
-
-.boton-promocion a:hover {
-  background-color: #c2185b;
-  transform: scale(1.05);
-}
-
-
 /* Secciones */
 section {
   padding: 60px 20px;
@@ -329,19 +310,20 @@ section h1 {
   text-align: center;
   font-weight: 700;
   background: linear-gradient(90deg, #e91e63, #ff9800);
-  -webkit-background-clip: text;   /* prefijo WebKit */
-  background-clip: text;           /* versión estándar */
-  -webkit-text-fill-color: transparent; /* prefijo WebKit */
-  color: transparent;              /* versión estándar */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   display: block;
   position: relative;
 }
+
 section h1::after {
   content: "";
   position: absolute;
   width: 0;
   height: 3px;
-  left: 50%; /* 🔹 centramos el subrayado */
+  left: 50%;
   transform: translateX(-50%);
   bottom: -5px;
   background: #e91e63;
@@ -360,10 +342,11 @@ section h1:hover::after {
   margin-bottom: 30px;
   font-style: italic;
 }
+
 /* Productos */
 .productos {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* máximo 4 por fila */
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
@@ -457,7 +440,6 @@ footer .social-icons a {
   background-color: #fff;
   color: #333;
 }
-
 
 #buscador:focus {
   border-color: #c2185b;
