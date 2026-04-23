@@ -348,7 +348,11 @@ section h1:hover::after {
   margin-bottom: 30px;
   font-style: italic;
 }
-
+.producto button {
+  display: block;
+  margin: 8px auto;
+  width: 80%; /* opcional */
+}
 /* Productos */
 .productos {
   display: grid;

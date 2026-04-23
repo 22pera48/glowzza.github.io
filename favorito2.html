@@ -87,8 +87,8 @@
           </div>
           <h4>${prod.nombre}</h4>
           <p>$${prod.precio}</p>
-          <button class="btn-principal" onclick="agregarAlCarrito('${prod.nombre}', ${prod.precio})">Agregar al carrito</button>
           <button class="btn-secundario" onclick="eliminarFavorito(${index})">Eliminar</button>
+          <button class="btn-principal" onclick="agregarAlCarrito('${prod.nombre}', ${prod.precio})">Agregar al carrito</button>
         `;
         contenedor.appendChild(div);
       });
