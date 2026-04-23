@@ -142,14 +142,13 @@ function resetAutoPlay() {
   }
 
   // -------------------- Firebase: cargar productos dinámicamente --------------------
-  const secciones = {
-    peluqueria: document.querySelector("#peluqueria .productos"),
-    skincare: document.querySelector("#skincare .productos"),
-    maquillaje: document.querySelector("#maquillaje .productos"),
-    "cuidado personal": document.querySelector("#cuidado\\ personal .productos"),
-    "perfume y esencias": document.querySelector("#perfume\\ y\\ esencias .productos")
-  };
-
+const secciones = {
+  peluqueria: document.querySelector("#peluqueria .productos"),
+  skincare: document.querySelector("#skincare .productos"),
+  maquillaje: document.querySelector("#maquillaje .productos"),
+  "cuidado personal": document.querySelector("#cuidado-personal .productos"),
+  "perfume y esencias": document.querySelector("#perfume-esencias .productos")
+};
   onSnapshot(collection(db, "productos_publicados_web"), (snapshot) => {
     Object.values(secciones).forEach(sec => sec.innerHTML = "");
     snapshot.forEach((doc) => {
