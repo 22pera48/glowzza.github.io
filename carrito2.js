@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("contenedorCarrito");
+  const subtotalDiv = document.getElementById("subtotalCarrito");
   const totalDiv = document.getElementById("totalCarrito");
 
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -8,17 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
     contenedor.innerHTML = "";
     if (carrito.length === 0) {
       contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+      subtotalDiv.textContent = "";
       totalDiv.textContent = "";
       return;
     }
 
-    let total = 0;
+    let subtotal = 0;
     const tabla = document.createElement("table");
     tabla.classList.add("tabla-carrito");
 
     tabla.innerHTML = `
       <thead>
         <tr>
+          <th>Imagen</th>
           <th>Producto</th>
           <th>Precio</th>
           <th>Cantidad</th>
@@ -28,17 +31,18 @@ document.addEventListener("DOMContentLoaded", () => {
       </thead>
       <tbody>
         ${carrito.map((item, index) => {
-          const subtotal = item.precio * item.cantidad;
-          total += subtotal;
+          const sub = item.precio * item.cantidad;
+          subtotal += sub;
           return `
             <tr>
+              <td><img src="${item.imagen}" alt="${item.nombre}" class="img-carrito"></td>
               <td>${item.nombre}</td>
               <td>$${item.precio}</td>
               <td>
                 <input type="number" min="1" value="${item.cantidad}" 
                   data-index="${index}" class="cantidad-input">
               </td>
-              <td>$${subtotal}</td>
+              <td>$${sub}</td>
               <td><button class="btn-secundario eliminar-btn" data-index="${index}">Eliminar</button></td>
             </tr>
           `;
@@ -47,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     contenedor.appendChild(tabla);
-    totalDiv.textContent = `Total: $${total}`;
+    subtotalDiv.textContent = `Subtotal: $${subtotal}`;
+    totalDiv.textContent = `Total: $${subtotal}`;
   }
 
   // 🔹 Actualizar cantidad dinámicamente
