@@ -100,22 +100,22 @@
       <button class="btn-principal" onclick="finalizarConWhatsApp()">Finalizar con WhatsApp</button>
       <button class="btn-secundario" onclick="mostrarFormulario()">Finalizar con Correo</button>
 
-      <!-- Formulario oculto -->
-      <form id="formCorreo" style="display:none; margin-top:20px;">
-        <label>Nombre:</label>
-        <input type="text" id="nombreCorreo" required>
+<!-- Formulario oculto -->
+<form id="formCorreo" style="display:none; margin-top:20px;">
+  <label>Nombre:</label>
+  <input type="text" id="nombreCorreo" required>
 
-        <label>Email (opcional):</label>
-        <input type="email" id="emailCorreo">
+  <label>Email (opcional):</label>
+  <input type="email" id="emailCorreo">
 
-        <label>Teléfono:</label>
-        <input type="text" id="direccionCorreo" required>
+  <label>Teléfono:</label>
+  <input type="text" id="direccionCorreo" required>
 
-        <div style="margin-top:15px;">
-          <button type="submit" class="btn-principal">Enviar pedido</button>
-          <button type="button" id="cancelarBtn" class="btn-secundario">Cancelar</button>
-        </div>
-      </form>
+  <div style="margin-top:15px;">
+    <button type="submit" class="btn-principal">Enviar pedido</button>
+<button type="button" id="cancelarBtn" class="btn-secundario">Cancelar</button>
+  </div>
+</form>
     </div>
   </div>
 
@@ -131,6 +131,75 @@
 
   <!-- 🔹 Script -->
   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const contenedor = document.getElementById("contenedorCarrito");
+      const subtotalDiv = document.getElementById("subtotalCarrito");
+      const totalDiv = document.getElementById("totalCarrito");
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+      if (carrito.length === 0) {
+        contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+        subtotalDiv.textContent = "";
+        totalDiv.textContent = "";
+        return;
+      }
+
+      let subtotal = 0;
+      contenedor.innerHTML = `
+        <table class="tabla-carrito">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${carrito.map((item, index) => {
+              const sub = item.precio * item.cantidad;
+              subtotal += sub;
+              return `
+                <tr>
+                  <td><img src="${item.imagen}" alt="${item.nombre}" class="img-carrito"></td>
+                  <td>${item.nombre}</td>
+                  <td>$${item.precio}</td>
+                  <td>
+                    <input type="number" min="1" value="${item.cantidad}" onchange="actualizarCantidad(${index}, this.value)">
+                  </td>
+                  <td>$${sub}</td>
+                  <td><button class="btn-secundario" onclick="eliminarProducto(${index})">Eliminar</button></td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+      subtotalDiv.textContent = `Subtotal: $${subtotal}`;
+      totalDiv.textContent = `Total: $${subtotal}`;
+    });
+
+    function actualizarCantidad(index, nuevaCantidad) {
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      carrito[index].cantidad = parseInt(nuevaCantidad);
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      location.reload();
+    }
+
+    function eliminarProducto(index) {
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      carrito.splice(index, 1);
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      location.reload();
+    }
+
+    function vaciarCarrito() {
+      localStorage.removeItem("carrito");
+      location.reload();
+    }
+
     // Abrir modal
     function finalizarCompra() {
       document.getElementById("finalizarModal").style.display = "block";
@@ -162,48 +231,38 @@
     }
 
     // Enviar formulario correo
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("formCorreo");
-      const cancelarBtn = document.getElementById("cancelarBtn");
+    document.getElementById("formCorreo").addEventListener("submit", (e) => {
+      e.preventDefault();
 
-      if (form) {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const nombre = document.getElementById("nombreCorreo").value;
-          const email = document.getElementById("emailCorreo").value;
-          const direccion = document.getElementById("direccionCorreo").value;
+      // Capturar datos del formulario
+      const nombre = document.getElementById("nombreCorreo").value;
+      const email = document.getElementById("emailCorreo").value;
+      const direccion = document.getElementById("direccionCorreo").value;
 
-          let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-          let resumen = "🛒 Pedido vía correo:\n";
-          let total = 0;
-          carrito.forEach(item => {
-            let sub = item.precio * item.cantidad;
-            total += sub;
-            resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
-          });
-          resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
+      // Podés armar el mensaje con los datos y el carrito
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      let resumen = "🛒 Pedido vía correo:\n";
+      let total = 0;
+      carrito.forEach(item => {
+        let sub = item.precio * item.cantidad;
+        total += sub;
+        resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
+      });
+      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
 
-          Swal.fire({
-            icon: 'success',
-            title: 'Pedido enviado por correo',
-            text: 'Gracias por elegir Glowzza 💖',
-            timer: 2500,
-            showConfirmButton: false
-          });
+      // Simulación de envío
+      Swal.fire({
+        icon: 'success',
+        title: 'Pedido enviado por correo',
+        text: 'Gracias por elegir Glowzza 💖',
+        timer: 2500,
+        showConfirmButton: false
+      });
 
-          localStorage.removeItem("carrito");
-          cerrarModal();
-          setTimeout(() => location.href = "index2.html", 2500);
-        });
-      }
-
-      // 🔹 Botón Cancelar → cierra modal entero
-      if (cancelarBtn) {
-        cancelarBtn.addEventListener("click", () => {
-          if (form) form.style.display = "none";
-          cerrarModal();
-        });
-      }
+      // Limpiar carrito y cerrar modal
+      localStorage.removeItem("carrito");
+      cerrarModal();
+      setTimeout(() => location.href = "index2.html", 2500);
     });
   </script>
 </body>
