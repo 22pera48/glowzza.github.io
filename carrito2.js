@@ -137,6 +137,8 @@ function mostrarFormulario() {
 // 🔹 Enviar formulario correo
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("formCorreo");
+  const cancelarBtn = document.getElementById("cancelarBtn");
+
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -165,6 +167,14 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.removeItem("carrito");
       cerrarModal();
       setTimeout(() => location.href = "index2.html", 2500);
+    });
+  }
+
+  // 🔹 Botón Cancelar → cierra modal entero
+  if (cancelarBtn) {
+    cancelarBtn.addEventListener("click", () => {
+      document.getElementById("formCorreo").style.display = "none";
+      document.getElementById("finalizarModal").style.display = "none";
     });
   }
 });
