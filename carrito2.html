@@ -264,6 +264,51 @@
       cerrarModal();
       setTimeout(() => location.href = "index2.html", 2500);
     });
+    // Enviar formulario correo
+    document.getElementById("formCorreo").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // Capturar datos del formulario
+      const nombre = document.getElementById("nombreCorreo").value;
+      const email = document.getElementById("emailCorreo").value;
+      const direccion = document.getElementById("direccionCorreo").value;
+
+      // Podés armar el mensaje con los datos y el carrito
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      let resumen = "🛒 Pedido vía correo:\n";
+      let total = 0;
+      carrito.forEach(item => {
+        let sub = item.precio * item.cantidad;
+        total += sub;
+        resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
+      });
+      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
+
+      // Simulación de envío
+      Swal.fire({
+        icon: 'success',
+        title: 'Pedido enviado por correo',
+        text: 'Gracias por elegir Glowzza 💖',
+        timer: 2500,
+        showConfirmButton: false
+      });
+
+      // Limpiar carrito y cerrar modal
+      localStorage.removeItem("carrito");
+      cerrarModal();
+      setTimeout(() => location.href = "index2.html", 2500);
+    });
+
+    // 🔹 Botón Cancelar → cierra modal entero
+    document.addEventListener("DOMContentLoaded", () => {
+      const cancelarBtn = document.getElementById("cancelarBtn");
+      if (cancelarBtn) {
+        cancelarBtn.addEventListener("click", () => {
+          document.getElementById("formCorreo").style.display = "none";
+          cerrarModal(); // usa tu función ya definida
+        });
+      }
+    });
   </script>
 </body>
 </html>
