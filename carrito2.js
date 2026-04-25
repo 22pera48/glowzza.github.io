@@ -1,3 +1,8 @@
+// Inicializar EmailJS
+(function(){
+  emailjs.init("eNmGPzHIA110nI73f"); // tu Public Key
+})();
+
 document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("contenedorCarrito");
   const subtotalDiv = document.getElementById("subtotalCarrito");
@@ -60,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     totalDiv.textContent = `Total: $${subtotal}`;
   }
 
-  // 🔹 Actualizar cantidad dinámicamente
+  // Actualizar cantidad
   contenedor.addEventListener("change", (e) => {
     if (e.target.classList.contains("cantidad-input")) {
       const index = e.target.dataset.index;
@@ -70,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔹 Eliminar producto con animación
+  // Eliminar producto con animación
   contenedor.addEventListener("click", (e) => {
     if (e.target.classList.contains("eliminar-btn")) {
       const index = e.target.dataset.index;
@@ -85,19 +90,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔹 Vaciar carrito
+  // Vaciar carrito
   window.vaciarCarrito = () => {
     carrito = [];
     localStorage.removeItem("carrito");
     renderCarrito();
   };
 
-  // 🔹 Finalizar compra → abre modal
+  // Finalizar compra → abre modal
   window.finalizarCompra = () => {
     document.getElementById("finalizarModal").style.display = "block";
   };
 
-  // 🔹 Botón Cancelar → cierra modal entero
+  // Botón Cancelar → cierra modal
   if (cancelarBtn) {
     cancelarBtn.addEventListener("click", () => {
       if (form) form.style.display = "none";
@@ -105,35 +110,41 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Enviar formulario correo
+  // Enviar formulario correo con EmailJS
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const nombre = document.getElementById("nombreCorreo").value;
-      const email = document.getElementById("emailCorreo").value;
-      const telefono = document.getElementById("direccionCorreo").value;
 
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      let resumen = "🛒 Pedido vía correo:\n";
+      // Armar resumen del carrito
+      let resumen = "";
       let total = 0;
       carrito.forEach(item => {
         let sub = item.precio * item.cantidad;
         total += sub;
-        resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
-      });
-      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nTeléfono: ${telefono}`;
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Pedido enviado por correo',
-        text: 'Gracias por elegir Glowzza 💖',
-        timer: 2500,
-        showConfirmButton: false
+        resumen += `${item.nombre} x${item.cantidad} = $${sub}\n`;
       });
 
-      localStorage.removeItem("carrito");
-      cerrarModal();
-      setTimeout(() => location.href = "index2.html", 2500);
+      // Rellenar campos ocultos
+      document.getElementById("productos").value = resumen;
+      document.getElementById("total").value = total;
+
+      // Enviar con EmailJS
+      emailjs.sendForm('service_e2dcwiw', 'template_0wi0hpz', form)
+        .then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Pedido enviado por correo',
+            text: 'Gracias por elegir Glowzza 💖',
+            timer: 2500,
+            showConfirmButton: false
+          });
+          localStorage.removeItem("carrito");
+          cerrarModal();
+          setTimeout(() => location.href = "index2.html", 2500);
+        })
+        .catch(error => {
+          alert('❌ Error al enviar: ' + JSON.stringify(error));
+        });
     });
   }
 
@@ -141,12 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCarrito();
 });
 
-// 🔹 Cerrar modal
-function cerrarModal() {
-  document.getElementById("finalizarModal").style.display = "none";
-}
-
-// 🔹 Finalizar con WhatsApp
+// Finalizar con WhatsApp
 function finalizarConWhatsApp() {
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
   let mensaje = "🌸✨ Glowzza ✨🌸\nTu carrito de belleza y cuidado personal 🛍️\n\n";
@@ -161,7 +167,13 @@ function finalizarConWhatsApp() {
   window.open(url, "_blank");
 }
 
-// 🔹 Mostrar formulario correo
+// Mostrar formulario correo
 function mostrarFormulario() {
   document.getElementById("formCorreo").style.display = "block";
 }
+
+// Cerrar modal
+function cerrarModal() {
+  document.getElementById("finalizarModal").style.display = "none";
+}
+

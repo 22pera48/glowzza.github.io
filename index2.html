@@ -14,7 +14,6 @@
 
   <!-- 🔹 Header -->
   <header class="header">
-    <!-- Fila superior -->
     <div class="top-bar">
       <div class="social-icons">
         <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
@@ -36,7 +35,6 @@
       </div>
     </div>
 
-    <!-- Fila inferior -->
     <nav class="menu">
       <a href="#peluqueria">Peluquería</a>
       <a href="#maquillaje">Maquillaje</a>
@@ -47,7 +45,7 @@
     </nav>
   </header>
 
-  <!-- 🔹 Cartel Glowzza arriba -->
+  <!-- 🔹 Cartel Glowzza -->
   <div class="hero-glowzza">
     <h1>Glowzza</h1>
     <p>PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
@@ -56,7 +54,7 @@
     </div>
   </div>
 
-  <!-- 🔹 Banner con carrusel -->
+  <!-- 🔹 Banner -->
   <section class="banner">
     <div class="carousel">
       <div class="slides">
@@ -68,7 +66,7 @@
     </div>
   </section>
 
-  <!-- 🔹 Secciones de productos -->
+  <!-- 🔹 Secciones -->
   <section id="peluqueria">
     <h1>Peluquería</h1>
     <p class="mensaje-seccion">Descubrí productos que realzan tu estilo y cuidan tu cabello.</p>
@@ -116,16 +114,47 @@
     <p>© 2026 - Glowzza</p>
   </footer>
 
-  <!-- 🔹 Modal -->
+  <!-- 🔹 Modal de imágenes -->
   <div id="imageModal" class="modal">
     <span class="close">&times;</span>
     <img class="modal-content" id="modalImg">
     <div id="caption"></div>
   </div>
 
+  <!-- 🔹 Modal de finalizar compra -->
+  <div id="finalizarModal" class="modal">
+    <div class="modal-content">
+      <h2>Finalizar compra</h2>
+      <form id="formCorreo" style="display:none;">
+        <div class="campo">
+          <label for="nombreCorreo">Nombre</label>
+          <input type="text" name="user_name" id="nombreCorreo" required>
+        </div>
+
+        <div class="campo">
+          <label for="emailCorreo">Correo electrónico (opcional)</label>
+          <input type="email" name="user_email" id="emailCorreo">
+        </div>
+
+        <div class="campo">
+          <label for="direccionCorreo">Teléfono</label>
+          <input type="tel" name="user_phone" id="direccionCorreo" required>
+        </div>
+
+        <!-- Campos ocultos -->
+        <input type="hidden" name="productos" id="productos">
+        <input type="hidden" name="total" id="total">
+
+        <button type="submit" class="boton-enviar">Enviar compra</button>
+        <button type="button" id="cancelarBtn" class="btn-secundario">Cancelar</button>
+      </form>
+    </div>
+  </div>
+
   <!-- 🔹 Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script type="module" src="index2.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="carrito2.js"></script>
   <script>
     function irAFavoritos() {
       window.location.href = "favorito2.html";
