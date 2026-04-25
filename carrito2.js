@@ -97,6 +97,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Render inicial
   renderCarrito();
+
+  // 🔹 Listener para botón Cancelar del formulario
+  const cancelarBtn = document.getElementById("cancelarBtn");
+  if (cancelarBtn) {
+    cancelarBtn.addEventListener("click", () => {
+      cerrarFormulario();
+    });
+  }
 });
 
 // 🔹 Cerrar modal
@@ -107,14 +115,14 @@ function cerrarModal() {
 // 🔹 Finalizar con WhatsApp
 function finalizarConWhatsApp() {
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-  let mensaje = "🛒 Hola, quiero finalizar mi compra:\n";
+  let mensaje = "🌸✨ Glowzza ✨🌸\nTu carrito de belleza y cuidado personal 🛍️\n\n";
   let total = 0;
   carrito.forEach(item => {
     let sub = item.precio * item.cantidad;
     total += sub;
-    mensaje += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
+    mensaje += `▫️ ${item.nombre} x${item.cantidad} = $${sub}\n`;
   });
-  mensaje += `\n💰 Total: $${total}\nGracias por elegir Glowzza 💖`;
+  mensaje += `\n💰 Total: $${total}\n🙌 Gracias por elegir Glowzza 💖`;
   let url = `https://wa.me/541171019084?text=${encodeURIComponent(mensaje)}`;
   window.open(url, "_blank");
 }
@@ -132,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const nombre = document.getElementById("nombreCorreo").value;
       const email = document.getElementById("emailCorreo").value;
-      const direccion = document.getElementById("direccionCorreo").value;
+      const telefono = document.getElementById("direccionCorreo").value;
 
       let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
       let resumen = "🛒 Pedido vía correo:\n";
@@ -142,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
         total += sub;
         resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
       });
-      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
+      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nTeléfono: ${telefono}`;
 
       Swal.fire({
         icon: 'success',
@@ -158,6 +166,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+// 🔹 Cerrar formulario
 function cerrarFormulario() {
   document.getElementById("formCorreo").style.display = "none";
 }
