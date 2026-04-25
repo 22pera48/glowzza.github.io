@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("contenedorCarrito");
   const subtotalDiv = document.getElementById("subtotalCarrito");
   const totalDiv = document.getElementById("totalCarrito");
+  const form = document.getElementById("formCorreo");
+  const cancelarBtn = document.getElementById("cancelarBtn");
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
   function renderCarrito() {
@@ -95,50 +97,15 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("finalizarModal").style.display = "block";
   };
 
-  // Render inicial
-  renderCarrito();
-
-  // 🔹 Listener para botón Cancelar del formulario
-  const cancelarBtn = document.getElementById("cancelarBtn");
+  // 🔹 Listener para botón Cancelar → cierra modal entero
   if (cancelarBtn) {
     cancelarBtn.addEventListener("click", () => {
-      // Oculta formulario y cierra modal
-      document.getElementById("formCorreo").style.display = "none";
+      form.style.display = "none";
       document.getElementById("finalizarModal").style.display = "none";
     });
   }
-});
 
-// 🔹 Cerrar modal
-function cerrarModal() {
-  document.getElementById("finalizarModal").style.display = "none";
-}
-
-// 🔹 Finalizar con WhatsApp
-function finalizarConWhatsApp() {
-  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-  let mensaje = "🌸✨ Glowzza ✨🌸\nTu carrito de belleza y cuidado personal 🛍️\n\n";
-  let total = 0;
-  carrito.forEach(item => {
-    let sub = item.precio * item.cantidad;
-    total += sub;
-    mensaje += `▫️ ${item.nombre} x${item.cantidad} = $${sub}\n`;
-  });
-  mensaje += `\n💰 Total: $${total}\n🙌 Gracias por elegir Glowzza 💖`;
-  let url = `https://wa.me/541171019084?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, "_blank");
-}
-
-// 🔹 Mostrar formulario correo
-function mostrarFormulario() {
-  document.getElementById("formCorreo").style.display = "block";
-}
-
-// 🔹 Enviar formulario correo
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("formCorreo");
-  const cancelarBtn = document.getElementById("cancelarBtn");
-
+  // 🔹 Enviar formulario correo
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -170,11 +137,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Botón Cancelar → cierra modal entero
-  if (cancelarBtn) {
-    cancelarBtn.addEventListener("click", () => {
-      document.getElementById("formCorreo").style.display = "none";
-      document.getElementById("finalizarModal").style.display = "none";
-    });
-  }
+  // Render inicial
+  renderCarrito();
 });
+
+// 🔹 Cerrar modal
+function cerrarModal() {
+  document.getElementById("finalizarModal").style.display = "none";
+}
+
+// 🔹 Finalizar con WhatsApp
+function finalizarConWhatsApp() {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  let mensaje = "🌸✨ Glowzza ✨🌸\nTu carrito de belleza y cuidado personal 🛍️\n\n";
+  let total = 0;
+  carrito.forEach(item => {
+    let sub = item.precio * item.cantidad;
+    total += sub;
+    mensaje += `▫️ ${item.nombre} x${item.cantidad} = $${sub}\n`;
+  });
+  mensaje += `\n💰 Total: $${total}\n🙌 Gracias por elegir Glowzza 💖`;
+  let url = `https://wa.me/541171019084?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, "_blank");
+}
+
+// 🔹 Mostrar formulario correo
+function mostrarFormulario() {
+  document.getElementById("formCorreo").style.display = "block";
+}
+
