@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("contenedorCarrito");
   const subtotalDiv = document.getElementById("subtotalCarrito");
   const totalDiv = document.getElementById("totalCarrito");
-
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
   function renderCarrito() {
@@ -35,9 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
           subtotal += sub;
           return `
             <tr>
-              <td>
-                ${item.imagen ? `<img src="${item.imagen}" alt="${item.nombre}" class="img-carrito">` : ""}
-              </td>
+              <td>${item.imagen ? `<img src="${item.imagen}" alt="${item.nombre}" class="img-carrito">` : ""}</td>
               <td>${item.nombre}</td>
               <td>$${item.precio}</td>
               <td>
@@ -58,14 +55,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     contenedor.appendChild(tabla);
     subtotalDiv.textContent = `Subtotal: $${subtotal}`;
-    totalDiv.textContent = `Total: $${subtotal}`; // luego podés sumar envío o descuentos
+    totalDiv.textContent = `Total: $${subtotal}`;
   }
 
   // 🔹 Actualizar cantidad dinámicamente
   contenedor.addEventListener("change", (e) => {
     if (e.target.classList.contains("cantidad-input")) {
       const index = e.target.dataset.index;
-      carrito[index].cantidad = Math.max(1, parseInt(e.target.value) || 1); // ✅ evita NaN
+      carrito[index].cantidad = Math.max(1, parseInt(e.target.value) || 1);
       localStorage.setItem("carrito", JSON.stringify(carrito));
       renderCarrito();
     }
@@ -93,20 +90,71 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCarrito();
   };
 
-  // 🔹 Finalizar compra
+  // 🔹 Finalizar compra → abre modal
   window.finalizarCompra = () => {
-    Swal.fire({
-      icon: 'success',
-      title: '¡Compra finalizada!',
-      text: 'Gracias por elegir Glowzza 💖',
-      timer: 2000,
-      showConfirmButton: false
-    });
-    carrito = [];
-    localStorage.removeItem("carrito");
-    setTimeout(() => location.href = "index2.html", 2000);
+    document.getElementById("finalizarModal").style.display = "block";
   };
 
   // Render inicial
   renderCarrito();
+});
+
+// 🔹 Cerrar modal
+function cerrarModal() {
+  document.getElementById("finalizarModal").style.display = "none";
+}
+
+// 🔹 Finalizar con WhatsApp
+function finalizarConWhatsApp() {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  let mensaje = "🛒 Hola, quiero finalizar mi compra:\n";
+  let total = 0;
+  carrito.forEach(item => {
+    let sub = item.precio * item.cantidad;
+    total += sub;
+    mensaje += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
+  });
+  mensaje += `\n💰 Total: $${total}\nGracias por elegir Glowzza 💖`;
+  let url = `https://wa.me/541171019084?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, "_blank");
+}
+
+// 🔹 Mostrar formulario correo
+function mostrarFormulario() {
+  document.getElementById("formCorreo").style.display = "block";
+}
+
+// 🔹 Enviar formulario correo
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("formCorreo");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombreCorreo").value;
+      const email = document.getElementById("emailCorreo").value;
+      const direccion = document.getElementById("direccionCorreo").value;
+
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      let resumen = "🛒 Pedido vía correo:\n";
+      let total = 0;
+      carrito.forEach(item => {
+        let sub = item.precio * item.cantidad;
+        total += sub;
+        resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
+      });
+      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Pedido enviado por correo',
+        text: 'Gracias por elegir Glowzza 💖',
+        timer: 2500,
+        showConfirmButton: false
+      });
+
+      localStorage.removeItem("carrito");
+      cerrarModal();
+      setTimeout(() => location.href = "index2.html", 2500);
+    });
+  }
 });

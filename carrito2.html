@@ -9,6 +9,43 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="index2.css">
+
+  <style>
+    /* Modal estilos */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 500px;
+      text-align: center;
+    }
+    .close {
+      float: right;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    #formCorreo label {
+      display: block;
+      margin-top: 10px;
+      text-align: left;
+    }
+    #formCorreo input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
 
@@ -54,6 +91,27 @@
       </div>
     </div>
   </section>
+
+  <!-- 🔹 Modal Finalizar Compra -->
+  <div id="finalizarModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h2>¿Cómo querés finalizar tu compra?</h2>
+      <button class="btn-principal" onclick="finalizarConWhatsApp()">Finalizar con WhatsApp</button>
+      <button class="btn-secundario" onclick="mostrarFormulario()">Finalizar con Correo</button>
+
+      <!-- Formulario oculto -->
+      <form id="formCorreo" style="display:none; margin-top:20px;">
+        <label>Nombre:</label>
+        <input type="text" id="nombreCorreo" required>
+        <label>Email:</label>
+        <input type="email" id="emailCorreo" required>
+        <label>Dirección:</label>
+        <input type="text" id="direccionCorreo" required>
+        <button type="submit" class="btn-principal">Enviar pedido</button>
+      </form>
+    </div>
+  </div>
 
   <!-- 🔹 Footer -->
   <footer>
@@ -136,17 +194,70 @@
       location.reload();
     }
 
+    // Abrir modal
     function finalizarCompra() {
+      document.getElementById("finalizarModal").style.display = "block";
+    }
+
+    // Cerrar modal
+    function cerrarModal() {
+      document.getElementById("finalizarModal").style.display = "none";
+    }
+
+    // Finalizar con WhatsApp
+    function finalizarConWhatsApp() {
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      let mensaje = "🛒 Hola, quiero finalizar mi compra:\n";
+      let total = 0;
+      carrito.forEach(item => {
+        let sub = item.precio * item.cantidad;
+        total += sub;
+        mensaje += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
+      });
+      mensaje += `\n💰 Total: $${total}\nGracias por elegir Glowzza 💖`;
+      let url = `https://wa.me/541171019084?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, "_blank");
+    }
+
+    // Mostrar formulario correo
+    function mostrarFormulario() {
+      document.getElementById("formCorreo").style.display = "block";
+    }
+
+    // Enviar formulario correo
+    document.getElementById("formCorreo").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // Capturar datos del formulario
+      const nombre = document.getElementById("nombreCorreo").value;
+      const email = document.getElementById("emailCorreo").value;
+      const direccion = document.getElementById("direccionCorreo").value;
+
+      // Podés armar el mensaje con los datos y el carrito
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      let resumen = "🛒 Pedido vía correo:\n";
+      let total = 0;
+      carrito.forEach(item => {
+        let sub = item.precio * item.cantidad;
+        total += sub;
+        resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
+      });
+      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
+
+      // Simulación de envío
       Swal.fire({
         icon: 'success',
-        title: '¡Compra finalizada!',
+        title: 'Pedido enviado por correo',
         text: 'Gracias por elegir Glowzza 💖',
-        timer: 2000,
+        timer: 2500,
         showConfirmButton: false
       });
+
+      // Limpiar carrito y cerrar modal
       localStorage.removeItem("carrito");
-      setTimeout(() => location.href = "index2.html", 2000);
-    }
+      cerrarModal();
+      setTimeout(() => location.href = "index2.html", 2500);
+    });
   </script>
 </body>
 </html>
