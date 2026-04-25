@@ -93,7 +93,7 @@
           <h4>${prod.nombre}</h4>
           <p>$${prod.precio}</p>
           <button class="btn-secundario" onclick="eliminarFavorito(${index})">Eliminar</button>
-          <button class="btn-principal" onclick="agregarAlCarrito('${prod.nombre}', ${prod.precio})">Agregar al carrito</button>
+          <button class="btn-principal" onclick="agregarAlCarrito('${prod.nombre}', ${prod.precio}, '${prod.imagen}', ${index})">Agregar al carrito</button>
         `;
         contenedor.appendChild(div);
       });
@@ -107,10 +107,32 @@
       renderFavoritos(favoritos);
     }
 
-    // 🔹 Simulación de agregar al carrito (puedes reemplazar con tu lógica real)
-    function agregarAlCarrito(nombre, precio) {
-      alert(`${nombre} agregado al carrito por $${precio}`);
+    // 🔹 Agregar al carrito y eliminar de favoritos
+    function agregarAlCarrito(nombre, precio, imagen, index) {
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+      const existente = carrito.find(p => p.nombre === nombre);
+      if (existente) {
+        existente.cantidad++;
+      } else {
+        carrito.push({ nombre, precio, imagen, cantidad: 1 });
+      }
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+
+      // Eliminar de favoritos
+      favoritos.splice(index, 1);
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+      renderFavoritos(favoritos);
+
+      Swal.fire({
+        icon: 'success',
+        title: `${nombre} agregado al carrito`,
+        showConfirmButton: false,
+        timer: 1500
+      });
     }
   </script>
 </body>
 </html>
+
