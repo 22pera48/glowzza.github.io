@@ -21,8 +21,9 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(209, 196, 233, 0.4); /* sombra pastel lavanda */
   text-align: center;
-  border: 2px solid #f8bbd0; /* borde rosa pastel */
+  /* ❌ quitamos el borde rosado de acá */
 }
+
 
 #carrito h1 {
   font-family: 'Roboto', sans-serif;
@@ -500,8 +501,12 @@ footer .social-icons a {
 
 /* 🔹 Tabla de productos */
 .cart-products {
-  flex: 2;   /* tabla ocupa más espacio */
+  flex: 2;
+  border: 2px solid #f8bbd0; /* ✅ borde rosado solo alrededor de la tabla */
+  border-radius: 12px;
+  padding: 10px;
 }
+
 
 .tabla-carrito {
   width: 100%;
@@ -541,13 +546,15 @@ footer .social-icons a {
 
 /* 🔹 Resumen lateral */
 .cart-summary {
-  flex: 0 0 300px;           /* ancho fijo, no se estira */
-  background: #e1f5fe;       /* celeste pastel */
-  padding: 20px;
+  flex: 0 0 300px;
+  background: #ffffff;
+  border: 2px solid #f8bbd0; /* borde rosa pastel propio */
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(179,229,252,0.4);
+  padding: 20px;
   text-align: left;
 }
+
 
 .cart-summary h2 {
   margin-bottom: 20px;
