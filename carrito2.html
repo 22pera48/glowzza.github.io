@@ -34,11 +34,18 @@
   <!-- 🔹 Sección Carrito -->
   <section id="carrito">
     <h1>Mi Carrito</h1>
-    <div id="contenedorCarrito"></div>
-    <div id="totalCarrito" class="total"></div>
-    <div class="acciones-carrito">
-      <button class="btn-secundario" onclick="vaciarCarrito()">Vaciar carrito</button>
-      <button class="btn-principal" onclick="finalizarCompra()">Finalizar compra</button>
+    <div class="cart-container">
+      <!-- Tabla de productos -->
+      <div id="contenedorCarrito" class="cart-products"></div>
+
+      <!-- Resumen -->
+      <div class="cart-summary">
+        <h2>Total del carrito</h2>
+        <div id="subtotalCarrito"></div>
+        <div id="totalCarrito" class="total"></div>
+        <button class="btn-finalizar" onclick="finalizarCompra()">Ir a finalizar la compra</button>
+        <button class="btn-secundario" onclick="vaciarCarrito()">Vaciar carrito</button>
+      </div>
     </div>
   </section>
 
@@ -56,20 +63,23 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const contenedor = document.getElementById("contenedorCarrito");
+      const subtotalDiv = document.getElementById("subtotalCarrito");
       const totalDiv = document.getElementById("totalCarrito");
       let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
       if (carrito.length === 0) {
         contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+        subtotalDiv.textContent = "";
         totalDiv.textContent = "";
         return;
       }
 
-      let total = 0;
+      let subtotal = 0;
       contenedor.innerHTML = `
         <table class="tabla-carrito">
           <thead>
             <tr>
+              <th>Imagen</th>
               <th>Producto</th>
               <th>Precio</th>
               <th>Cantidad</th>
@@ -79,16 +89,17 @@
           </thead>
           <tbody>
             ${carrito.map((item, index) => {
-              const subtotal = item.precio * item.cantidad;
-              total += subtotal;
+              const sub = item.precio * item.cantidad;
+              subtotal += sub;
               return `
                 <tr>
+                  <td><img src="${item.imagen}" alt="${item.nombre}" class="img-carrito"></td>
                   <td>${item.nombre}</td>
                   <td>$${item.precio}</td>
                   <td>
                     <input type="number" min="1" value="${item.cantidad}" onchange="actualizarCantidad(${index}, this.value)">
                   </td>
-                  <td>$${subtotal}</td>
+                  <td>$${sub}</td>
                   <td><button class="btn-secundario" onclick="eliminarProducto(${index})">Eliminar</button></td>
                 </tr>
               `;
@@ -96,7 +107,8 @@
           </tbody>
         </table>
       `;
-      totalDiv.textContent = `Total: $${total}`;
+      subtotalDiv.textContent = `Subtotal: $${subtotal}`;
+      totalDiv.textContent = `Total: $${subtotal}`;
     });
 
     function actualizarCantidad(index, nuevaCantidad) {
@@ -132,4 +144,3 @@
   </script>
 </body>
 </html>
-
