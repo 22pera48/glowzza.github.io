@@ -100,16 +100,19 @@
       <button class="btn-principal" onclick="finalizarConWhatsApp()">Finalizar con WhatsApp</button>
       <button class="btn-secundario" onclick="mostrarFormulario()">Finalizar con Correo</button>
 
-      <!-- Formulario oculto -->
-      <form id="formCorreo" style="display:none; margin-top:20px;">
-        <label>Nombre:</label>
-        <input type="text" id="nombreCorreo" required>
-        <label>Email:</label>
-        <input type="email" id="emailCorreo" required>
-        <label>Dirección:</label>
-        <input type="text" id="direccionCorreo" required>
-        <button type="submit" class="btn-principal">Enviar pedido</button>
-      </form>
+<!-- Formulario oculto -->
+<form id="formCorreo" style="display:none; margin-top:20px;">
+  <label>Nombre:</label>
+  <input type="text" id="nombreCorreo" required>
+
+  <label>Email (opcional):</label>
+  <input type="email" id="emailCorreo"> <!-- 🔹 sin required -->
+
+  <label>Teléfono:</label>
+  <input type="text" id="direccionCorreo" required>
+
+  <button type="submit" class="btn-principal">Enviar pedido</button>
+</form>
     </div>
   </div>
 
