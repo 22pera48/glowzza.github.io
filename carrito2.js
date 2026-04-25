@@ -141,6 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCarrito();
 });
 
+// 🔹 Cerrar modal
+function cerrarModal() {
+  document.getElementById("finalizarModal").style.display = "none";
+}
 
 // 🔹 Finalizar con WhatsApp
 function finalizarConWhatsApp() {
