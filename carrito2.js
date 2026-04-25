@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
   function renderCarrito() {
+    if (!contenedor || !subtotalDiv || !totalDiv) return; // 🔹 evita romper si no existen
     contenedor.innerHTML = "";
     if (carrito.length === 0) {
       contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
@@ -66,29 +67,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Actualizar cantidad
-  contenedor.addEventListener("change", (e) => {
-    if (e.target.classList.contains("cantidad-input")) {
-      const index = e.target.dataset.index;
-      carrito[index].cantidad = Math.max(1, parseInt(e.target.value) || 1);
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-      renderCarrito();
-    }
-  });
-
-  // Eliminar producto con animación
-  contenedor.addEventListener("click", (e) => {
-    if (e.target.classList.contains("eliminar-btn")) {
-      const index = e.target.dataset.index;
-      const fila = e.target.closest("tr");
-      fila.style.transition = "opacity 0.5s";
-      fila.style.opacity = "0";
-      setTimeout(() => {
-        carrito.splice(index, 1);
+  if (contenedor) {
+    contenedor.addEventListener("change", (e) => {
+      if (e.target.classList.contains("cantidad-input")) {
+        const index = e.target.dataset.index;
+        carrito[index].cantidad = Math.max(1, parseInt(e.target.value) || 1);
         localStorage.setItem("carrito", JSON.stringify(carrito));
         renderCarrito();
-      }, 500);
-    }
-  });
+      }
+    });
+
+    // Eliminar producto con animación
+    contenedor.addEventListener("click", (e) => {
+      if (e.target.classList.contains("eliminar-btn")) {
+        const index = e.target.dataset.index;
+        const fila = e.target.closest("tr");
+        fila.style.transition = "opacity 0.5s";
+        fila.style.opacity = "0";
+        setTimeout(() => {
+          carrito.splice(index, 1);
+          localStorage.setItem("carrito", JSON.stringify(carrito));
+          renderCarrito();
+        }, 500);
+      }
+    });
+  }
 
   // Vaciar carrito
   window.vaciarCarrito = () => {
@@ -99,14 +102,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Finalizar compra → abre modal
   window.finalizarCompra = () => {
-    document.getElementById("finalizarModal").style.display = "block";
+    const modal = document.getElementById("finalizarModal");
+    if (modal) modal.style.display = "block";
   };
 
   // Botón Cancelar → cierra modal
   if (cancelarBtn) {
     cancelarBtn.addEventListener("click", () => {
       if (form) form.style.display = "none";
-      document.getElementById("finalizarModal").style.display = "none";
+      cerrarModal();
     });
   }
 
@@ -124,9 +128,11 @@ document.addEventListener("DOMContentLoaded", () => {
         resumen += `${item.nombre} x${item.cantidad} = $${sub}\n`;
       });
 
-      // Rellenar campos ocultos
-      document.getElementById("productos").value = resumen;
-      document.getElementById("total").value = total;
+      // Rellenar campos ocultos si existen
+      const productosInput = document.getElementById("productos");
+      const totalInput = document.getElementById("total");
+      if (productosInput) productosInput.value = resumen;
+      if (totalInput) totalInput.value = total;
 
       // Enviar con EmailJS
       emailjs.sendForm('service_e2dcwiw', 'template_0wi0hpz', form)
@@ -169,11 +175,12 @@ function finalizarConWhatsApp() {
 
 // Mostrar formulario correo
 function mostrarFormulario() {
-  document.getElementById("formCorreo").style.display = "block";
+  const form = document.getElementById("formCorreo");
+  if (form) form.style.display = "block";
 }
 
 // Cerrar modal
 function cerrarModal() {
-  document.getElementById("finalizarModal").style.display = "none";
+  const modal = document.getElementById("finalizarModal");
+  if (modal) modal.style.display = "none";
 }
-
