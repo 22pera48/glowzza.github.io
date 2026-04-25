@@ -491,6 +491,7 @@ footer .social-icons a {
 /* 🔹 Contenedor general del carrito */
 .cart-container {
   display: flex;
+  align-items: flex-start;   /* alinea arriba */
   gap: 30px;
   max-width: 1100px;
   margin: 40px auto;
@@ -499,7 +500,7 @@ footer .social-icons a {
 
 /* 🔹 Tabla de productos */
 .cart-products {
-  flex: 2;
+  flex: 2;   /* tabla ocupa más espacio */
 }
 
 .tabla-carrito {
@@ -540,8 +541,8 @@ footer .social-icons a {
 
 /* 🔹 Resumen lateral */
 .cart-summary {
-  flex: 1;
-  background: #e1f5fe; /* celeste pastel */
+  flex: 0 0 300px;           /* ancho fijo, no se estira */
+  background: #e1f5fe;       /* celeste pastel */
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(179,229,252,0.4);
@@ -574,6 +575,7 @@ footer .social-icons a {
   color: #333;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 10px;
 }
 
 .btn-finalizar:hover {
@@ -589,5 +591,7 @@ footer .social-icons a {
 
   .cart-summary {
     margin-top: 20px;
+    width: 100%;   /* ocupa todo el ancho en móvil */
   }
 }
+
