@@ -158,3 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+function cerrarFormulario() {
+  document.getElementById("formCorreo").style.display = "none";
+}

@@ -106,12 +106,15 @@
   <input type="text" id="nombreCorreo" required>
 
   <label>Email (opcional):</label>
-  <input type="email" id="emailCorreo"> <!-- 🔹 sin required -->
+  <input type="email" id="emailCorreo">
 
   <label>Teléfono:</label>
   <input type="text" id="direccionCorreo" required>
 
-  <button type="submit" class="btn-principal">Enviar pedido</button>
+  <div style="margin-top:15px;">
+    <button type="submit" class="btn-principal">Enviar pedido</button>
+    <button type="button" class="btn-secundario" onclick="cerrarFormulario()">Cancelar</button>
+  </div>
 </form>
     </div>
   </div>
