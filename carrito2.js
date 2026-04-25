@@ -1,6 +1,6 @@
 // Inicializar EmailJS
 (function(){
-  emailjs.init("eNmGPzHIA110nI73f"); // tu Public Key
+  emailjs.init("eNmGPzHIA110nI73f"); // tu Public Key real
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,8 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelarBtn = document.getElementById("cancelarBtn");
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
+  // Renderizar carrito
   function renderCarrito() {
-    if (!contenedor || !subtotalDiv || !totalDiv) return; // 🔹 evita romper si no existen
+    if (!contenedor || !subtotalDiv || !totalDiv) return;
     contenedor.innerHTML = "";
     if (carrito.length === 0) {
       contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
@@ -24,16 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let subtotal = 0;
     const tabla = document.createElement("table");
     tabla.classList.add("tabla-carrito");
-
     tabla.innerHTML = `
       <thead>
         <tr>
-          <th>Imagen</th>
-          <th>Producto</th>
-          <th>Precio</th>
-          <th>Cantidad</th>
-          <th>Subtotal</th>
-          <th></th>
+          <th>Imagen</th><th>Producto</th><th>Precio</th>
+          <th>Cantidad</th><th>Subtotal</th><th></th>
         </tr>
       </thead>
       <tbody>
@@ -45,53 +41,41 @@ document.addEventListener("DOMContentLoaded", () => {
               <td>${item.imagen ? `<img src="${item.imagen}" alt="${item.nombre}" class="img-carrito">` : ""}</td>
               <td>${item.nombre}</td>
               <td>$${item.precio}</td>
-              <td>
-                <input type="number" min="1" value="${item.cantidad}" 
-                  data-index="${index}" class="cantidad-input">
-              </td>
+              <td><input type="number" min="1" value="${item.cantidad}" data-index="${index}" class="cantidad-input"></td>
               <td>$${sub}</td>
-              <td>
-                <button class="btn-secundario eliminar-btn" data-index="${index}" aria-label="Eliminar ${item.nombre}">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          `;
+              <td><button class="btn-secundario eliminar-btn" data-index="${index}" aria-label="Eliminar ${item.nombre}">Eliminar</button></td>
+            </tr>`;
         }).join("")}
-      </tbody>
-    `;
-
+      </tbody>`;
     contenedor.appendChild(tabla);
     subtotalDiv.textContent = `Subtotal: $${subtotal}`;
     totalDiv.textContent = `Total: $${subtotal}`;
   }
 
   // Actualizar cantidad
-  if (contenedor) {
-    contenedor.addEventListener("change", (e) => {
-      if (e.target.classList.contains("cantidad-input")) {
-        const index = e.target.dataset.index;
-        carrito[index].cantidad = Math.max(1, parseInt(e.target.value) || 1);
+  contenedor.addEventListener("change", (e) => {
+    if (e.target.classList.contains("cantidad-input")) {
+      const index = e.target.dataset.index;
+      carrito[index].cantidad = Math.max(1, parseInt(e.target.value) || 1);
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      renderCarrito();
+    }
+  });
+
+  // Eliminar producto con animación
+  contenedor.addEventListener("click", (e) => {
+    if (e.target.classList.contains("eliminar-btn")) {
+      const index = e.target.dataset.index;
+      const fila = e.target.closest("tr");
+      fila.style.transition = "opacity 0.5s";
+      fila.style.opacity = "0";
+      setTimeout(() => {
+        carrito.splice(index, 1);
         localStorage.setItem("carrito", JSON.stringify(carrito));
         renderCarrito();
-      }
-    });
-
-    // Eliminar producto con animación
-    contenedor.addEventListener("click", (e) => {
-      if (e.target.classList.contains("eliminar-btn")) {
-        const index = e.target.dataset.index;
-        const fila = e.target.closest("tr");
-        fila.style.transition = "opacity 0.5s";
-        fila.style.opacity = "0";
-        setTimeout(() => {
-          carrito.splice(index, 1);
-          localStorage.setItem("carrito", JSON.stringify(carrito));
-          renderCarrito();
-        }, 500);
-      }
-    });
-  }
+      }, 500);
+    }
+  });
 
   // Vaciar carrito
   window.vaciarCarrito = () => {
@@ -119,6 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
+      if (carrito.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'Carrito vacío', text: 'Agregá productos antes de enviar.' });
+        return;
+      }
+
       // Armar resumen del carrito
       let resumen = "";
       let total = 0;
@@ -128,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
         resumen += `${item.nombre} x${item.cantidad} = $${sub}\n`;
       });
 
-      // Rellenar campos ocultos si existen
+      // Rellenar campos ocultos
       const productosInput = document.getElementById("productos");
       const totalInput = document.getElementById("total");
       if (productosInput) productosInput.value = resumen;
@@ -149,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(() => location.href = "index2.html", 2500);
         })
         .catch(error => {
-          alert('❌ Error al enviar: ' + JSON.stringify(error));
+          Swal.fire({ icon: 'error', title: 'Error al enviar', text: JSON.stringify(error) });
         });
     });
   }
