@@ -163,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <h4>${producto.nombre}</h4>
         <p>$${producto.precio}</p>
         ${producto.descripcion ? `<p class="descripcion">${producto.descripcion}</p>` : ""}
-        <button class="btn-secundario" onclick="eliminarFavorito('${producto.nombre}')">Eliminar</button>
         <button class="btn-principal" onclick="agregarAlCarrito('${producto.nombre}', ${producto.precio})">Agregar al carrito</button>
         <button class="btn-secundario btn-favorito">❤ Favorito</button>
       `;
