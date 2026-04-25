@@ -35,7 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
           subtotal += sub;
           return `
             <tr>
-              <td><img src="${item.imagen}" alt="${item.nombre}" class="img-carrito"></td>
+              <td>
+                ${item.imagen ? `<img src="${item.imagen}" alt="${item.nombre}" class="img-carrito">` : ""}
+              </td>
               <td>${item.nombre}</td>
               <td>$${item.precio}</td>
               <td>
@@ -43,7 +45,11 @@ document.addEventListener("DOMContentLoaded", () => {
                   data-index="${index}" class="cantidad-input">
               </td>
               <td>$${sub}</td>
-              <td><button class="btn-secundario eliminar-btn" data-index="${index}">Eliminar</button></td>
+              <td>
+                <button class="btn-secundario eliminar-btn" data-index="${index}" aria-label="Eliminar ${item.nombre}">
+                  Eliminar
+                </button>
+              </td>
             </tr>
           `;
         }).join("")}
@@ -52,14 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     contenedor.appendChild(tabla);
     subtotalDiv.textContent = `Subtotal: $${subtotal}`;
-    totalDiv.textContent = `Total: $${subtotal}`;
+    totalDiv.textContent = `Total: $${subtotal}`; // luego podés sumar envío o descuentos
   }
 
   // 🔹 Actualizar cantidad dinámicamente
   contenedor.addEventListener("change", (e) => {
     if (e.target.classList.contains("cantidad-input")) {
       const index = e.target.dataset.index;
-      carrito[index].cantidad = parseInt(e.target.value);
+      carrito[index].cantidad = Math.max(1, parseInt(e.target.value) || 1); // ✅ evita NaN
       localStorage.setItem("carrito", JSON.stringify(carrito));
       renderCarrito();
     }
@@ -104,4 +110,3 @@ document.addEventListener("DOMContentLoaded", () => {
   // Render inicial
   renderCarrito();
 });
-

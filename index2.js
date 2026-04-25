@@ -22,13 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
   window.irAlCarrito = () => window.location.href = "carrito2.html";
   window.irAFavoritos = () => window.location.href = "favorito2.html";
 
-  window.agregarAlCarrito = (nombre, precio) => {
+  // ✅ corregido: ahora guarda también la imagen
+  window.agregarAlCarrito = (nombre, precio, imagen) => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     let item = carrito.find(p => p.nombre === nombre);
     if (item) {
       item.cantidad++;
     } else {
-      carrito.push({ nombre, precio, cantidad: 1 });
+      carrito.push({ nombre, precio, cantidad: 1, imagen });
     }
     localStorage.setItem("carrito", JSON.stringify(carrito));
 
@@ -50,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
     lista.innerHTML = "";
     carrito.forEach(prod => {
       const li = document.createElement("li");
-      li.textContent = `${prod.nombre} x${prod.cantidad} - $${prod.precio * prod.cantidad}`;
+      // ✅ podés mostrar miniatura si querés
+      li.innerHTML = `<img src="${prod.imagen}" alt="${prod.nombre}" style="width:30px;height:30px;margin-right:8px;"> ${prod.nombre} x${prod.cantidad} - $${prod.precio * prod.cantidad}`;
       lista.appendChild(li);
     });
   }
@@ -163,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <h4>${producto.nombre}</h4>
         <p>$${producto.precio}</p>
         ${producto.descripcion ? `<p class="descripcion">${producto.descripcion}</p>` : ""}
-        <button class="btn-principal" onclick="agregarAlCarrito('${producto.nombre}', ${producto.precio})">Agregar al carrito</button>
+        <button class="btn-principal" onclick="agregarAlCarrito('${producto.nombre}', ${producto.precio}, '${producto.imagen}')">Agregar al carrito</button>
         <button class="btn-secundario btn-favorito">❤ Favorito</button>
       `;
       secciones[producto.categoria]?.appendChild(div);
