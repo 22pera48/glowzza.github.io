@@ -198,8 +198,7 @@
           document.getElementById("total").value = total;
 
           // Enviar con EmailJS
-    emailjs.sendForm('service_e2dcwiw', 'template_0wi0hpz', this)
-            .then(() => {
+emailjs.sendForm('service_e2dcwiw', 'template_0wi0hpz', form)            .then(() => {
               Swal.fire({
                 icon: 'success',
                 title: 'Pedido enviado por correo',
