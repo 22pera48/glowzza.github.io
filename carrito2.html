@@ -113,37 +113,38 @@
 
   <div style="margin-top:15px;">
     <button type="submit" class="btn-principal">Enviar pedido</button>
-<button type="button" id="cancelarBtn" class="btn-secundario">Cancelar</button>
+    <button type="button" id="cancelarBtn" class="btn-secundario">Cancelar</button>
   </div>
 </form>
-    </div>
+</div>
+</div>
+
+<!-- 🔹 Footer -->
+<footer>
+  <div class="social-icons">
+    <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
+    <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
+    <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
   </div>
+  <p>© 2026 - Glowzza</p>
+</footer>
 
-  <!-- 🔹 Footer -->
-  <footer>
-    <div class="social-icons">
-      <a href="https://facebook.com" target="_blank"><span class="material-icons">facebook</span></a>
-      <a href="https://instagram.com" target="_blank"><span class="material-icons">photo_camera</span></a>
-      <a href="https://wa.me/541171019084" target="_blank"><span class="material-icons">chat</span></a>
-    </div>
-    <p>© 2026 - Glowzza</p>
-  </footer>
+<!-- 🔹 Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const contenedor = document.getElementById("contenedorCarrito");
+    const subtotalDiv = document.getElementById("subtotalCarrito");
+    const totalDiv = document.getElementById("totalCarrito");
+    const form = document.getElementById("formCorreo");
+    const cancelarBtn = document.getElementById("cancelarBtn");
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-  <!-- 🔹 Script -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const contenedor = document.getElementById("contenedorCarrito");
-      const subtotalDiv = document.getElementById("subtotalCarrito");
-      const totalDiv = document.getElementById("totalCarrito");
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-
-      if (carrito.length === 0) {
-        contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
-        subtotalDiv.textContent = "";
-        totalDiv.textContent = "";
-        return;
-      }
-
+    // Render inicial del carrito
+    if (carrito.length === 0) {
+      contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+      subtotalDiv.textContent = "";
+      totalDiv.textContent = "";
+    } else {
       let subtotal = 0;
       contenedor.innerHTML = `
         <table class="tabla-carrito">
@@ -179,136 +180,98 @@
       `;
       subtotalDiv.textContent = `Subtotal: $${subtotal}`;
       totalDiv.textContent = `Total: $${subtotal}`;
-    });
-
-    function actualizarCantidad(index, nuevaCantidad) {
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      carrito[index].cantidad = parseInt(nuevaCantidad);
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-      location.reload();
-    }
-
-    function eliminarProducto(index) {
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      carrito.splice(index, 1);
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-      location.reload();
-    }
-
-    function vaciarCarrito() {
-      localStorage.removeItem("carrito");
-      location.reload();
-    }
-
-    // Abrir modal
-    function finalizarCompra() {
-      document.getElementById("finalizarModal").style.display = "block";
-    }
-
-    // Cerrar modal
-    function cerrarModal() {
-      document.getElementById("finalizarModal").style.display = "none";
-    }
-
-    // Finalizar con WhatsApp
-    function finalizarConWhatsApp() {
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      let mensaje = "🛒 Hola, quiero finalizar mi compra:\n";
-      let total = 0;
-      carrito.forEach(item => {
-        let sub = item.precio * item.cantidad;
-        total += sub;
-        mensaje += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
-      });
-      mensaje += `\n💰 Total: $${total}\nGracias por elegir Glowzza 💖`;
-      let url = `https://wa.me/541171019084?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, "_blank");
-    }
-
-    // Mostrar formulario correo
-    function mostrarFormulario() {
-      document.getElementById("formCorreo").style.display = "block";
     }
 
     // Enviar formulario correo
-    document.getElementById("formCorreo").addEventListener("submit", (e) => {
-      e.preventDefault();
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-      // Capturar datos del formulario
-      const nombre = document.getElementById("nombreCorreo").value;
-      const email = document.getElementById("emailCorreo").value;
-      const direccion = document.getElementById("direccionCorreo").value;
+        // Capturar datos del formulario
+        const nombre = document.getElementById("nombreCorreo").value;
+        const email = document.getElementById("emailCorreo").value;
+        const telefono = document.getElementById("direccionCorreo").value;
 
-      // Podés armar el mensaje con los datos y el carrito
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      let resumen = "🛒 Pedido vía correo:\n";
-      let total = 0;
-      carrito.forEach(item => {
-        let sub = item.precio * item.cantidad;
-        total += sub;
-        resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
-      });
-      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
-
-      // Simulación de envío
-      Swal.fire({
-        icon: 'success',
-        title: 'Pedido enviado por correo',
-        text: 'Gracias por elegir Glowzza 💖',
-        timer: 2500,
-        showConfirmButton: false
-      });
-
-      // Limpiar carrito y cerrar modal
-      localStorage.removeItem("carrito");
-      cerrarModal();
-      setTimeout(() => location.href = "index2.html", 2500);
-    });
-    // Enviar formulario correo
-    document.getElementById("formCorreo").addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      // Capturar datos del formulario
-      const nombre = document.getElementById("nombreCorreo").value;
-      const email = document.getElementById("emailCorreo").value;
-      const direccion = document.getElementById("direccionCorreo").value;
-
-      // Podés armar el mensaje con los datos y el carrito
-      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      let resumen = "🛒 Pedido vía correo:\n";
-      let total = 0;
-      carrito.forEach(item => {
-        let sub = item.precio * item.cantidad;
-        total += sub;
-        resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
-      });
-      resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nDirección: ${direccion}`;
-
-      // Simulación de envío
-      Swal.fire({
-        icon: 'success',
-        title: 'Pedido enviado por correo',
-        text: 'Gracias por elegir Glowzza 💖',
-        timer: 2500,
-        showConfirmButton: false
-      });
-
-      // Limpiar carrito y cerrar modal
-      localStorage.removeItem("carrito");
-      cerrarModal();
-      setTimeout(() => location.href = "index2.html", 2500);
-    });
-
-    // 🔹 Botón Cancelar → cierra modal entero
-    document.addEventListener("DOMContentLoaded", () => {
-      const cancelarBtn = document.getElementById("cancelarBtn");
-      if (cancelarBtn) {
-        cancelarBtn.addEventListener("click", () => {
-          document.getElementById("formCorreo").style.display = "none";
-          cerrarModal(); // usa tu función ya definida
+        // Armar mensaje con carrito
+        let resumen = "🛒 Pedido vía correo:\n";
+        let total = 0;
+        carrito.forEach(item => {
+          let sub = item.precio * item.cantidad;
+          total += sub;
+          resumen += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
         });
-      }
+        resumen += `\n💰 Total: $${total}\nCliente: ${nombre}\nEmail: ${email}\nTeléfono: ${telefono}`;
+
+        // Simulación de envío
+        Swal.fire({
+          icon: 'success',
+          title: 'Pedido enviado por correo',
+          text: 'Gracias por elegir Glowzza 💖',
+          timer: 2500,
+          showConfirmButton: false
+        });
+
+        // Limpiar carrito y cerrar modal
+        localStorage.removeItem("carrito");
+        cerrarModal();
+        setTimeout(() => location.href = "index2.html", 2500);
+      });
+    }
+
+    // Botón Cancelar → cierra modal entero
+    if (cancelarBtn) {
+      cancelarBtn.addEventListener("click", () => {
+        form.style.display = "none";
+        cerrarModal();
+      });
+    }
+  });
+
+  // Funciones auxiliares
+  function actualizarCantidad(index, nuevaCantidad) {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    carrito[index].cantidad = parseInt(nuevaCantidad);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    location.reload();
+  }
+
+  function eliminarProducto(index) {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    carrito.splice(index, 1);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    location.reload();
+  }
+
+  function vaciarCarrito() {
+    localStorage.removeItem("carrito");
+    location.reload();
+  }
+
+  function finalizarCompra() {
+    document.getElementById("finalizarModal").style.display = "block";
+  }
+
+  function cerrarModal() {
+    document.getElementById("finalizarModal").style.display = "none";
+  }
+
+  function finalizarConWhatsApp() {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    let mensaje = "🛒 Hola, quiero finalizar mi compra:\n";
+    let total = 0;
+    carrito.forEach(item => {
+      let sub = item.precio * item.cantidad;
+      total += sub;
+      mensaje += `• ${item.nombre} x${item.cantidad} = $${sub}\n`;
     });
-  </script>
+    mensaje += `\n💰 Total: $${total}\nGracias por elegir Glowzza 💖`;
+    let url = `https://wa.me/541171019084?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, "_blank");
+  }
+
+  function mostrarFormulario() {
+    document.getElementById("formCorreo").style.display = "block";
+  }
+</script>
 </body>
 </html>
