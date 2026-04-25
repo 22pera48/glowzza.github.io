@@ -285,7 +285,28 @@ button:hover, .btn-principal:hover {
   transform: scale(1.08);
   box-shadow: 0 8px 20px rgba(179,229,252,0.6);
 }
+.hero-favoritos {
+  width: 100%;
+  padding: 40px 20px;
+  background: linear-gradient(90deg, #f8bbd0, #f3e5f5);
+  text-align: center;
+  color: #444;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(209,196,233,0.3);
+  margin-bottom: 20px;
+}
 
+.hero-favoritos h1 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+.hero-favoritos p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
 /* Banner con carrusel */
 .carousel {
   position: relative;
