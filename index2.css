@@ -546,17 +546,17 @@ footer .social-icons a {
 
 /* 🔹 Resumen lateral */
 .cart-summary {
-  flex: 0 0 300px;           /* ancho fijo */
-  background: #ffffff;       /* fondo blanco limpio */
-  border: 2px solid #f8bbd0; /* borde rosado propio */
+  flex: 0 0 300px;
+  background: #ffffff;
+  border: 2px solid #f8bbd0;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(179,229,252,0.4);
-  padding: 20px;
+  padding: 30px 20px 20px; /* 🔹 más espacio arriba */
   text-align: left;
 
-  position: sticky;   /* 🔹 se queda fijo al hacer scroll */
-  top: 20px;          /* distancia desde arriba */
-  height: fit-content;/* se ajusta al contenido */
+  position: sticky;
+  top: 40px;          /* 🔹 distancia mayor desde arriba */
+  height: fit-content;
 }
 
 .cart-summary h2 {
