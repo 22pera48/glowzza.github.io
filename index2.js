@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.irAlCarrito = () => window.location.href = "carrito2.html";
   window.irAFavoritos = () => window.location.href = "favorito2.html";
 
-  // ✅ corregido: ahora guarda también la imagen
+  // ✅ guarda también la imagen
   window.agregarAlCarrito = (nombre, precio, imagen) => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     let item = carrito.find(p => p.nombre === nombre);
@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     lista.innerHTML = "";
     carrito.forEach(prod => {
       const li = document.createElement("li");
-      // ✅ podés mostrar miniatura si querés
       li.innerHTML = `<img src="${prod.imagen}" alt="${prod.nombre}" style="width:30px;height:30px;margin-right:8px;"> ${prod.nombre} x${prod.cantidad} - $${prod.precio * prod.cantidad}`;
       lista.appendChild(li);
     });

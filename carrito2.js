@@ -102,7 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelarBtn = document.getElementById("cancelarBtn");
   if (cancelarBtn) {
     cancelarBtn.addEventListener("click", () => {
-      cerrarFormulario();
+      // Oculta formulario y cierra modal
+      document.getElementById("formCorreo").style.display = "none";
+      document.getElementById("finalizarModal").style.display = "none";
     });
   }
 });
@@ -166,8 +168,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-// 🔹 Cerrar formulario
-function cerrarFormulario() {
-  document.getElementById("formCorreo").style.display = "none";
-}
