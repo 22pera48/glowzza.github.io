@@ -97,10 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("finalizarModal").style.display = "block";
   };
 
-  // 🔹 Listener para botón Cancelar → cierra modal entero
+  // 🔹 Botón Cancelar → cierra modal entero
   if (cancelarBtn) {
     cancelarBtn.addEventListener("click", () => {
-      form.style.display = "none";
+      if (form) form.style.display = "none";
       document.getElementById("finalizarModal").style.display = "none";
     });
   }
@@ -165,4 +165,3 @@ function finalizarConWhatsApp() {
 function mostrarFormulario() {
   document.getElementById("formCorreo").style.display = "block";
 }
-
