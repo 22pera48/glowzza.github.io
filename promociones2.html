@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promociones - Glowzza</title>
+  <link rel="stylesheet" href="index2.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="top-bar">
+      <div class="acciones">
+        <button onclick="window.location.href='index2.html'" class="btn-principal">Inicio</button>
+        <button onclick="window.location.href='carrito2.html'" class="btn-secundario">Carrito</button>
+        <button onclick="window.location.href='favorito2.html'" class="btn-secundario">Favoritos</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Promociones -->
+  <div class="hero-promos">
+    <h1>Promociones Glowzza ✨</h1>
+    <p>Ofertas especiales y descuentos limitados</p>
+  </div>
+
+  <!-- Sección Promociones -->
+  <section id="promociones">
+    <h2>Ofertas disponibles</h2>
+    <!-- Contenedor dinámico -->
+    <div id="promoContainer"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 - Glowzza</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script src="promociones2.js"></script>
+</body>
+</html>
