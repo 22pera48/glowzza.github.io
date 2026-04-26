@@ -827,11 +827,12 @@ footer .social-icons a {
   width: 260px;
   text-align: center;
   padding: 15px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .promo-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
 /* Imagen de la promo */
@@ -844,19 +845,24 @@ footer .social-icons a {
 
 /* Título */
 .promo-card h3 {
+  font-family: 'Open Sans', sans-serif; /* coherente con carrito */
   font-size: 1.2rem;
   margin: 10px 0 5px;
   color: #ec407a;
+  font-weight: bold;
 }
 
 /* Descripción */
 .promo-card p {
+  font-family: 'Open Sans', sans-serif;
   font-size: 0.95rem;
   margin: 5px 0;
+  color: #555;
 }
 
 /* Precio */
 .promo-card .precio {
+  font-family: 'Open Sans', sans-serif;
   font-weight: bold;
   color: #333;
   margin: 10px 0;
@@ -868,4 +874,13 @@ footer .social-icons a {
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
+  background-color: #ec407a;
+  color: #fff;
+  border: none;
+  font-family: 'Open Sans', sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+.promo-card .btn-principal:hover {
+  background-color: #c2185b;
 }
