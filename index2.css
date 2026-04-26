@@ -810,3 +810,62 @@ footer .social-icons a {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+/* Contenedor de promociones */
+#promoContainer {
+  display: flex;
+  flex-wrap: wrap;          /* permite varias filas */
+  justify-content: center;  /* centra horizontalmente */
+  gap: 20px;                /* espacio entre tarjetas */
+  margin-top: 20px;
+}
+
+/* Tarjeta individual */
+.promo-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 260px;
+  text-align: center;
+  padding: 15px;
+  transition: transform 0.2s ease;
+}
+
+.promo-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Imagen de la promo */
+.promo-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* Título */
+.promo-card h3 {
+  font-size: 1.2rem;
+  margin: 10px 0 5px;
+  color: #ec407a;
+}
+
+/* Descripción */
+.promo-card p {
+  font-size: 0.95rem;
+  margin: 5px 0;
+}
+
+/* Precio */
+.promo-card .precio {
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0;
+}
+
+/* Botón */
+.promo-card .btn-principal {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
