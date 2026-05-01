@@ -33,13 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     localStorage.setItem("carrito", JSON.stringify(carrito));
 
-    Swal.fire({
-      position: 'top-end',
-      icon: 'success',
-      title: `${nombre} agregado al carrito`,
-      showConfirmButton: false,
-      timer: 1500
-    });
+Swal.fire({
+  position: 'center',
+  icon: 'success',
+  title: `${nombre} agregado al carrito`,
+  showConfirmButton: false,
+  timer: 1500
+});
 
     mostrarMiniCart();
   };
