@@ -582,18 +582,19 @@ footer .social-icons a {
   width: 280px;
 }
 
-/* Modal */
+/* 🔹 Modal */
 .modal {
-  display: none;
+  display: none;              /* oculto por defecto */
   position: fixed;
-  z-index: 2000;
-  padding-top: 60px;
+  z-index: 2000;              /* alto para que quede encima */
   left: 0; top: 0;
   width: 100%; height: 100%;
+  padding-top: 60px;
   overflow: auto;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0,0,0,0.8); /* fondo oscuro */
 }
 
+/* Contenido del modal */
 .modal-content {
   margin: auto;
   display: block;
@@ -602,21 +603,6 @@ footer .social-icons a {
   border-radius: 8px;
 }
 
-.close {
-  position: absolute;
-  top: 20px;
-  right: 35px;
-  color: #fff;
-  font-size: 40px;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 1001; /* asegura que quede por encima de la imagen */
-}
-
-.close:hover {
-  color: #ff4081; /* cambia de color al pasar el mouse */
-}
-/* 🔹 Contenedor general del carrito */
 .cart-container {
   display: flex;
   align-items: flex-start;   /* alinea arriba */
@@ -780,27 +766,19 @@ footer .social-icons a {
   background: #ddd;
 }
 
-/* 🔹 Modal */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-}
-.modal-content {
-  background: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 500px;
-  text-align: center;
-}
 .close {
-  float: right;
-  font-size: 1.5rem;
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: #fff;
+  font-size: 40px;
+  font-weight: bold;
   cursor: pointer;
+  z-index: 1001;
+}
+
+.close:hover {
+  color: #ff4081;
 }
 
 /* 🔹 Formulario correo */
