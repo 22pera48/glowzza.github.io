@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-// ⚠️ Pegá acá tu configuración de Firebase
+// ⚠️ Configuración Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
   authDomain: "glowzzainventario.firebaseapp.com",
@@ -28,23 +28,28 @@ async function cargarPromociones() {
     const snapshot = await getDocs(collection(db, "promociones_publicadas_web"));
     promoContainer.innerHTML = "";
 
-    snapshot.forEach(doc => {
-      const promo = doc.data();
+    snapshot.forEach(docSnap => {
+      const promo = docSnap.data();
       if (!promo.activo) return; // solo mostrar activas
 
       const card = document.createElement("div");
       card.classList.add("promo-card");
 
+      // contenido de la tarjeta
       card.innerHTML = `
         <img src="${promo.imagen}" alt="${promo.titulo}">
         <h3>${promo.titulo}</h3>
         <p>${promo.descripcion}</p>
         <p class="precio">Antes: $${promo.precio_original}<br>Ahora: $${promo.precio_descuento}</p>
-        <button class="btn-principal" onclick="agregarAlCarrito('${promo.titulo}', ${promo.precio_descuento})">
-          Agregar al carrito
-        </button>
       `;
 
+      // botón con event listener
+      const btn = document.createElement("button");
+      btn.classList.add("btn-principal");
+      btn.textContent = "Agregar al carrito";
+      btn.addEventListener("click", () => agregarAlCarrito(promo.titulo, promo.precio_descuento));
+
+      card.appendChild(btn);
       promoContainer.appendChild(card);
     });
   } catch (error) {
@@ -52,18 +57,13 @@ async function cargarPromociones() {
     promoContainer.innerHTML = "<p>❌ Error al cargar promociones</p>";
   }
 }
+
 // Función para manejar el carrito
 function agregarAlCarrito(titulo, precio) {
   try {
-    // Leer carrito actual de localStorage
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-
-    // Agregar nueva promo
     carrito.push({ titulo, precio });
-
-    // Guardar carrito actualizado
     localStorage.setItem("carrito", JSON.stringify(carrito));
-
     alert(`✅ "${titulo}" agregado al carrito por $${precio}`);
   } catch (error) {
     console.error("Error al agregar al carrito:", error);
