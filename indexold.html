@@ -43,13 +43,14 @@
     position: relative;
   }
 
-  .banner h1 {
+.banner h1 {
     font-size: 3em;
     margin: 0;
     background: linear-gradient(to right, #ff4081, #e91e63);
-    -webkit-background-clip: text;
+    -webkit-background-clip: text;   /* prefijo para Chrome/Safari */
+    background-clip: text;           /* estándar para compatibilidad */
     -webkit-text-fill-color: transparent;
-  }
+}
 
   .banner p {
     font-size: 1.5em;
