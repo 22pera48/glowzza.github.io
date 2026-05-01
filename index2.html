@@ -14,7 +14,6 @@
 
   <!-- 🔹 Header -->
   <header class="header">
-    <!-- Fila superior -->
     <div class="top-bar">
       <div class="social-icons">
         <a href="https://www.facebook.com/profile.php?id=61587097079502&sfnsn=mo" target="_blank"><span class="material-icons">facebook</span></a>
@@ -36,7 +35,6 @@
       </div>
     </div>
 
-    <!-- Fila inferior -->
     <nav class="menu">
       <a href="#peluqueria">Peluquería</a>
       <a href="#maquillaje">Maquillaje</a>
@@ -47,7 +45,7 @@
     </nav>
   </header>
 
-  <!-- 🔹 Cartel Glowzza arriba -->
+  <!-- 🔹 Hero -->
   <div class="hero-glowzza">
     <h1>Glowzza</h1>
     <p>PREPARA TU PIEL PARA BRILLAR MÁS QUE NUNCA</p>
@@ -56,7 +54,7 @@
     </div>
   </div>
 
-  <!-- 🔹 Banner con carrusel -->
+  <!-- 🔹 Banner -->
   <section class="banner">
     <div class="carousel">
       <div class="slides">
@@ -72,31 +70,51 @@
   <section id="peluqueria">
     <h1>Peluquería</h1>
     <p class="mensaje-seccion">Descubrí productos que realzan tu estilo y cuidan tu cabello.</p>
-    <div class="productos"></div>
+    <div class="productos">
+      <div class="producto"><h4>Shampoo Glowzza</h4></div>
+      <div class="producto"><h4>Acondicionador Nutritivo</h4></div>
+      <div class="producto"><h4>Mascarilla Capilar</h4></div>
+    </div>
   </section>
 
   <section id="skincare">
     <h1>Skincare</h1>
     <p class="mensaje-seccion">Rutinas pensadas para una piel radiante y saludable.</p>
-    <div class="productos"></div>
+    <div class="productos">
+      <div class="producto"><h4>Serum Vitamina C</h4></div>
+      <div class="producto"><h4>Crema Hidratante</h4></div>
+      <div class="producto"><h4>Tónico Facial</h4></div>
+    </div>
   </section>
 
   <section id="maquillaje">
     <h1>Maquillaje</h1>
     <p class="mensaje-seccion">Colores y texturas para expresar tu arte personal.</p>
-    <div class="productos"></div>
+    <div class="productos">
+      <div class="producto"><h4>Labial Glowzza</h4></div>
+      <div class="producto"><h4>Base Hidratante</h4></div>
+      <div class="producto"><h4>Sombras Radiantes</h4></div>
+    </div>
   </section>
 
   <section id="cuidado-personal">
     <h1>Cuidado Personal</h1>
     <p class="mensaje-seccion">Bienestar diario con productos que te acompañan siempre.</p>
-    <div class="productos"></div>
+    <div class="productos">
+      <div class="producto"><h4>Jabón Artesanal</h4></div>
+      <div class="producto"><h4>Crema de Manos</h4></div>
+      <div class="producto"><h4>Desodorante Natural</h4></div>
+    </div>
   </section>
 
   <section id="perfume-esencias">
     <h1>Perfume y Esencias</h1>
     <p class="mensaje-seccion">Fragancias únicas que dejan huella en cada momento.</p>
-    <div class="productos"></div>
+    <div class="productos">
+      <div class="producto"><h4>Perfume Glowzza</h4></div>
+      <div class="producto"><h4>Esencia Floral</h4></div>
+      <div class="producto"><h4>Aroma Vainilla</h4></div>
+    </div>
   </section>
 
   <!-- 🔹 Contacto -->
@@ -109,9 +127,9 @@
   <!-- 🔹 Footer -->
   <footer>
     <div class="social-icons">
-        <a href="https://www.facebook.com/profile.php?id=61587097079502&sfnsn=mo" target="_blank"><span class="material-icons">facebook</span></a>
-        <a href="https://www.instagram.com/glowzza_make_up?utm_source=qr&igsh=cXB0dGRsdzhnaXFs" target="_blank"><span class="material-icons">photo_camera</span></a>
-        <a href="https://wa.me/541171019084?text=Hola%20Glowzza,%20quiero%20más%20información" target="_blank"><span class="material-icons">chat</span></a>
+      <a href="https://www.facebook.com/profile.php?id=61587097079502&sfnsn=mo" target="_blank"><span class="material-icons">facebook</span></a>
+      <a href="https://www.instagram.com/glowzza_make_up?utm_source=qr&igsh=cXB0dGRsdzhnaXFs" target="_blank"><span class="material-icons">photo_camera</span></a>
+      <a href="https://wa.me/541171019084?text=Hola%20Glowzza,%20quiero%20más%20información" target="_blank"><span class="material-icons">chat</span></a>
     </div>
     <p>© 2026 - Glowzza</p>
   </footer>
@@ -133,11 +151,24 @@
     function irAlCarrito() {
       window.location.href = "carrito2.html";
     }
+
+    // Buscador dinámico
+    const buscador = document.getElementById("buscador");
+    if (buscador) {
+      buscador.addEventListener("input", () => {
+        const filtro = buscador.value.toLowerCase();
+        document.querySelectorAll(".producto").forEach(prod => {
+          const nombre = prod.querySelector("h4").textContent.toLowerCase();
+          prod.style.display = nombre.includes(filtro) ? "" : "none";
+        });
+      });
+    }
   </script>
-  <!-- Cartel flotante de promociones -->
-<div class="promo-float" onclick="window.location.href='promociones2.html'">
-  🔥 Promos
-</div>
+
+  <!-- Cartel flotante -->
+  <div class="promo-float" onclick="window.location.href='promociones2.html'">
+    🔥 Promos
+  </div>
 
 </body>
 </html>
