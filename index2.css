@@ -884,3 +884,29 @@ footer .social-icons a {
 .promo-card .btn-principal:hover {
   background-color: #c2185b;
 }
+.hero-promociones {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #ffe6f0, #fff);
+  border-radius: 12px;
+  padding: 40px 20px;
+  margin: 30px auto;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.hero-promociones h1 {
+  font-family: "Great Vibes", cursive;
+  font-size: 3rem;
+  color: #e91e63;
+  margin-bottom: 10px;
+}
+
+.hero-promociones p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
