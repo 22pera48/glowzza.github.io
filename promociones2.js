@@ -59,12 +59,20 @@ async function cargarPromociones() {
 }
 
 // Función para manejar el carrito
-function agregarAlCarrito(titulo, precio) {
+function agregarAlCarrito(promo) {
   try {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-    carrito.push({ titulo, precio });
+
+    carrito.push({
+      nombre: promo.titulo,            // el carrito espera "nombre"
+      precio: promo.precio_descuento,  // el carrito espera "precio"
+      descripcion: promo.descripcion,
+      imagen: promo.imagen,
+      cantidad: 1                      // inicializamos cantidad
+    });
+
     localStorage.setItem("carrito", JSON.stringify(carrito));
-    alert(`✅ "${titulo}" agregado al carrito por $${precio}`);
+    alert(`✅ "${promo.titulo}" agregado al carrito por $${promo.precio_descuento}`);
   } catch (error) {
     console.error("Error al agregar al carrito:", error);
   }
