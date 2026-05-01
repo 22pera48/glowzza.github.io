@@ -4,13 +4,13 @@ import { getFirestore, collection, getDocs } from "https://www.gstatic.com/fireb
 
 // ⚠️ Pegá acá tu configuración de Firebase
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_AUTH_DOMAIN",
-  projectId: "TU_PROJECT_ID",
-  storageBucket: "TU_STORAGE_BUCKET",
-  messagingSenderId: "TU_MESSAGING_SENDER_ID",
-  appId: "TU_APP_ID",
-  measurementId: "TU_MEASUREMENT_ID"
+  apiKey: "AIzaSyBDrfX2Fszw9-M1DwzX_Sk63et9tw4ddOU",
+  authDomain: "glowzzainventario.firebaseapp.com",
+  projectId: "glowzzainventario",
+  storageBucket: "glowzzainventario.appspot.com",
+  messagingSenderId: "159721581844",
+  appId: "1:159721581844:web:f62cdb303258dc847b6601",
+  measurementId: "G-0FR3Q6P3L2"
 };
 
 // Inicializar Firebase
