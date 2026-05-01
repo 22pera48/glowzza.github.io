@@ -604,11 +604,17 @@ footer .social-icons a {
 
 .close {
   position: absolute;
-  top: 20px; right: 35px;
+  top: 20px;
+  right: 35px;
   color: #fff;
   font-size: 40px;
   font-weight: bold;
   cursor: pointer;
+  z-index: 1001; /* asegura que quede por encima de la imagen */
+}
+
+.close:hover {
+  color: #ff4081; /* cambia de color al pasar el mouse */
 }
 /* 🔹 Contenedor general del carrito */
 .cart-container {
