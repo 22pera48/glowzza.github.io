@@ -896,20 +896,29 @@ footer .social-icons a {
 }
 .promo-float {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
-  background: #e91e63; /* rosa fuerte */
+  right: 30px;
+  bottom: 30px;
+  background: linear-gradient(135deg, #ff4081, #f50057); /* degradado llamativo */
   color: white;
-  padding: 12px 18px;
+  padding: 18px 28px; /* más grande */
   border-radius: 50px;
+  font-size: 1.4rem; /* tipografía más grande */
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease, background 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease, background 0.3s ease;
   z-index: 9999;
+  animation: pulse 1.5s infinite; /* animación */
 }
 
 .promo-float:hover {
-  transform: scale(1.1);
-  background: #ad1457; /* tono más oscuro al pasar el mouse */
+  transform: scale(1.15);
+  background: linear-gradient(135deg, #f50057, #c51162);
+}
+
+/* Animación de pulso */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
