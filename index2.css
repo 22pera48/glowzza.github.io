@@ -1064,6 +1064,38 @@ footer .social-icons a {
     padding: 8px 14px;
     font-size: 0.9rem;
   }
+  /* Contenedor del combo */
+.combo-grid {
+  display: flex;          /* activa flexbox */
+  flex-wrap: wrap;        /* permite que bajen a otra fila si no entran */
+  gap: 15px;              /* espacio entre productos */
+  justify-content: center;/* centra el combo */
+  margin-top: 15px;
+}
+
+/* Cada producto del combo */
+.combo-item {
+  width: 140px;           /* ancho fijo de cada tarjeta */
+  text-align: center;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 10px;
+}
+
+.combo-item img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.combo-item p {
+  margin: 5px 0;
+}
+
+.combo-item p strong {
+  color: #2c3e50;
+}
+
 
   .menu a {
     font-size: 0.85rem;
