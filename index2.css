@@ -982,7 +982,8 @@ footer .social-icons a {
 /* 📱 Ajustes para celular chico */
 @media (max-width: 480px) {
   .productos {
-    grid-template-columns: 1fr; /* una sola columna */
+    grid-template-columns: repeat(2, 1fr); /* dos columnas */
+    gap: 12px; /* espacio entre cards */
   }
 
   section {
@@ -1016,6 +1017,18 @@ footer .social-icons a {
     bottom: 10px;
     padding: 10px 16px;
     font-size: 1rem; /* botón flotante más discreto */
+  }
+
+  .menu {
+    flex-direction: column;   /* menú vertical */
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+  }
+
+  .menu a {
+    font-size: 0.85rem;       /* enlaces más chicos */
+    padding: 4px 0;
   }
 }
 
