@@ -979,55 +979,98 @@ footer .social-icons a {
   }
 }
 
+/* 📱 Ajustes para celular mediano */
+@media (max-width: 768px) {
+  .productos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* dos columnas */
+    gap: 14px;
+    grid-auto-rows: 1fr; /* filas uniformes */
+  }
+
+  .producto {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 300px;
+    box-sizing: border-box;
+  }
+
+  .img-wrapper {
+    height: 180px; /* altura fija */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .img-wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  .menu {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .menu a {
+    font-size: 0.9rem;
+    padding: 5px 0;
+  }
+}
+
 /* 📱 Ajustes para celular chico */
 @media (max-width: 480px) {
   .productos {
+    display: grid;
     grid-template-columns: repeat(2, 1fr); /* dos columnas */
-    gap: 12px; /* espacio entre cards */
+    gap: 12px;
+    grid-auto-rows: 1fr;
+  }
+
+  .producto {
+    min-height: 280px;
   }
 
   section {
-    padding: 30px 10px; /* menos espacio lateral */
+    padding: 20px 10px;
   }
 
   .mensaje-seccion {
-    font-size: 0.9em; /* texto más chico */
+    font-size: 0.9em;
   }
 
   .hero-glowzza h1,
   .hero-carrito h1,
   .hero-favoritos h1,
   .hero-promociones h1 {
-    font-size: 1.8rem; /* títulos más compactos */
+    font-size: 1.6rem;
   }
 
   .hero-glowzza p,
   .hero-carrito p,
   .hero-favoritos p,
   .hero-promociones p {
-    font-size: 0.95rem; /* subtítulos más chicos */
+    font-size: 0.9rem;
   }
 
   .promo-card {
-    width: 100%; /* cada promo ocupa todo el ancho */
+    width: 100%;
   }
 
   .promo-float {
     right: 10px;
     bottom: 10px;
-    padding: 10px 16px;
-    font-size: 1rem; /* botón flotante más discreto */
-  }
-
-  .menu {
-    flex-direction: column;   /* menú vertical */
-    align-items: center;
-    gap: 6px;
-    padding: 6px 0;
+    padding: 8px 14px;
+    font-size: 0.9rem;
   }
 
   .menu a {
-    font-size: 0.85rem;       /* enlaces más chicos */
+    font-size: 0.85rem;
     padding: 4px 0;
   }
 }
