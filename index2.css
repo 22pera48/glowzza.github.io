@@ -922,3 +922,81 @@ footer .social-icons a {
   50% { transform: scale(1.08); }
   100% { transform: scale(1); }
 }
+/* 📱 Ajustes responsivos */
+@media (max-width: 1024px) {
+  /* Tablet */
+  .productos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .hero-glowzza, .hero-carrito, .hero-favoritos, .hero-promociones {
+    padding: 40px 20px;
+  }
+  .hero-glowzza h1, .hero-carrito h1, .hero-favoritos h1, .hero-promociones h1 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Celular mediano */
+  .top-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+  }
+  .buscador input {
+    width: 100%;
+    max-width: none;
+  }
+  .acciones {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .menu {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .productos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cart-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .cart-summary {
+    position: static;
+    width: 100%;
+  }
+  .promo-card {
+    width: 45%;
+  }
+  .promo-float {
+    right: 15px;
+    bottom: 15px;
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Celular chico */
+  .productos {
+    grid-template-columns: 1fr;
+  }
+  section {
+    padding: 30px 10px;
+  }
+  .mensaje-seccion {
+    font-size: 0.9em;
+  }
+  .hero-glowzza h1, .hero-carrito h1, .hero-favoritos h1, .hero-promociones h1 {
+    font-size: 1.8rem;
+  }
+  .hero-glowzza p, .hero-carrito p, .hero-favoritos p, .hero-promociones p {
+    font-size: 0.95rem;
+  }
+  .promo-card {
+    width: 100%;
+  }
+}
