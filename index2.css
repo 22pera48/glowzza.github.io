@@ -1000,3 +1000,14 @@ footer .social-icons a {
     width: 100%;
   }
 }
+/* Forzar fondo claro aunque el sistema esté en dark mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #fffafc !important;
+    color: #444 !important;
+  }
+  header, section, footer {
+    background-color: #ffffff !important;
+    color: #333 !important;
+  }
+}
