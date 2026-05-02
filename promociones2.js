@@ -36,23 +36,24 @@ async function cargarPromociones() {
       card.classList.add("promo-card");
 
       // contenido de la tarjeta con combo completo
-      card.innerHTML = `
-        <h3>${promo.titulo}</h3>
-        <p>${promo.descripcion || ""}</p>
-        <p class="precio">Antes: $${promo.precio_original}<br>Ahora: $${promo.precio_descuento}</p>
-        <p><strong>Estado:</strong> ${promo.activo ? "✅ Activa" : "❌ Inactiva"}</p>
-        <div class="combo-grid">
-          ${
-            promo.comboProductos?.map(p => `
-              <div class="combo-item">
-                <img src="${p.imagen}" alt="${p.nombre}">
-                <p>${p.nombre}</p>
-                <p><strong>$${p.precio}</strong></p>
-              </div>
-            `).join("") || ""
-          }
+card.innerHTML = `
+  <h3>${promo.titulo}</h3>
+  <p>${promo.descripcion || ""}</p>
+  <p class="precio">Antes: $${promo.precio_original}<br>Ahora: $${promo.precio_descuento}</p>
+  <p><strong>Estado:</strong> ${promo.activo ? "✅ Activa" : "❌ Inactiva"}</p>
+  ${promo.imagen ? `<img src="${promo.imagen}" alt="${promo.titulo}" class="promo-img">` : ""}
+  <div class="combo-grid">
+    ${
+      promo.comboProductos?.map(p => `
+        <div class="combo-item">
+          <img src="${p.imagen}" alt="${p.nombre}">
+          <p>${p.nombre}</p>
+          <p><strong>$${p.precio}</strong></p>
         </div>
-      `;
+      `).join("") || ""
+    }
+  </div>
+`;
 
       // botón con event listener
       const btn = document.createElement("button");
