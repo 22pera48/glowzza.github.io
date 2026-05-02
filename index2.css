@@ -979,34 +979,56 @@ footer .social-icons a {
   }
 }
 
+/* 📱 Ajustes para celular chico */
 @media (max-width: 480px) {
-  /* Celular chico */
   .productos {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* una sola columna */
   }
+
   section {
-    padding: 30px 10px;
+    padding: 30px 10px; /* menos espacio lateral */
   }
+
   .mensaje-seccion {
-    font-size: 0.9em;
+    font-size: 0.9em; /* texto más chico */
   }
-  .hero-glowzza h1, .hero-carrito h1, .hero-favoritos h1, .hero-promociones h1 {
-    font-size: 1.8rem;
+
+  .hero-glowzza h1,
+  .hero-carrito h1,
+  .hero-favoritos h1,
+  .hero-promociones h1 {
+    font-size: 1.8rem; /* títulos más compactos */
   }
-  .hero-glowzza p, .hero-carrito p, .hero-favoritos p, .hero-promociones p {
-    font-size: 0.95rem;
+
+  .hero-glowzza p,
+  .hero-carrito p,
+  .hero-favoritos p,
+  .hero-promociones p {
+    font-size: 0.95rem; /* subtítulos más chicos */
   }
+
   .promo-card {
-    width: 100%;
+    width: 100%; /* cada promo ocupa todo el ancho */
+  }
+
+  .promo-float {
+    right: 10px;
+    bottom: 10px;
+    padding: 10px 16px;
+    font-size: 1rem; /* botón flotante más discreto */
   }
 }
-/* Forzar fondo claro aunque el sistema esté en dark mode */
+
+/* 🌙 Forzar fondo claro aunque el sistema esté en dark mode */
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #fffafc !important;
     color: #444 !important;
   }
-  header, section, footer {
+
+  header,
+  section,
+  footer {
     background-color: #ffffff !important;
     color: #333 !important;
   }
