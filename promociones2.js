@@ -35,19 +35,30 @@ async function cargarPromociones() {
       const card = document.createElement("div");
       card.classList.add("promo-card");
 
-      // contenido de la tarjeta
+      // contenido de la tarjeta con combo completo
       card.innerHTML = `
-        <img src="${promo.imagen}" alt="${promo.titulo}">
         <h3>${promo.titulo}</h3>
-        <p>${promo.descripcion}</p>
+        <p>${promo.descripcion || ""}</p>
         <p class="precio">Antes: $${promo.precio_original}<br>Ahora: $${promo.precio_descuento}</p>
+        <p><strong>Estado:</strong> ${promo.activo ? "✅ Activa" : "❌ Inactiva"}</p>
+        <div class="combo-grid">
+          ${
+            promo.comboProductos?.map(p => `
+              <div class="combo-item">
+                <img src="${p.imagen}" alt="${p.nombre}">
+                <p>${p.nombre}</p>
+                <p><strong>$${p.precio}</strong></p>
+              </div>
+            `).join("") || ""
+          }
+        </div>
       `;
 
       // botón con event listener
       const btn = document.createElement("button");
       btn.classList.add("btn-principal");
       btn.textContent = "Agregar al carrito";
-      btn.addEventListener("click", () => agregarAlCarrito(promo.titulo, promo.precio_descuento));
+      btn.addEventListener("click", () => agregarAlCarrito(promo));
 
       card.appendChild(btn);
       promoContainer.appendChild(card);
@@ -63,16 +74,30 @@ function agregarAlCarrito(promo) {
   try {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-    carrito.push({
-      nombre: promo.titulo,            // el carrito espera "nombre"
-      precio: promo.precio_descuento,  // el carrito espera "precio"
-      descripcion: promo.descripcion,
-      imagen: promo.imagen,
-      cantidad: 1                      // inicializamos cantidad
-    });
+    // 🔹 Guardar todos los productos del combo en el carrito
+    if (promo.comboProductos && promo.comboProductos.length > 0) {
+      promo.comboProductos.forEach(prod => {
+        carrito.push({
+          nombre: prod.nombre,
+          precio: prod.precio,
+          descripcion: prod.descripcion || "",
+          imagen: prod.imagen,
+          cantidad: 1
+        });
+      });
+    } else {
+      // si no hay combo, guardar la promo principal
+      carrito.push({
+        nombre: promo.titulo,
+        precio: promo.precio_descuento,
+        descripcion: promo.descripcion,
+        imagen: promo.imagen,
+        cantidad: 1
+      });
+    }
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
-    alert(`✅ "${promo.titulo}" agregado al carrito por $${promo.precio_descuento}`);
+    alert(`✅ "${promo.titulo}" agregado al carrito`);
   } catch (error) {
     console.error("Error al agregar al carrito:", error);
   }
