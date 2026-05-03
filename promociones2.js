@@ -37,20 +37,19 @@ async function cargarPromociones() {
 
       // contenido de la tarjeta con combo completo
 card.innerHTML = `
-  <h3>${promo.titulo}</h3>
+  <h3>${promo.tituloPersonalizado || promo.titulo}</h3>
   <p>${promo.descripcion || ""}</p>
   <p class="precio">Antes: $${promo.precio_original}<br>Ahora: $${promo.precio_descuento}</p>
   <p><strong>Estado:</strong> ${promo.activo ? "✅ Activa" : "❌ Inactiva"}</p>
-  ${promo.imagen ? `<img src="${promo.imagen}" alt="${promo.titulo}" class="promo-img">` : ""}
+  ${promo.imagen ? `<img src="${promo.imagen}" alt="${promo.tituloPersonalizado || promo.titulo}" class="promo-img">` : ""}
   <div class="combo-grid">
     ${
-promo.comboProductos?.map(p => `
-  <div class="combo-item">
-    <img src="${p.imagen}" alt="${p.nombre}">
-    <p>${p.nombre}</p>
-  </div>
-`).join("") || ""
-
+      promo.comboProductos?.map(p => `
+        <div class="combo-item">
+          <img src="${p.imagen}" alt="${p.nombre}">
+          <p>${p.nombre}</p>
+        </div>
+      `).join("") || ""
     }
   </div>
 `;
