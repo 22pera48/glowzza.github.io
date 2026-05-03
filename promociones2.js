@@ -74,27 +74,27 @@ function agregarAlCarrito(promo) {
   try {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-    // 🔹 Guardar todos los productos del combo en el carrito
-    if (promo.comboProductos && promo.comboProductos.length > 0) {
-      promo.comboProductos.forEach(prod => {
-        carrito.push({
-          nombre: prod.nombre,
-          precio: prod.precio,
-          descripcion: prod.descripcion || "",
-          imagen: prod.imagen,
-          cantidad: 1
-        });
-      });
-    } else {
-      // si no hay combo, guardar la promo principal
-      carrito.push({
-        nombre: promo.titulo,
-        precio: promo.precio_descuento,
-        descripcion: promo.descripcion,
-        imagen: promo.imagen,
-        cantidad: 1
-      });
-    }
+    // 🔹 Calcular el total del combo
+    const totalCombo = promo.comboProductos?.reduce(
+      (acc, prod) => acc + Number(prod.precio),
+      0
+    ) || 0;
+
+    // 🔹 Usar precio con descuento si existe, sino el total
+    const precioFinal = promo.precio_descuento
+      ? Number(promo.precio_descuento)
+      : totalCombo;
+
+    // 🔹 Crear entrada única para el combo
+    carrito.push({
+      id: promo.id,
+      nombre: promo.tituloPersonalizado || promo.titulo || "Combo",
+      precio: precioFinal,
+      descripcion: promo.descripcion || "",
+      imagen: promo.imagen,
+      productos: promo.comboProductos, // opcional: detalle de productos
+      cantidad: 1
+    });
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
     alert(`✅ "${promo.titulo}" agregado al carrito`);
