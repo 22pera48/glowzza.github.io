@@ -239,16 +239,19 @@ Swal.fire({
   };
 
   // Control de sesión: mostrar/ocultar acceso al panel
-  onAuthStateChanged(auth, (user) => {
-    const loginBtn = document.querySelector(".btn-login");
-    if (loginBtn) {
-      loginBtn.style.display = user ? "none" : "inline-block";
-    }
-    // Podés mostrar un botón de logout si hay usuario activo
-    const logoutBtn = document.querySelector(".btn-logout");
-    if (logoutBtn) {
-      logoutBtn.style.display = user ? "inline-block" : "none";
-    }
-  });
+onAuthStateChanged(auth, (user) => {
+  const loginBtn = document.querySelector(".btn-login");
+  const logoutBtn = document.querySelector(".btn-logout");
+
+  if (user) {
+    // Usuario logueado → ocultar login y mostrar logout
+    if (loginBtn) loginBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+  } else {
+    // Usuario no logueado → mostrar login y ocultar logout
+    if (loginBtn) loginBtn.style.display = "inline-block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+  }
+});
 
 });

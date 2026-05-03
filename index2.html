@@ -13,41 +13,45 @@
 <body>
 
   <!-- 🔹 Header -->
-  <header class="header">
-    <div class="top-bar">
-      <div class="social-icons">
-        <a href="https://www.facebook.com/profile.php?id=61587097079502&sfnsn=mo" target="_blank"><span class="material-icons">facebook</span></a>
-        <a href="https://www.instagram.com/glowzza_make_up?utm_source=qr&igsh=cXB0dGRsdzhnaXFs" target="_blank"><span class="material-icons">photo_camera</span></a>
-        <a href="https://wa.me/541171019084?text=Hola%20Glowzza,%20quiero%20más%20información" target="_blank"><span class="material-icons">chat</span></a>
-      </div>
-
-      <div class="buscador">
-        <input type="text" id="buscador" placeholder="Buscar productos..." />
-      </div>
-
-      <div class="acciones">
-        <button onclick="irAlCarrito()" class="btn-principal">
-          <span class="material-icons">shopping_cart</span> Carrito
-        </button>
-        <button onclick="irAFavoritos()" class="btn-secundario">
-          <span class="material-icons">favorite</span> Mis Favoritos
-        </button>
-        <!-- 🔹 Botón de Login -->
-        <button onclick="mostrarLogin()" class="btn-login">
-          <span class="material-icons">login</span> Iniciar Sesión
-        </button>
-      </div>
+<header class="header">
+  <div class="top-bar">
+    <div class="social-icons">
+      <a href="https://www.facebook.com/profile.php?id=61587097079502&sfnsn=mo" target="_blank"><span class="material-icons">facebook</span></a>
+      <a href="https://www.instagram.com/glowzza_make_up?utm_source=qr&igsh=cXB0dGRsdzhnaXFs" target="_blank"><span class="material-icons">photo_camera</span></a>
+      <a href="https://wa.me/541171019084?text=Hola%20Glowzza,%20quiero%20más%20información" target="_blank"><span class="material-icons">chat</span></a>
     </div>
 
-    <nav class="menu">
-      <a href="#peluqueria">Peluquería</a>
-      <a href="#maquillaje">Maquillaje</a>
-      <a href="#skincare">Skincare</a>
-      <a href="#cuidado-personal">Cuidado Personal</a>
-      <a href="#perfume-esencias">Perfume y Esencias</a>
-      <a href="#contacto">Contacto</a>
-    </nav>
-  </header>
+    <div class="buscador">
+      <input type="text" id="buscador" placeholder="Buscar productos..." />
+    </div>
+
+    <div class="acciones">
+      <button onclick="irAlCarrito()" class="btn-principal">
+        <span class="material-icons">shopping_cart</span> Carrito
+      </button>
+      <button onclick="irAFavoritos()" class="btn-secundario">
+        <span class="material-icons">favorite</span> Mis Favoritos
+      </button>
+      <!-- 🔹 Botón de Login -->
+      <button onclick="mostrarLogin()" class="btn-login">
+        <span class="material-icons">login</span> Iniciar Sesión
+      </button>
+      <!-- 🔹 Botón de Logout (oculto por defecto) -->
+      <button onclick="cerrarSesion()" class="btn-logout" style="display:none;">
+        <span class="material-icons">logout</span> Cerrar Sesión
+      </button>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="#peluqueria">Peluquería</a>
+    <a href="#maquillaje">Maquillaje</a>
+    <a href="#skincare">Skincare</a>
+    <a href="#cuidado-personal">Cuidado Personal</a>
+    <a href="#perfume-esencias">Perfume y Esencias</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
 
   <!-- 🔹 Hero -->
   <div class="hero-glowzza">
