@@ -219,7 +219,7 @@ Swal.fire({
           await signInWithEmailAndPassword(auth, result.value.email, result.value.pass);
           Swal.fire('Bienvenido', 'Ingreso exitoso ✅', 'success');
           setTimeout(() => {
-            window.location.href = "panel.html"; // redirige al panel
+            window.location.href = "menu.html"; // redirige al panel
           }, 1500);
         } catch (error) {
           Swal.fire('Error', error.message, 'error');
