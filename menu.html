@@ -18,13 +18,14 @@
       font-size: 36px;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
+
     .boton-grande.rojo {
-  background-color: #e53935;
-}
-.boton-grande.rojo:hover {
-  background-color: #c62828;
-  transform: scale(1.05);
-}
+      background-color: #e53935;
+    }
+    .boton-grande.rojo:hover {
+      background-color: #c62828;
+      transform: scale(1.05);
+    }
 
     .menu-principal {
       display: grid;
@@ -74,41 +75,46 @@
 <body>
   <h1>Glowzza - Panel Principal</h1>
   <div class="menu-principal">
-    <button onclick="location.href='clientes.html'" class="boton-grande">
-      Registro de Clientes
-    </button>
-    <button onclick="location.href='stock.html'" class="boton-grande">
-      Control de Stock
-    </button>
-    <button onclick="location.href='balance.html'" class="boton-grande">
-      Balance
-    </button>
-    <button onclick="location.href='proveedores.html'" class="boton-grande">
-      Registro de Proveedores
-    </button>
-    <button onclick="location.href='descargas.html'" class="boton-grande">
-      Download
-    </button>
-    <button onclick="location.href='upload.html'" class="boton-grande">
-      Upload
-    </button>
-    </button>
-<button onclick="location.href='scraperGlowzza/scraper.html'" class="boton-grande">    Scraper
-  </button>
-
-    <!-- 🔹 Nuevo botón Solicitudes -->
-    <button onclick="location.href='solicitudes.html'" class="boton-grande">
-      Solicitudes
-    </button>
-    <button onclick="location.href='administrador.html'" 
-        class="boton-grande" 
-        style="background-color:#e53935;">
-  Administrador Glowzza
-
+    <button onclick="location.href='clientes.html'" class="boton-grande">Registro de Clientes</button>
+    <button onclick="location.href='stock.html'" class="boton-grande">Control de Stock</button>
+    <button onclick="location.href='balance.html'" class="boton-grande">Balance</button>
+    <button onclick="location.href='proveedores.html'" class="boton-grande">Registro de Proveedores</button>
+    <button onclick="location.href='descargas.html'" class="boton-grande">Download</button>
+    <button onclick="location.href='upload.html'" class="boton-grande">Upload</button>
+    <button onclick="location.href='scraperGlowzza/scraper.html'" class="boton-grande">Scraper</button>
+    <button onclick="location.href='solicitudes.html'" class="boton-grande">Solicitudes</button>
+    <button onclick="location.href='administrador.html'" class="boton-grande rojo">Administrador Glowzza</button>
   </div>
 
   <button onclick="location.href='https://www.glowzza.com.ar'" class="boton-volver">
     Volver a Glowzza
   </button>
+
+  <!-- 🔹 Protección de sesión -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "glowzzainventario.firebaseapp.com",
+      projectId: "glowzzainventario",
+      storageBucket: "glowzzainventario.appspot.com",
+      messagingSenderId: "159721581844",
+      appId: "1:159721581844:web:f62cdb303258dc847b6601",
+      measurementId: "G-0FR3Q6P3L2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // 🔹 Verificar sesión
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Si no hay usuario logueado, redirige al login
+        window.location.href = "index.html"; 
+      }
+    });
+  </script>
 </body>
 </html>
