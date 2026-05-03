@@ -799,6 +799,7 @@ footer .social-icons a {
   display: flex;
   flex-wrap: wrap;          /* permite varias filas */
   justify-content: center;  /* centra horizontalmente */
+  align-items: flex-start;  /* 🔹 evita que todas se estiren */
   gap: 20px;                /* espacio entre tarjetas */
   margin-top: 20px;
 }
