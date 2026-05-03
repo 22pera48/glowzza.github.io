@@ -1,6 +1,8 @@
 // Importar Firebase SDK desde CDN
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Configuración Firebase
 const firebaseConfig = {
@@ -16,7 +18,8 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
+// 🔹 Inicializar Auth
+const auth = getAuth(app);
 document.addEventListener("DOMContentLoaded", () => {
   // -------------------- Carrito --------------------
   window.irAlCarrito = () => window.location.href = "carrito2.html";
@@ -191,10 +194,6 @@ Swal.fire({
     };
   }
     // -------------------- Login con Firebase Auth --------------------
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-  const auth = getAuth(app);
 
   // Botón de login (puede ser el que pusimos en el header)
   window.mostrarLogin = () => {
