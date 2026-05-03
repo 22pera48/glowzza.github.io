@@ -190,4 +190,66 @@ Swal.fire({
       modal.style.display = "none";
     };
   }
+    // -------------------- Login con Firebase Auth --------------------
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const auth = getAuth(app);
+
+  // Botón de login (puede ser el que pusimos en el header)
+  window.mostrarLogin = () => {
+    Swal.fire({
+      title: 'Iniciar Sesión',
+      html:
+        '<input id="swal-user" class="swal2-input" placeholder="Email">' +
+        '<input id="swal-pass" type="password" class="swal2-input" placeholder="Contraseña">',
+      confirmButtonText: 'Ingresar',
+      focusConfirm: false,
+      preConfirm: () => {
+        const email = document.getElementById('swal-user').value;
+        const pass = document.getElementById('swal-pass').value;
+        if (!email || !pass) {
+          Swal.showValidationMessage('Completa email y contraseña');
+          return false;
+        }
+        return { email, pass };
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await signInWithEmailAndPassword(auth, result.value.email, result.value.pass);
+          Swal.fire('Bienvenido', 'Ingreso exitoso ✅', 'success');
+          setTimeout(() => {
+            window.location.href = "panel.html"; // redirige al panel
+          }, 1500);
+        } catch (error) {
+          Swal.fire('Error', error.message, 'error');
+        }
+      }
+    });
+  };
+
+  // Botón de logout (si lo agregás en el header)
+  window.cerrarSesion = async () => {
+    try {
+      await signOut(auth);
+      Swal.fire('Sesión cerrada', '', 'info');
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
+    }
+  };
+
+  // Control de sesión: mostrar/ocultar acceso al panel
+  onAuthStateChanged(auth, (user) => {
+    const loginBtn = document.querySelector(".btn-login");
+    if (loginBtn) {
+      loginBtn.style.display = user ? "none" : "inline-block";
+    }
+    // Podés mostrar un botón de logout si hay usuario activo
+    const logoutBtn = document.querySelector(".btn-logout");
+    if (logoutBtn) {
+      logoutBtn.style.display = user ? "inline-block" : "none";
+    }
+  });
+
 });
