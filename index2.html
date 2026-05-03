@@ -32,6 +32,10 @@
         <button onclick="irAFavoritos()" class="btn-secundario">
           <span class="material-icons">favorite</span> Mis Favoritos
         </button>
+        <!-- 🔹 Botón de Login -->
+        <button onclick="mostrarLogin()" class="btn-login">
+          <span class="material-icons">login</span> Iniciar Sesión
+        </button>
       </div>
     </div>
 
@@ -161,6 +165,36 @@
           const nombre = prod.querySelector("h4").textContent.toLowerCase();
           prod.style.display = nombre.includes(filtro) ? "" : "none";
         });
+      });
+    }
+
+    // 🔹 Login con SweetAlert
+    function mostrarLogin() {
+      Swal.fire({
+        title: 'Iniciar Sesión',
+        html:
+          '<input id="swal-user" class="swal2-input" placeholder="Usuario">' +
+          '<input id="swal-pass" type="password" class="swal2-input" placeholder="Contraseña">',
+        confirmButtonText: 'Ingresar',
+        focusConfirm: false,
+        preConfirm: () => {
+          const user = document.getElementById('swal-user').value;
+          const pass = document.getElementById('swal-pass').value;
+          if (!user || !pass) {
+            Swal.showValidationMessage('Completa usuario y contraseña');
+            return false;
+          }
+          return { user, pass };
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Aquí podrías validar con Firebase Auth
+          // Por ahora redirige directo al panel/proyecto
+          Swal.fire('Bienvenido ' + result.value.user, 'Redirigiendo...', 'success');
+          setTimeout(() => {
+            window.location.href = "panel.html"; // tu proyecto
+          }, 1500);
+        }
       });
     }
   </script>
