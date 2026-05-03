@@ -44,13 +44,13 @@ card.innerHTML = `
   ${promo.imagen ? `<img src="${promo.imagen}" alt="${promo.titulo}" class="promo-img">` : ""}
   <div class="combo-grid">
     ${
-      promo.comboProductos?.map(p => `
-        <div class="combo-item">
-          <img src="${p.imagen}" alt="${p.nombre}">
-          <p>${p.nombre}</p>
-          <p><strong>$${p.precio}</strong></p>
-        </div>
-      `).join("") || ""
+promo.comboProductos?.map(p => `
+  <div class="combo-item">
+    <img src="${p.imagen}" alt="${p.nombre}">
+    <p>${p.nombre}</p>
+  </div>
+`).join("") || ""
+
     }
   </div>
 `;
