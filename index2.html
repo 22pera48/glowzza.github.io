@@ -32,10 +32,6 @@
         <button onclick="irAFavoritos()" class="btn-secundario">
           <span class="material-icons">favorite</span> Mis Favoritos
         </button>
-        <!-- 🔹 Botón de Login -->
-        <button onclick="mostrarLogin()" class="btn-login">
-          <span class="material-icons">login</span> Iniciar Sesión
-        </button>
       </div>
     </div>
 
@@ -71,7 +67,55 @@
   </section>
 
   <!-- 🔹 Secciones de productos -->
-  <!-- (todo tu contenido igual que antes) -->
+  <section id="peluqueria">
+    <h1>Peluquería</h1>
+    <p class="mensaje-seccion">Descubrí productos que realzan tu estilo y cuidan tu cabello.</p>
+    <div class="productos">
+      <div class="producto"><h4>Shampoo Glowzza</h4></div>
+      <div class="producto"><h4>Acondicionador Nutritivo</h4></div>
+      <div class="producto"><h4>Mascarilla Capilar</h4></div>
+    </div>
+  </section>
+
+  <section id="skincare">
+    <h1>Skincare</h1>
+    <p class="mensaje-seccion">Rutinas pensadas para una piel radiante y saludable.</p>
+    <div class="productos">
+      <div class="producto"><h4>Serum Vitamina C</h4></div>
+      <div class="producto"><h4>Crema Hidratante</h4></div>
+      <div class="producto"><h4>Tónico Facial</h4></div>
+    </div>
+  </section>
+
+  <section id="maquillaje">
+    <h1>Maquillaje</h1>
+    <p class="mensaje-seccion">Colores y texturas para expresar tu arte personal.</p>
+    <div class="productos">
+      <div class="producto"><h4>Labial Glowzza</h4></div>
+      <div class="producto"><h4>Base Hidratante</h4></div>
+      <div class="producto"><h4>Sombras Radiantes</h4></div>
+    </div>
+  </section>
+
+  <section id="cuidado-personal">
+    <h1>Cuidado Personal</h1>
+    <p class="mensaje-seccion">Bienestar diario con productos que te acompañan siempre.</p>
+    <div class="productos">
+      <div class="producto"><h4>Jabón Artesanal</h4></div>
+      <div class="producto"><h4>Crema de Manos</h4></div>
+      <div class="producto"><h4>Desodorante Natural</h4></div>
+    </div>
+  </section>
+
+  <section id="perfume-esencias">
+    <h1>Perfume y Esencias</h1>
+    <p class="mensaje-seccion">Fragancias únicas que dejan huella en cada momento.</p>
+    <div class="productos">
+      <div class="producto"><h4>Perfume Glowzza</h4></div>
+      <div class="producto"><h4>Esencia Floral</h4></div>
+      <div class="producto"><h4>Aroma Vainilla</h4></div>
+    </div>
+  </section>
 
   <!-- 🔹 Contacto -->
   <section id="contacto">
@@ -117,36 +161,6 @@
           const nombre = prod.querySelector("h4").textContent.toLowerCase();
           prod.style.display = nombre.includes(filtro) ? "" : "none";
         });
-      });
-    }
-
-    // 🔹 Login con SweetAlert
-    function mostrarLogin() {
-      Swal.fire({
-        title: 'Iniciar Sesión',
-        html:
-          '<input id="swal-user" class="swal2-input" placeholder="Usuario">' +
-          '<input id="swal-pass" type="password" class="swal2-input" placeholder="Contraseña">',
-        confirmButtonText: 'Ingresar',
-        focusConfirm: false,
-        preConfirm: () => {
-          const user = document.getElementById('swal-user').value;
-          const pass = document.getElementById('swal-pass').value;
-          if (!user || !pass) {
-            Swal.showValidationMessage('Completa usuario y contraseña');
-            return false;
-          }
-          return { user, pass };
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Aquí podrías validar con Firebase Auth
-          // Por ahora redirige directo al panel/proyecto
-          Swal.fire('Bienvenido ' + result.value.user, 'Redirigiendo...', 'success');
-          setTimeout(() => {
-            window.location.href = "panel.html"; // tu proyecto
-          }, 1500);
-        }
       });
     }
   </script>
