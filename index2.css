@@ -808,11 +808,14 @@ footer .social-icons a {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  width: 260px;
   text-align: center;
   padding: 15px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex: 1 1 45%;            /* 🔹 ocupa hasta 45% pero se ajusta */
+  max-width: 320px;         /* 🔹 límite máximo */
+  margin: 10px;
 }
+
 
 .promo-card:hover {
   transform: translateY(-5px);
@@ -1007,9 +1010,6 @@ footer .social-icons a {
     width: 100%;
   }
 
-  .promo-card {
-    width: 45%;
-  }
 
   .promo-float {
     right: 15px;
@@ -1054,9 +1054,6 @@ footer .social-icons a {
     font-size: 0.9rem;
   }
 
-  .promo-card {
-    width: 100%;
-  }
 
   .promo-float {
     right: 10px;
@@ -1071,16 +1068,18 @@ footer .social-icons a {
   gap: 15px;              /* espacio entre productos */
   justify-content: center;/* centra el combo */
   margin-top: 15px;
+  align-items: flex-start; /* 🔹 evita que todos se estiren a la altura máxima */
 }
 
 /* Cada producto del combo */
 .combo-item {
-  width: 140px;           /* ancho fijo de cada tarjeta */
+  flex: 0 1 140px;        /* ancho fijo, altura automática */
   text-align: center;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   padding: 10px;
+  height: auto;           /* 🔹 asegura que cada tarjeta se ajuste a su contenido */
 }
 
 .combo-item img {
